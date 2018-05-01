@@ -1,0 +1,36 @@
+image: Visual Studio 2017
+
+platform:
+  - x64
+
+version: 0.0.{build}
+
+pull_requests:
+  do_not_increment_build_number: true
+
+branches:
+  only:
+  - master
+
+environment:
+  WIN_CSC_LINK:
+    secure: 5UwjQ0UqNFMk/b4hy+dUyBzmZtWh1yWdMJ9XxBc6WTE0Ozu88gCxXggxmoF0caDT
+  WIN_CSC_KEY_PASSWORD:
+    secure: 1xK3OGlDcGhuO80hRQ3w3g==
+  GH_TOKEN:
+    secure: r/UxKdYBtP2YNBwO9klll6KRy/bWyP5rwb6LfaoEEaBPLEi1jqPYmQRBD4X3QMY6
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node 8 x64
+  - npm install -g windows-build-tools
+  - npm install --save-dev electron-rebuild
+  - npm install
+
+build_script:
+  - ./node_modules/.bin/electron-rebuild -f
+  - set DEBUG=electron-builder & npm run release-win
+
+test: off

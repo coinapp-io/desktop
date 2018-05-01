@@ -1,0 +1,398 @@
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Montserrat'), local('Montserrat'), url(../fonts/Montserrat-Bold.ttf) format('sans-serif');
+}
+
+BODY {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11pt;
+}
+
+#transactions_tab {
+    font-size: 10pt;
+    text-align: center;
+}
+
+.windows_close {
+    width: 35px;
+    height: 21px;
+    background-color: rgb(177, 177, 177);
+    position: absolute;
+    top: 0;
+    right: 0px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+
+.windows_minimize {
+    width: 35px;
+    height: 21px;
+    background-color: rgb(177, 177, 177);
+    position: absolute;
+    top: 0;
+    right: 36px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.logo {
+    display: block;
+    margin: 45px auto;
+    height: 145px;
+}
+
+.tab-content {
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 25px 30px;
+    border-left: 1px solid #e8e8e8;
+    border-right: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    height: 235px;
+}
+
+.dynamicbar {
+    width: 100%;
+    height: 400px;
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    opacity: 0.25;
+}
+
+.tokens_list {
+    width: 220px;
+    height: 513px;
+    border-bottom: 1px solid #d2d2d2;
+    position: absolute;
+    top: 22px;
+    display: block;
+}
+
+.token_obj {
+    background-color: #ffffff;
+    padding: 20px 0;
+    margin-bottom: 1px;
+    cursor: pointer;
+}
+
+.token_obj:HOVER {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.token_obj .badge {
+    float: right;
+}
+
+.main-container {
+    display: block;
+    position: absolute;
+    border-left: 1px solid #bdbdbd;
+    left: 0px;
+    top: 22px;
+    height: 535px;
+    width: 100%;
+    float: right;
+    background-color: #f7f7f7;
+    opacity: 0;
+    transition-duration: 250ms;
+}
+
+.main-container IMG {
+
+}
+
+.sendBtns {
+    margin-top: 30px;
+}
+
+.draggable {
+    border-bottom: 1px solid #d2d2d2;
+    width: 100%;
+    height: 22px;
+    display: block;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+}
+
+.errorInfo {
+    margin-top: 5px;
+    display: none;
+}
+
+.portfolio {
+    font-size: 11pt;
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    color: #bfbfbf;
+    display: none;
+}
+
+.portfolio SPAN {}
+
+.miniprice {
+    font-size: 8pt;
+}
+
+.txidLink {
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+.coinBox {
+    text-align: center;
+}
+
+.coinBox B {
+    font-size: 42pt;
+    display: block;
+    font-weight: bold;
+}
+
+.coinBox SMALL {
+    font-size: 23pt;
+    color: #6f6f6f;
+}
+
+.myaddress {
+    text-align: center;
+    display: block;
+    font-size: 17pt;
+    margin: 40px 0;
+    color: #f9a332;
+    font-weight: bold;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.27);
+}
+
+.options {
+    margin-top: 30px;
+}
+
+.walletInput {
+    margin-top: 30px;
+}
+
+#walletActions {
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    color: #2583ff;
+    opacity: 0.3;
+    font-size: 35pt;
+}
+
+.modal-content {
+    border-radius: 0;
+}
+
+.modal-dialog {
+    max-width: 590px !important;
+    margin-top: 14vh;
+}
+
+.updateLoader {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+}
+
+.updateLoader .progress {
+    height: 6px;
+    border-radius: 0;
+}
+
+.updateLoader .progress-bar {
+    transition: width 5s ease;
+}
+
+.about {
+    position: absolute;
+    bottom: 6px;
+    left: 10px;
+    color: #bdbdbd;
+    cursor: pointer;
+    font-size: 8pt;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+.myaddress {
+    cursor: pointer;
+}
+
+.nav-tabs a {
+    color: #d69637;
+    font-size: 12pt;
+    padding-top: 10px;
+    background-color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #523e21;
+    text-shadow: 1px 1px 0px black;
+    border: 1px solid #171109;
+}
+
+.transaction_box {
+    background-color: rgba(0, 255, 0, 0.07);
+    padding: 2px 0;
+    margin: 0 -6px;
+    height: 50px;
+}
+
+.transaction_box_neg {
+    background-color: rgba(255, 23, 0, 0.04);
+    padding: 2px 0;
+    margin: 0 -6px;
+    height: 50px;
+}
+
+.transaction_box_misc {
+    background-color: white;
+    padding: 2px 0;
+    margin: 0 -6px;
+    height: 50px;
+}
+
+.pendingFlash{
+    -webkit-animation: flash linear 1s infinite;
+    animation: flash linear 1s infinite;
+}
+@-webkit-keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: .5; }
+    100% { opacity: 1; }
+}
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: .5; }
+    100% { opacity: 1; }
+}
+
+
+.fadeInEach {
+    display: none;
+}
+
+
+.small_txt {
+    font-size: 8pt;
+}
+
+.view_tx_btn {
+    height: 20px;
+    padding: 2px 5px;
+    font-size: 8pt;
+    background-color: #616161;
+    color: white;
+}
+
+.left_navs {
+    margin: 0px 0;
+    padding: 0;
+}
+
+.left_navs .nav-item {
+    padding: 0;
+}
+
+.left_navs a {
+    height: 40px;
+    width: 100%;
+    margin: 0;
+    padding-top: 9px;
+    font-size: 10pt;
+    text-align: center;
+    border-radius: 0 !important;
+}
+
+#left_tabs {
+    padding: 5px;
+    border: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 472px;
+}
+
+
+.block_number {
+    position: absolute;
+    bottom: 2px;
+    right: 10px;
+    font-size: 12pt;
+    color: #dadada;
+}
+
+.popup_notifications {
+    width: 100%;
+    height: 60px;
+    margin-top: -85px;
+    background-color: rgb(252, 204, 65);
+    position: absolute;
+    padding: 18px 0;
+    font-size: 12pt;
+    overflow: hidden;
+    transition:margin-top 0.3s ease-out;
+    z-index: 9999999;
+}
+
+#tokens_loading_msg {
+    font-size: 8pt;
+    width: 100%;
+    display: block;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+    border-color: rgba(251, 176, 60, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(249, 174, 58, 0.6);
+    outline: 0 none;
+}
+
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input, button, textarea, :focus {
+    outline: none; // You should add some other style for :focus to help UX/a11y
+}

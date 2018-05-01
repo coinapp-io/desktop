@@ -1,0 +1,67 @@
+{
+    "name": "coinapp",
+    "version": "0.0.1",
+    "description": "A Simple Cryptocurrency Wallet for Ethereum, ERC20 Tokens, Bitcoin and Litecoin",
+    "author": "Hunter Long <info@socialeck.com>",
+    "main": "main.js",
+    "scripts": {
+        "test": "/bin/bash -c ./.travis/travis-test.sh",
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder -wml",
+        "release": "electron-builder -ml -p onTagOrDraft",
+        "release-win": "electron-builder -w -p onTagOrDraft",
+        "test-all": "docker-compose up -d && sleep 20 && curl -X POST -H 'Content-Type: application/json' -d @test/newcoin.json http://localhost:8545 && export NODE_ALL='true' >> /dev/null && mocha && docker-compose down",
+        "fetch-list": "/bin/bash -c ./.travis/fetch-list.sh",
+        "icon": "./.travis/notification-icon.sh -i ./build/icon.png -b com.coinapp"
+    },
+    "build": {
+        "appId": "com.coinapp",
+        "productName": "CoinApp",
+        "mac": {
+            "publish": [
+                "github"
+            ],
+            "category": "financial"
+        },
+        "linux": {
+            "publish": [
+                "github"
+            ],
+            "target": [
+                "deb"
+            ]
+        },
+        "win": {
+            "publish": [
+                "github"
+            ]
+        }
+    },
+    "repository": "https://github.com/hunterlong/coinapp",
+    "keywords": [
+        "coinapp"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "chai": "^4.1.2",
+        "chai-as-promised": "^7.1.1",
+        "electron": "^1.8.6",
+        "electron-builder": "^20.10.0",
+        "mocha": "^5.1.1",
+        "spectron": "^3.8.0"
+    },
+    "dependencies": {
+        "bip39": "2.5.0",
+        "bitcoinjs-lib": "3.3.2",
+        "clipboardy": "^1.2.3",
+        "electron-default-menu": "^1.0.1",
+        "electron-log": "^2.2.14",
+        "electron-store": "^1.3.0",
+        "electron-updater": "^2.21.8",
+        "ethereumjs-tx": "^1.3.4",
+        "ethereumjs-wallet": "0.6.0",
+        "ethers": "3.0.15",
+        "node-notifier": "^5.2.1"
+    }
+}

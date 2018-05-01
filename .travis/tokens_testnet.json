@@ -1,0 +1,35 @@
+[
+  {
+    "symbol": "BASIC",
+    "address": "0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab",
+    "decimals": 8,
+    "name": "BASIC Token",
+    "ens_address": "",
+    "website": "",
+    "logo": {
+      "src": "",
+      "width": "400",
+      "height": "400",
+      "ipfs_hash": ""
+    },
+    "support": {
+      "email": "",
+      "url": ""
+    },
+    "social": {
+      "blog": "",
+      "chat": "",
+      "facebook": "",
+      "forum": "",
+      "github": "",
+      "gitter": "",
+      "instagram": "",
+      "linkedin": "",
+      "reddit": "",
+      "slack": "",
+      "telegram": "",
+      "twitter": "",
+      "youtube": ""
+    }
+  }
+]

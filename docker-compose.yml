@@ -1,0 +1,16 @@
+version: '3'
+services:
+  btcserver:
+    image: hunterlong/regtestinsight:latest
+    ports:
+      - "3001:3001"
+      - "8333:8333"
+  ltcserver:
+    image: hunterlong/ltctestinsight:latest
+    ports:
+      - "3005:3005"
+      - "8335:8333"
+  gethserver:
+    image: hunterlong/ganache:latest
+    ports:
+      - "8545:8545"

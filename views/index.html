@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CoinApp</title>
+    <link rel="stylesheet" href="../style/bootstrap.min.css">
+</head>
+
+<body>
+
+<div class="draggable">
+
+    <div onclick="CloseApp()" class="windows_close d-none">x</div>
+    <div onclick="MinimizeApp()" class="windows_minimize d-none">-</div>
+
+</div>
+
+<div class="tokens_list" hidden>
+
+    <div class="col-12 left_navs">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li id="transaction_nav" class="nav-item col-6">
+                <a class="nav-link active" id="transactions_tab-tab" data-toggle="tab" href="#transactions_tab" role="tab" aria-controls="home" aria-selected="true">Transactions</a>
+            </li>
+            <li class="nav-item col-6">
+                <a class="nav-link" id="tokens_available-tab" data-toggle="tab" href="#tokens_available" role="tab" aria-controls="profile" aria-selected="false">Tokens <span id="tokens_count">(0)</span></a>
+            </li>
+        </ul>
+
+    </div>
+
+
+    <div class="col-12 tab-content" id="left_tabs">
+        <div class="tab-pane fade show active" id="transactions_tab" role="tabpanel" aria-labelledby="transactions_tab-tab"></div>
+        <div class="tab-pane fade" id="tokens_available" role="tabpanel" aria-labelledby="tokens_available-tab">
+            <span id="tokens_loading_msg" class="text-center">Loading Tokens (0/0)</span>
+
+            <div id="progress_token" class="progress">
+                <div id="progress_token_load" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="container-fluid" id="token_lists">
+
+
+    </div>
+
+</div>
+
+
+<div class="main-container">
+
+
+    <div class="popup_notifications text-center">Incorrect Password! Try that one more time...</div>
+
+    <div class="container-fluid" id="access_container">
+
+        <div class="row">
+            <div class="col-md-10 offset-md-1 mb-2 mt-3">
+                <img src="../images/banner.png" class="logo">
+            </div>
+
+            <p class="errorInfo text-info pull-right" id="keystorejsonerror">Incorrect Password for Keystore Wallet</p>
+
+        </div>
+
+        <div class="col-10 offset-1">
+
+            <nav class="col-12">
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active col-4 text-center" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Crypto Wallet</a>
+                    <a class="nav-item nav-link col-4 text-center" id="setup_panel-tab" data-toggle="tab" href="#setup_panel" role="tab" aria-controls="nav-profile" aria-selected="false">Settings</a>
+                    <a class="nav-item nav-link col-4 text-center" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">New Wallet</a>
+                </div>
+            </nav>
+            <div class="col-12">
+                <div class="tab-content col-12" id="nav-tabContent">
+                    <div class="tab-pane show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="form-group row">
+                            <label for="walletpass" class="col-3 col-form-label">Keystore Wallet</label>
+                            <div class="col-3">
+                                <button onclick="OpenKeystoreFile();" class="btn btn-default">Choose File</button>
+                            </div>
+                            <div class="col-4">
+                                <input type="password" class="form-control" id="keystorewalletpass" placeholder="Keystore Password">
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="submit" class="btn btn-primary mb-2" id="keystorebtn" onclick="UnlockWalletKeystore();">Unlock</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="walletpass" class="col-3 col-form-label">Private Key</label>
+                            <div class="col-4">
+                                <input type="password" class="form-control" id="privatepass" placeholder="Private Key" value="">
+                            </div>
+                            <div class="col-3">
+                                <select class="custom-select mr-sm-2" id="unlock_coin_type">
+                                    <option value="" selected>Type</option>
+                                    <option value="ethereum">Ethereum</option>
+                                    <option value="btc">Bitcoin</option>
+                                    <option value="ltc">Litecoin</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="submit" class="btn btn-primary mb-2" id="unlock_priv_key" onclick="OpenPrivateKey();">Unlock</button>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="phrase" class="col-3 col-form-label">Mnemonic Phrase</label>
+                            <div class="col-7">
+                            <input type="type" class="form-control" id="phrase" placeholder="3 to 24 word phrase" value="">
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="submit" class="btn btn-primary mb-2" id="open_hd_wallet" onclick="OpenPhrase();">Unlock</button>
+                            </div>
+                        </div>
+
+                        <p class="errorInfo text-info pull-right" id="phraseerror">Invalid Ethereum Wallet Private Key</p>
+                    </div>
+
+                    <div class="tab-pane" id="nav-ledger" role="tabpanel" aria-labelledby="nav-ledger-tab">
+
+                        <div class="form-group">
+                            Connect Ledger!
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="tab-pane" id="setup_panel" role="tabpanel" aria-labelledby="setup_panel-tab">
+
+                        <div class="row">
+
+                        <div class="col-12">
+                                <div class="form-group row">
+                                    <label for="inputPassword" class="col-3 col-form-label">Geth Server</label>
+                                    <div class="col-5 input-group">
+                                        <input type="text" class="form-control" id="setting_geth_server" placeholder="Ethereum Server Endpoint">
+                                        <div class="input-group-append">
+                                            <div id="eth_server_conn" class="input-group-text bg-success text-white">✓</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                            <option value="geth" selected>JSON RPC</option>
+                                            <option value="etherscan">EtherScan.io</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="inputPassword" class="col-3 col-form-label">BTC Server</label>
+                                    <div class="col-5 input-group">
+                                        <input type="text" class="form-control" id="setting_btc_server" placeholder="Bitcoin Server Endpoint">
+                                        <div class="input-group-append">
+                                            <div id="btc_server_conn" class="input-group-text bg-secondary text-white">?</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                            <option value="insight" selected>Insight API</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                    <div class="form-group row">
+                                    <label for="inputPassword" class="col-3 col-form-label">LTC Server</label>
+                                    <div class="col-5 input-group">
+                                        <input type="text" class="form-control" id="setting_ltc_server" placeholder="Litecoin Server Endpoint">
+                                        <div class="input-group-append">
+                                            <div id="ltc_server_conn" class="input-group-text bg-secondary text-white">?</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                            <option value="insight" selected>Insight API</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            <button id="save_settings_btn" class="btn btn-primary mb-2" onclick="SaveSettings()">Save Settings</button>
+                        </div>
+
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+
+                        <button type="submit" class="btn btn-primary mb-2" onclick="OpenBTCLedger();">BTC on Ledger</button>
+
+                        <button type="submit" class="btn btn-primary mb-2" onclick="OpenETHLedger();">ETH on Ledger</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="container-fluid mt-5" id="token_container" hidden>
+
+        <div class="row walletInfo">
+
+            <div class="col-md-12 mb-5">
+
+                <div class="form-inline d-none" id="hd_path_setting">
+                    <div class="col-3">
+                        <select class="custom-select" id="hdpath_coin">
+                            <option value="eth" selected>Ethereum</option>
+                            <option value="btc">Bitcoin</option>
+                            <option value="ltc">Litecoin</option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <select class="custom-select" id="hdpath_options">
+                            <option value="m/44'/60'/0'/0/" selected>m/44'/60'/0'/0/</option>
+                            <option value="m/0/">m/0/</option>
+                        </select>
+                    </div>
+                    <input type="number" class="form-control col-2" id="hd_path_index" value="0" min="0">
+                    <input type="text" class="form-control col-3" id="hd_path" value="m/44'/60'/0'/0/0" readonly>
+                </div>
+
+                <span class="myaddress" onclick="CopyAddress();"></span>
+            </div>
+
+            <div id="token_balance_area" class="col-md-4 offset-md-2 coinBox d-none">
+                <b id="token_bal">0.0000</b><span class="token_name">SENSE</span>
+            </div>
+
+            <div id="crypto_balance_area" class="col-md-12 coinBox">
+                <b id="ethbal">0.0000</b>ETH
+            </div>
+
+            <span class="col-12 text-center d-none" id="pending_amount">1242.43 LTC Pending</span>
+
+            <div id="send_token_area" class="col-md-4 offset-md-2 text-center sendBtns d-none">
+                <button id="send_tokens_btn" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#token_modal" onclick="UpdateTokenFees();">
+                    Send <span class="token_name">SENSE</span>
+                </button>
+            </div>
+
+            <div id="send_crypto_area" class="col-md-12 text-center sendBtns">
+                <button id="send_ether_btn" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#ethermodal" onclick="UpdateEthFees();">
+                    Send Ether
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+</div>
+
+
+
+<link rel="stylesheet" href="../style/main.css">
+
+
+<script>
+    // You can also require other files to run in this process
+    require('../renderer.js')
+</script>
+
+
+
+
+<div class="modal fade" id="ethermodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="crypto_modal_title">Send Ethereum</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row align-items-center">
+                        <div class="col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Address</div>
+                                </div>
+                                <input type="text" class="form-control updateable_ether" id="send_ether_to" placeholder="0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text crypto_symbol">ETH</div>
+                                </div>
+                                <input type="text" class="form-control updateable_ether" id="send_ether_amount" placeholder="Amount of ETH" value="0">
+                            </div>
+                        </div>
+                        <div class="col-12" id="crypto_data">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Data</div>
+                                </div>
+                                <input type="text" class="form-control updateable_ether" id="eth_data" placeholder="Optional Data">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <p class="help-block" id="cryptos_available"><u class="ethspend">0.0</u> ETH Available</p>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+
+                <div class="col-9">
+                    <div id="crypto_gas_limit" class="btn btn-default">Gas Limit: <input class="form-control updateable_ether" id="ethgaslimit" type="number" value="21000" style="width: 100px;" min="21000" max="8000000"> gwei</div>
+                    <div id="crypto_gas_price" class="btn btn-default">Gas Price: <input class="form-control updateable_ether" id="ethgasprice" type="number" value="3" style="width: 70px;" min="1" max="200"> gwei</div>
+                    <div class="btn btn-default">Fee: <input class="form-control" id="ethtxfee" type="text" value="0.00044" readonly style="width: 115px;"><span class="crypto_symbol">ETH</span></div>
+                </div>
+
+                <div class="col-3">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="sendethbutton" class="btn btn-primary" onclick="SendEthereum();" disabled>Send ETH</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="token_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Send <span class="token_name">TOKEN</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row align-items-center">
+                        <div class="col-12">
+                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Address</div>
+                                </div>
+                                <input type="text" class="form-control updateable_token_ether" id="send_to_token" placeholder="0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="sr-only" for="inlineFormInputGroup">TOKENS</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><span class="token_name">TOKEN</span></div>
+                                </div>
+                                <input type="text" class="form-control updateable_token_ether" id="send_amount_token" placeholder="Amount of TOKENS">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <p class="help-block"><u class="token_spend">0.0</u> <span class="token_symbol">TOKEN</span> Available | <u class="ethavailable">0.0</u> ETH Available</p>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+
+                <div class="col-9">
+                    <div class="btn btn-default">Gas Limit: <input class="form-control updateable_token_ether" id="tokengaslimit" type="number" value="65000" style="width: 100px;" min="65000" max="8000000"> gwei</div>
+                    <div class="btn btn-default">Gas Price: <input class="form-control updateable_token_ether" id="tokengasprice" type="number" value="3" style="width: 70px;" min="1" max="200"> gwei</div>
+                    <div class="btn btn-default">Fee: <input class="form-control" id="tokentxfee" type="text" value="0.00044" readonly style="width: 115px;"> ETH</div>
+                </div>
+
+                <div class="col-3">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="sendtokenbutton" class="btn btn-primary" onclick="SendToken();" disabled>Send <span class="token_symbol">TOKEN</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="aboutmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">About CoinApp</h4>
+            </div>
+            <div class="modal-body">
+
+                A nifty crypto wallet application that lets you send and receive Ethereum, ERC20 Tokens, Bitcoin and Litecoin. CoinApp has a minimal UI for people who just want to move their coins, there's some advanced features for the knowledgable users too.
+
+                <p></p>
+
+                <a href="#" onclick="OpenGithubRepo()">CoinApp Github Repo</a> | Developed by <a href="#" onclick="OpenHunterGithub()">Hunter Long</a>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="trxsentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Transaction Sent</h4>
+            </div>
+            <div class="modal-body text-center">
+                You sent <u id="senttxamount"></u> <span id="txtype">ETH</span> to <b id="txtoaddress"></b>
+
+                <p class="txidLink text-primary" onclick="OpenEtherScan('0x31b2c588cbf74bec84491eb4ec8423cd13742f7d90315693771b6699c042eba5')"></p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<span class="block_number d-none">Block #5352546</span>
+
+<span class="about" data-toggle="modal" data-target="#aboutmodal"></span>
+
+</body>
+
+<script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+</script>
+
+<script src="../js/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/constants.js"></script>
+<script src="../js/phrase.js"></script>
+<script src="../js/abi.js"></script>
+<script src="../js/settings.js"></script>
+<script src="../js/transactions.js"></script>
+<script src="../js/view.js"></script>
+<script src="../js/tokens.js"></script>
+<script src="../js/main.js"></script>
+
+</html>
