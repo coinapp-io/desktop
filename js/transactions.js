@@ -328,6 +328,8 @@ function SendToken(callback) {
     $("#sendtokenbutton").prop("disabled", true);
     var price = parseInt($("#tokengasprice").val());
 
+    price = parseInt(price) * 1000000000;
+
     var bigamount = amount * (10 ** tokenDecimals);
 
     console.log("decimals: "+tokenDecimals);
@@ -337,26 +339,31 @@ function SendToken(callback) {
 
     var trueamount = ethers.utils.bigNumberify(bigamount.toString());
     var decBalance = tokenBalance * (10 ** tokenDecimals);
+    var targetAddress = ethers.utils.getAddress(to);
 
     if (to != '' && bigamount != '' && parseFloat(bigamount) <= decBalance) {
-        var targetAddress = ethers.utils.getAddress(to);
-        tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, myWallet);
-        tokenContract.transfer(targetAddress, trueamount, {
-            gasPrice: price,
-            gasLimit: gasLimit
-        }).then(function(txid) {
-            console.log(txid);
-            console.log(txid.hash);
-            $("#sendtokenbutton").prop("disabled", false);
-            $('#token_modal').modal('hide');
-
-            $(".txidLink").html(txid.hash);
-            $(".txidLink").attr("onclick", "OpenEtherScan('" + txid.hash + "')");
-            $("#senttxamount").html(amount);
-            $("#txtoaddress").html(to);
-            $("#txtype").html(tokenSymbol);
-            $('#trxsentModal').modal('show');
-            UpdateBalance();
+        myWallet.getTransactionCount('pending').then(function (nonce) {
+            tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, myWallet);
+            var trxOptions = {
+                gasLimit: gasLimit,
+                gasPrice: price,
+                nonce: nonce,
+                value: 0
+            };
+            var contractTransfer = tokenContract.transfer(targetAddress, trueamount, trxOptions);
+            contractTransfer.then(function (txid) {
+                $("#sendtokenbutton").prop("disabled", false);
+                $('#token_modal').modal('hide');
+                $(".txidLink").html(txid.hash);
+                $(".txidLink").attr("onclick", "OpenEtherScan('" + txid.hash + "')");
+                $("#senttxamount").html(amount);
+                $("#txtoaddress").html(to);
+                $("#txtype").html(tokenSymbol);
+                $('#trxsentModal').modal('show');
+                PopupNotification("Transaction Sent", "You sent " + amount + " "+tokenSymbol);
+                AddPendingTransaction(txid.hash, amount, tokenSymbol);
+                UpdateBalance();
+            });
         });
     }
 }

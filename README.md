@@ -8,7 +8,7 @@
   <a href="https://github.com/hunterlong/coinapp/releases/download/v0.0.18/CoinApp-0.0.18.dmg">Mac</a> |
   <a href="https://github.com/hunterlong/coinapp/releases/download/v0.0.18/coinapp_0.0.18_amd64.deb">Linux</a>
   <br><br>
-  <a href="https://travis-ci.org/hunterlong/coinapp"><img src="https://travis-ci.org/hunterlong/coinapp.svg?branch=master"></a>
+  <a href="https://travis-ci.org/coinapp-io/desktop"><img src="https://travis-ci.org/coinapp-io/desktop.svg?branch=master"></a>
 </p>
 
 # CoinApp - A Simple Cryptocurrency Wallet

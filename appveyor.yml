@@ -20,6 +20,9 @@ environment:
   GH_TOKEN:
     secure: r/UxKdYBtP2YNBwO9klll6KRy/bWyP5rwb6LfaoEEaBPLEi1jqPYmQRBD4X3QMY6
 
+build:
+  verbosity: quiet
+
 init:
   - git config --global core.autocrlf input
 

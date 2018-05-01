@@ -190,11 +190,11 @@ function OpenEtherScan(txid) {
 }
 
 function OpenGithubRepo() {
-    shell.openExternal('https://github.com/hunterlong/coinapp')
+    shell.openExternal('https://github.com/coinapp-io/desktop')
 }
 
 function OpenGithubReleases() {
-    shell.openExternal('https://github.com/hunterlong/coinapp/releases')
+    shell.openExternal('https://github.com/coinapp-io/desktop/releases')
 }
 
 function OpenHunterGithub() {
