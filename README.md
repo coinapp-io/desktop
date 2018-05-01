@@ -4,9 +4,9 @@
 
 <p align="center">
   <b>CoinApp - A Simple Cryptocurrency Wallet</b><br>
-  <a href="https://github.com/hunterlong/coinapp/releases/download/v0.0.18/coinapp-setup-0.0.18.exe">Windows</a> |
-  <a href="https://github.com/hunterlong/coinapp/releases/download/v0.0.18/CoinApp-0.0.18.dmg">Mac</a> |
-  <a href="https://github.com/hunterlong/coinapp/releases/download/v0.0.18/coinapp_0.0.18_amd64.deb">Linux</a>
+  <a href="https://github.com/coinapp-io/desktop/releases">Windows</a> |
+  <a href="https://github.com/coinapp-io/desktop/releases">Mac</a> |
+  <a href="https://github.com/coinapp-io/desktop/releases">Linux</a>
   <br><br>
   <a href="https://travis-ci.org/coinapp-io/desktop"><img src="https://travis-ci.org/coinapp-io/desktop.svg?branch=master"></a>
 </p>

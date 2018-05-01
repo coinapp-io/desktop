@@ -18,8 +18,8 @@ const BTC_PRIV = process.env.BTC_PRIV;
 const LTC_PRIV = process.env.LTC_PRIV;
 
 //
-// Bitcoin Testnet Donations:  mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd
-// Litecoin Testnet Donations: myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD
+// Bitcoin Testnet Donations:  myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD
+// Litecoin Testnet Donations: muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C
 //
 
 it('opens a window', () => {
@@ -156,9 +156,9 @@ it('should open litecoin sending modal and send LTC', () => {
         .click("//select/option[@value=\'ltc\']")
         .click('#unlock_priv_key')
         .getText(".myaddress")
-        .should.eventually.equal("mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd")
+        .should.eventually.equal("muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C")
         .click('#send_ether_btn').pause(7000)
-        .setValue('#send_ether_to', "mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd").pause(500)
+        .setValue('#send_ether_to', "muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C").pause(500)
         .setValue('#send_ether_amount', "0.123").pause(500)
         .click('#sendethbutton').pause(12000)
         .getText(".txidLink")
@@ -166,7 +166,7 @@ it('should open litecoin sending modal and send LTC', () => {
         .getText("#senttxamount")
         .should.eventually.equal("0.123")
         .getText("#txtoaddress")
-        .should.eventually.equal("mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd")
+        .should.eventually.equal("muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C")
 });
 
 

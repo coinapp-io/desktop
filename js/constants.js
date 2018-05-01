@@ -7,9 +7,8 @@ const fs = require('fs');
 const clipboardy = require('clipboardy');
 const { dialog } = require('electron').remote;
 
-if (process.env.NODE_ENV=='test') {
-    // var tokenList = require('../.travis/tokens_testnet.json');
-    var tokenList = require('../js/tokens-eth.json');
+if (process.env.TRAVIS) {
+    var tokenList = require('../.travis/tokens_testnet.json');
 } else {
     var tokenList = require('../js/tokens-eth.json');
 }

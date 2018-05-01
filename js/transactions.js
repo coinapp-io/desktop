@@ -330,7 +330,7 @@ function SendToken(callback) {
 
     price = parseInt(price) * 1000000000;
 
-    var bigamount = amount * (10 ** tokenDecimals);
+    var bigamount = parseFloat(amount) * (10 ** tokenDecimals);
 
     console.log("decimals: "+tokenDecimals);
     console.log("sending tokens: "+amount);

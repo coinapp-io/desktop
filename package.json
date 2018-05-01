@@ -9,8 +9,8 @@
         "start": "electron .",
         "pack": "electron-builder --dir",
         "dist": "electron-builder -wml",
-        "release": "electron-builder -ml -p onTagOrDraft",
-        "release-win": "electron-builder -w -p onTagOrDraft",
+        "release": "electron-builder -ml -p always",
+        "release-win": "electron-builder -w -p always",
         "test-all": "docker-compose up -d && sleep 20 && curl -X POST -H 'Content-Type: application/json' -d @test/newcoin.json http://localhost:8545 && export NODE_ALL='true' >> /dev/null && mocha && docker-compose down",
         "fetch-list": "/bin/bash -c ./.travis/fetch-list.sh",
         "icon": "./.travis/notification-icon.sh -i ./build/icon.png -b com.coinapp"
