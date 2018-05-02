@@ -84,11 +84,11 @@ function PendingBalance() {
 function SendCoins(to_address, send_amount, callback) {
     var tx = new bitcoin.TransactionBuilder(coinNetwork);
 
-    CryptoBalance(myAddress, function(bal) {
+    CryptoBalance(configs.address, function(bal) {
 
         console.log("tx bal: "+bal);
 
-        LoadUTXOs(myAddress, function(utxos) {
+        LoadUTXOs(configs.address, function(utxos) {
 
             $.each(utxos, function (key, out) {
                 tx.addInput(out.txid, out.vout);
@@ -102,10 +102,10 @@ function SendCoins(to_address, send_amount, callback) {
             console.log("sending:   ", send_amount);
             console.log("remaining: ", remaining);
             console.log("to: ", to_address);
-            console.log("my addr: ", myAddress);
+            console.log("my addr: ", configs.address);
 
             tx.addOutput(to_address, parseInt(send_amount));
-            tx.addOutput(myAddress, parseInt(remaining));
+            tx.addOutput(configs.address, parseInt(remaining));
 
             $.each(utxos, function (key, out) {
                 tx.sign(key, myWallet);
@@ -131,8 +131,8 @@ function LoadUTXOs(address, callback) {
 }
 
 function CopyAddress() {
-    clipboardy.writeSync(myAddress);
-    ShowNotification("Address Copied: " + myAddress);
+    clipboardy.writeSync(configs.address);
+    ShowNotification("Address Copied: " + configs.address);
 }
 
 
@@ -213,10 +213,21 @@ function OpenBlockchainTx(txid, coin) {
 
 function FocusOnToken(token, decimals, name, symbol) {
     console.log("Logging: " + token);
-    TOKEN_ADDRESS = token;
-    tokenSymbol = symbol;
-    tokenDecimals = decimals;
-    tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+
+    tokenContract = new ethers.Contract(token, TOKEN_ABI, configs.provider);
+    configs.tokenAddress = token;
+    configs.token = tokenContract;
+    configs.tokenDecimals = decimals;
+    configs.tokenSymbol = symbol;
+
+    tokenContract.balanceOf(configs.address).then(function(tokenBal) {
+        configs.tokenBalance = parseInt(tokenBal) * (0.1 ** decimals);
+        configs.bigTokenBalance = tokenBal;
+
+        var split = parseFloat(configs.tokenBalance).toFixed(4).split(".");
+        $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
+
+    });
 
     $("#token_balance_area").removeClass("d-none");
     $("#send_token_area").removeClass("d-none");
@@ -226,7 +237,7 @@ function FocusOnToken(token, decimals, name, symbol) {
     $("#send_token_area").attr("class", "col-4 offset-2 text-center sendBtns");
     $("#send_crypto_area").attr("class", "col-6 text-center sendBtns");
 
-    UpdateBalance();
+    // UpdateBalance();
     ChangeTokenName(name);
     ChangeTokenSymbol(symbol);
 }
@@ -278,59 +289,62 @@ function UpdatePath(path) {
 
 
 function SuccessAccess() {
-    if (usingBtc) {
-        $("#token_balance_area").hide();
-        $("#send_token_area").hide();
-        $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
-        $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
-        $("#send_ether_btn").html("Send Bitcoin");
-        $("#crypto_balance_area").html("<b id=\"ethbal\"></b> BTC");
-        $("#tokens_available-tab").remove();
-        $("#transaction_nav").attr("class", "nav-item col-12");
-        $("#crypto_modal_title").html('Send Bitcoin');
-        $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> BTC Available");
-        $("#crypto_data").remove();
-        $("#crypto_gas_limit").remove();
-        $("#crypto_gas_price").remove();
-        $("#sendethbutton").html("Send BTC");
-        apiEndpoint = btc;
-        ChangeCryptoSymbol("BTC");
-        LoadBitcoinTransactions(myAddress, "btc");
-    } else if (usingLtc) {
-        $("#token_balance_area").hide();
-        $("#send_token_area").hide();
-        $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
-        $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
-        $("#send_ether_btn").html("Send Litecoin");
-        $("#crypto_balance_area").html("<b id=\"ethbal\"></b> LTC");
-        $("#tokens_available-tab").remove();
-        $("#transaction_nav").attr("class", "nav-item col-12");
-        $("#crypto_modal_title").html('Send Litecoin');
-        $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> LTC Available");
-        $("#crypto_data").remove();
-        $("#crypto_gas_limit").remove();
-        $("#crypto_gas_price").remove();
-        $("#sendethbutton").html("Send LTC");
-        apiEndpoint = ltc;
-        ChangeCryptoSymbol("LTC");
-        LoadBitcoinTransactions(myAddress, "ltc");
-    } else {
-        // tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
-        LoadEthereumTransactions(myAddress);
-        ParseTokenList();
-        $(".block_number").removeClass("d-none");
-        provider.on('block', function(blockNumber) {
-            console.log('New Block: ' + blockNumber);
-            $(".block_number").html("Block #"+blockNumber);
-        });
-    }
-    $("#access_container").hide();
-    $("#token_container").removeAttr("hidden");
-    $(".tokens_list").removeAttr("hidden");
+    return new Promise(function(resolve, reject) {
+        if (configs.coin == "BTC") {
+            $("#token_balance_area").hide();
+            $("#send_token_area").hide();
+            $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
+            $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
+            $("#send_ether_btn").html("Send Bitcoin");
+            $("#crypto_balance_area").html("<b id=\"ethbal\"></b> BTC");
+            $("#tokens_available-tab").remove();
+            $("#transaction_nav").attr("class", "nav-item col-12");
+            $("#crypto_modal_title").html('Send Bitcoin');
+            $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> BTC Available");
+            $("#crypto_data").remove();
+            $("#crypto_gas_limit").remove();
+            $("#crypto_gas_price").remove();
+            $("#sendethbutton").html("Send BTC");
+            ChangeCryptoSymbol("BTC");
+            // LoadBitcoinTransactions(configs.address, "btc");
+        } else if (configs.coin == "LTC") {
+            $("#token_balance_area").hide();
+            $("#send_token_area").hide();
+            $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
+            $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
+            $("#send_ether_btn").html("Send Litecoin");
+            $("#crypto_balance_area").html("<b id=\"ethbal\"></b> LTC");
+            $("#tokens_available-tab").remove();
+            $("#transaction_nav").attr("class", "nav-item col-12");
+            $("#crypto_modal_title").html('Send Litecoin');
+            $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> LTC Available");
+            $("#crypto_data").remove();
+            $("#crypto_gas_limit").remove();
+            $("#crypto_gas_price").remove();
+            $("#sendethbutton").html("Send LTC");
+            ChangeCryptoSymbol("LTC");
+            // LoadBitcoinTransactions(configs.address, "ltc");
+        } else {
+            // tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+            // LoadEthereumTransactions(configs.address);
+            // ParseTokenList();
+            $(".block_number").removeClass("d-none");
+            OnEthereumBlock();
+        }
 
-    $(".main-container").css("left", "220px");
-    $(".main-container").css("width", "620px");
+        var split = parseFloat(configs.balance).toFixed(4).split(".");
+        $('#ethbal').html(split[0] + ".<small>" + split[1] + "</small>");
 
+        $("#access_container").hide();
+        $("#token_container").removeAttr("hidden");
+        $(".tokens_list").removeAttr("hidden");
+
+        $(".main-container").css("left", "220px");
+        $(".main-container").css("width", "620px");
+
+        resolve(configs);
+
+    });
     // $(".options").hide();
     // $(".walletInput").hide();
     // $("#addressArea").attr("class", "row");
@@ -382,57 +396,118 @@ function SetBitcoinNetwork(coin) {
 }
 
 
-function OpenPrivateKey() {
-    var key = $("#privatepass").val();
-    var coin = $( "#unlock_coin_type option:selected").val();
 
-    if (coin=="btc") {
-        try {
-            usingBtc = true;
-            SetBitcoinNetwork(coin);
-            myWallet = bitcoin.ECPair.fromWIF(key, coinNetwork);
-            myAddress = myWallet.getAddress();
-            SuccessAccess();
-            UpdateBalance();
-        } catch(e) {
-            $("#privatepass").val('');
-            ShowNotification("Bitcoin Wallet: "+e);
-        }
-    } else if (coin=="ltc") {
-        try {
-            usingLtc = true;
-            SetBitcoinNetwork(coin);
-            myWallet = bitcoin.ECPair.fromWIF(key, coinNetwork);
-            myAddress = myWallet.getAddress();
-            SuccessAccess();
-            UpdateBalance();
-        } catch(e) {
-            $("#privatepass").val('');
-            ShowNotification("Litecoin Wallet: "+e);
-        }
-    } else {
+var configs = {
+    coin: "none",
+    wallet: null,
+    address: "",
+    network: null,
+    decimals: 18,
+    bigBalance: 0,
+    balance: "0.0",
+    pendingBalance: "0.0",
+    tokenBalance: "0.0",
+    bigTokenBalance: 0,
+    tokenDecimals: 0,
+    api: "",
+    provider: null,
+    myTransactions: [],
+    pendingTransactions: [],
+    tokenAddress: "",
+    token: null
+};
 
+
+
+function UnlockBTC() {
+    return new Promise(function(resolve, reject) {
+        var key = $("#privatepass").val();
+        myWallet = bitcoin.ECPair.fromWIF(key, configs.network);
+        myAddress = myWallet.getAddress();
+        configs.wallet = myWallet;
+        configs.address = myAddress;
+        configs.decimals = 8;
+        $(".myaddress").html(myAddress);
+        resolve(myWallet);
+    });
+}
+
+
+
+function UnlockETH() {
+    return new Promise(function(resolve, reject) {
+        var key = $("#privatepass").val();
         if (key.substring(0, 2) !== '0x') {
             key = '0x' + key;
         }
-        if (key != '' && key.match(/^(0x)?[0-9A-fa-f]{64}$/)) {
-            HideButtons();
-            try {
-                provider = new ethers.providers.JsonRpcProvider(geth);
-                myWallet = new Wallet(key);
-                myWallet.provider = new ethers.providers.JsonRpcProvider(geth);
-                myAddress = myWallet.address;
-                console.log("Opened: " + myAddress);
-                SuccessAccess();
-                UpdateBalance();
-            } catch (e) {
-                ShowNotification(e);
-                console.error(e);
-            }
-        } else {
-            $("#privatekeyerror").show();
+        configs.provider = new ethers.providers.JsonRpcProvider(geth);
+        provider = new ethers.providers.JsonRpcProvider(geth);
+        var myWallet = new Wallet(key);
+        myWallet.provider = provider;
+        myAddress = myWallet.address;
+        $(".myaddress").html(myAddress);
+        configs.wallet = myWallet;
+        configs.address = myAddress;
+        resolve(myWallet);
+        // SuccessAccess();
+        // UpdateBalance();
+    });
+}
+
+
+function UnlockPrivateKey() {
+        var coin = $( "#unlock_coin_type option:selected").val();
+        if (coin=="btc") {
+            configs.coin = "BTC";
+            configs.network = bitcoin.networks.bitcoin;
+            configs.api = store.get("btc");
+        } else if (coin=="ltc") {
+            configs.coin = "LTC";
+            configs.api = store.get("ltc");
+            configs.network = bitcoin.networks.litecoin;
         }
-    }
+
+        if (process.env.NODE_ENV=='test') {
+            configs.network = bitcoin.networks.testnet;
+        }
+
+        if (coin=="ltc" || coin=="btc") {
+            UnlockBTC().then(function (r) {
+                UpdateBalance().then(function (balance) {
+                    LoadBitcoinTransactions().then(function (tsx) {
+                        SuccessAccess().then(function (c) {
+                            RenderTransactions(configs.myTransactions, 0, 16);
+                            // render trnsactions
+                        });
+                    });
+                });
+            }).catch(function (err) {
+                ShowNotification(err);
+            });
+        }
+
+        if (coin=="eth") {
+            configs.coin = "ETH";
+            configs.api = store.get("geth");
+            UnlockETH().then(function() {
+                UpdateBalance().then(function(balance) {
+                    LoadEthereumTransactions(configs.address).then(function(tsx) {
+                        SuccessAccess().then(function(c) {
+                            RenderTransactions(configs.myTransactions, 0, 16).then(function(t) {
+                                ParseTokenList().then(function() {
+
+                                });
+                            });
+                            // render trnsactions
+                        });
+                    }).catch(function(err) {
+                        ShowNotification(err);
+                    });
+                });
+            }).catch(function(err) {
+                ShowNotification(err.reason);
+            });
+        }
 }
 
 
@@ -489,16 +564,16 @@ function UpdateTokenFees() {
     var gasLimit = $("#tokengaslimit").val();
     var gasPrice = $("#tokengasprice").val();
     if (bad(amount) || bad(gasLimit) || bad(gasPrice) || bad(amount)) {
-        $(".ethavailable").html(ethBalance.toFixed(6));
-        $(".token_spend").html(tokenBalance.toFixed(6));
+        $(".ethavailable").html(parseFloat(configs.balance).toFixed(6));
+        $(".token_spend").html(parseFloat(configs.tokenBalance).toFixed(6));
         $("#sendtokenbutton").prop("disabled", true);
         return
     }
-    var availableTokens = tokenBalance - amount;
+    var availableTokens = configs.tokenBalance - amount;
     $(".token_spend").html(availableTokens.toFixed(6));
     var price = parseInt(gasPrice) * 0.000000001;
     var txCost = gasLimit * price;
-    var available = ethBalance - txCost;
+    var available = configs.balance - txCost;
     $("#tokentxfee").val(txCost.toFixed(6));
     $(".ethavailable").html(available.toFixed(6));
     var correctAddr = isEthAddress($("#send_to_token").val());
@@ -518,23 +593,23 @@ function UpdateEthFees() {
     var txCost = gasLimit * price;
     var available = 0;
 
-    if (usingLtc) {
-        $(".ethspend").val(ltcBalance);
-        available = ltcBalance - parseFloat(amount);
+    if (configs.coin=="LTC") {
+        $(".ethspend").val(configs.balance);
+        available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
         txCost = 0.000374;
         $("#send_ether_to").attr("placeholder", "LKmC2Gda9LMAWWDYP6wqN2N8qKhnVzbgE5");
-    } else if (usingBtc) {
-        $(".ethspend").val(btcBalance);
-        available = btcBalance - parseFloat(amount);
+    } else if (configs.coin=="BTC") {
+        $(".ethspend").val(configs.balance);
+        available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
         txCost = 0.001;
         $("#send_ether_to").attr("placeholder", "1GkYGJ8vmxT8JpEWJWFPUHgwYAAccapD2a");
     } else {
-        $(".ethspend").val(ethBalance);
-        available = ethBalance - amount - txCost;
+        $(".ethspend").val(configs.balance);
+        available = configs.balance - amount - txCost;
     }
 
     if (bad(amount) || bad(gasLimit) || bad(gasPrice) || bad(amount)) {
@@ -544,7 +619,7 @@ function UpdateEthFees() {
     }
     $("#ethtxfee").val(txCost.toFixed(6));
     $(".ethspend").html(available.toFixed(6));
-    if (!usingBtc && !usingLtc) {
+    if (configs.coin=="ETH") {
         var correctAddr = isEthAddress($("#send_ether_to").val());
     } else {
         var correctAddr = true;

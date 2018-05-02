@@ -1,63 +1,65 @@
 
-function GetTokenBalance(contract, wallet, callback) {
-    if (process.env.NODE_ENV=='test') {
-        var api = "https://api.tokenbalance.com/token/" + contract + "/" + wallet;
-    } else {
-        var api = "https://api.tokenbalance.com/token/" + contract + "/" + wallet;
-    }
-    $.get(api, function(bal, status) {
-        var balance = bal.balance;
-        callback(balance);
-    });
-}
+// function GetTokenBalance(contract, wallet, callback) {
+//
+// }
 
 
 
-function CryptoBalance(address, callback) {
-    var api = apiEndpoint+"/addr/"+address+"/balance";
-    $.get(api, function(bal, status) {
-        ltcBalance = parseInt(bal) * 0.00000001;
-        btcBalance = ltcBalance;
+function CryptoBalance(address) {
+    return new Promise(function(resolve, reject) {
+       var api = configs.api + "/addr/" + address + "/balance";
+        $.get(api, function (bal, status) {
 
-        var pendingapi = apiEndpoint+"/addr/"+address+"/unconfirmedBalance";
-        $.get(pendingapi, function(pendBal, status) {
-            pendBal = parseInt(pendBal) * 0.00000001;
+            configs.bigBalance = bal;
+            configs.balance = parseInt(bal) * 0.00000001;
 
-            if (pendBal === 0) {
-                $("#pending_amount").attr("class", "d-none");
-            } else if (pendBal > 0) {
-                $("#pending_amount").attr("class", "col-12 text-center text-success");
-            } else {
-                $("#pending_amount").attr("class", "col-12 text-center text-danger");
-            }
-            $("#pending_amount").html(pendBal.toFixed(6)+ " Pending");
+            ltcBalance = parseInt(bal) * 0.00000001;
+            btcBalance = ltcBalance;
 
-            if (pendBal < 0) {
-                btcBalance = btcBalance + pendBal;
-            }
+            var pendingapi = configs.api + "/addr/" + address + "/unconfirmedBalance";
+            $.get(pendingapi, function (pendBal, status) {
 
-            splits = btcBalance.toString().split(".");
-            $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0,4) + "</small>");
+                configs.pendingBalance = parseInt(pendBal) * 0.00000001;
 
-            if (pendingBalance != undefined && pendingBalance != pendBal) {
-                console.log("last balances changed!!!");
-                NotifyPendingTransactions(pendBal);
-            }
+                pendBal = parseInt(pendBal) * 0.00000001;
 
-            lastBalance = btcBalance;
-            pendingBalance = pendBal;
+                if (pendBal === 0) {
+                    $("#pending_amount").attr("class", "d-none");
+                } else if (pendBal > 0) {
+                    $("#pending_amount").attr("class", "col-12 text-center text-success");
+                } else {
+                    $("#pending_amount").attr("class", "col-12 text-center text-danger");
+                }
+                $("#pending_amount").html(pendBal.toFixed(6) + " Pending");
 
-            if (callback) callback(bal);
+                if (pendBal < 0) {
+                    btcBalance = btcBalance + pendBal;
+                }
+
+                splits = btcBalance.toString().split(".");
+                $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
+
+                resolve(bal);
+
+                if (pendingBalance != undefined && pendingBalance != pendBal) {
+                    console.log("last balances changed!!!");
+                    NotifyPendingTransactions(pendBal);
+                }
+
+                lastBalance = btcBalance;
+                pendingBalance = pendBal;
+
+                // if (callback) callback(bal);
+            });
+
         });
-
     });
-
 }
 
 
 
 function NotifyPendingTransactions(pending) {
-    LoadBitcoinTransactions(myAddress, CryptoName(), function(txs) {
+    LoadBitcoinTransactions(myAddress, CryptoName()).then(function(txs) {
         $.each(txs, function (key, tx) {
             if (tx.confirms == 0){
                 if (pending > 0) {
@@ -73,7 +75,7 @@ function NotifyPendingTransactions(pending) {
                 }
             }
         });
-        RenderTransactions(txs, CryptoName(), 0);
+        RenderTransactions(txs, 0, 16);
         lastTransactions = txs;
     });
 }
@@ -104,7 +106,7 @@ function CheckNewTransactions(newTranx, oldTranx) {
     console.log(allTransactions);
 
     LoadBitcoinTransactions(myAddress, CryptoName(), function(transactions) {
-        RenderTransactions(transactions, CryptoName(), 0);
+        RenderTransactions(transactions, 0, 16);
     });
 
 
@@ -116,7 +118,6 @@ function CheckNewTransactions(newTranx, oldTranx) {
 function CheckForPendingETH() {
     provider.getBlock('pending').then(function (pens) {
         if (pens.number == lastEthBlock) return;
-        pendingEthTransaction = [];
         console.log("Block #"+pens.number+" has "+pens.transactions.length+" transactions.");
         $.each(pens.transactions, function (key, hash) {
             if($.inArray(hash, pendingEthTransaction) === -1) {
@@ -125,21 +126,22 @@ function CheckForPendingETH() {
                     var ethval = ethers.utils.formatEther(tx.value);
                     pendBal = parseFloat(ethval);
                     if (tx.from == myAddress) {
-                        PopupNotification("Outgoing ETH Pending", ethval + " from " + tx.from);
+                        console.log("Outgoing popup for tx: "+tx.hash);
                         $("#pending_amount").attr("class", "col-12 text-center text-danger");
+
+                        AddPendingTransaction(tx.hash, pendBal, "ETH");
+
                     } else if (tx.to == myAddress) {
+                        console.log("incoming popup for tx: "+tx.hash);
                         PopupNotification("Incoming ETH", ethval + " from " + tx.from);
                         AddPendingTransaction(tx.hash, ethval, CryptoName(), true);
                         $("#pending_amount").attr("class", "col-12 text-center text-success");
                     }
                     if (tx.from == myAddress || tx.to == myAddress) {
-                        console.log(tx);
                         pendingEthTransaction.push(tx.hash);
                         $("#pending_amount").html(pendBal.toFixed(6) + " Pending");
-                        provider.once(tx.hash, function(transaction) {
-                            console.log('Transaction Minded: ' + transaction.hash);
-                            console.log(transaction);
-                            LoadEthereumTransactions(myAddress);
+                        WaitForTransaction(tx.hash, function(hash) {
+                            ShowNotification(hash+" Confirmed")
                         });
                     }
                 });
@@ -151,58 +153,126 @@ function CheckForPendingETH() {
 
 
 
+function WaitForTransaction(hash, callback) {
+    provider.once(hash, function(transaction) {
+        console.log('Transaction Minded: ' + transaction.hash);
+        callback(transaction);
+    });
+}
+
+
+
+
+function OnEthereumBlock(callback) {
+    provider.on('block', function(blockNumber) {
+        console.log('New Block: ' + blockNumber);
+        $(".block_number").html("Block #"+blockNumber);
+        if (callback) callback(blockNumber);
+    });
+}
+
+
+
 function UpdateBalance() {
-    console.log("address: "+myAddress);
-    if (myAddress=='undefined') return;
-    $(".myaddress").html(myAddress);
-
-    if (usingBtc) {
-        CryptoBalance(myAddress);
-        return
-    } else if (usingLtc) {
-        CryptoBalance(myAddress);
-        return
-    } else {
-
-        provider.getBalance(myAddress).then(function (balance) {
-            var etherString = ethers.utils.formatEther(balance);
-            console.log("ETH Balance: " + etherString);
-            var n = parseFloat(etherString);
-            var ethValue = n.toLocaleString(
-                undefined, // use a string like 'en-US' to override browser locale
-                {
-                    minimumFractionDigits: 4
-                }
-            );
-            var messageEl = $('#ethbal');
-            var split = parseFloat(ethValue).toFixed(4).split(".");
-            ethBalance = parseFloat(ethValue);
-            messageEl.html(split[0] + ".<small>" + split[1] + "</small>");
-        });
-
-        GetTokenBalance(TOKEN_ADDRESS, myAddress, function(balance) {
-            if (bad(balance)) return;
-            tokenBalance = parseFloat(balance);
-            var split = parseFloat(balance).toFixed(4).split(".");
-            $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
-        });
-
-        $.each(availableTokens, function (key, val) {
-            GetTokenBalance(val, myAddress, function(balance) {
-                if (bad(balance)) return;
-                var tokenObj = "<div id=\"token_" + val.symbol + "\" onclick=\"FocusOnToken('" + val.address + "', " + val.decimals + ", '" + val.name + "', '" + val.symbol + "')\" class=\"row token_obj\">\n" +
-                    "    <div class=\"col-12\">\n" +
-                    "        <h5>" + val.name +
-                    "<span class=\"badge badge-secondary\">" + balance + "</span></h5>\n" +
-                    "    </div>\n" +
-                    "</div>";
-                $("#tokens_available").append(tokenObj);
+    return new Promise(function(resolve, reject) {
+        if (configs.coin=="BTC" || configs.coin=="LTC") {
+            CryptoBalance(configs.address).then(function(balance) {
+                resolve(balance);
             });
-        });
+        } else {
+            configs.provider.getBalance(configs.address).then(function (balance) {
+                var etherString = ethers.utils.formatEther(balance);
+                configs.balance = etherString;
+                configs.bigBalance = balance;
+                var n = parseFloat(etherString);
+                var ethValue = n.toLocaleString(
+                    undefined, // use a string like 'en-US' to override browser locale
+                    {
+                        minimumFractionDigits: 4
+                    }
+                );
+                resolve(balance);
+            });
+        }
 
-        CheckForPendingETH();
-
-    }
+        //
+        //
+        // if (configs.address == 'undefined') reject(myAddress);
+        // $(".myaddress").html(myAddress);
+        //
+        // if (configs.coin=="BTC") {
+        //         CryptoBalance(myAddress);
+        // } else if (configs.coin=="LTC") {
+        //     resolve(configs.coin);
+        // } else if (configs.coin=="ETH") {
+        //
+        //     provider.getBalance(myAddress).then(function (balance) {
+        //         var etherString = ethers.utils.formatEther(balance);
+        //         configs.balance = etherString;
+        //         configs.bigBalance = balance;
+        //         var n = parseFloat(etherString);
+        //         var ethValue = n.toLocaleString(
+        //             undefined, // use a string like 'en-US' to override browser locale
+        //             {
+        //                 minimumFractionDigits: 4
+        //             }
+        //         );
+        //         var messageEl = $('#ethbal');
+        //         var split = parseFloat(ethValue).toFixed(4).split(".");
+        //         ethBalance = parseFloat(ethValue);
+        //         messageEl.html(split[0] + ".<small>" + split[1] + "</small>");
+        //         resolve(balance);
+        //     });
+        //
+        // }
+        //
+        // if (usingBtc) {
+        //     CryptoBalance(myAddress);
+        //     return
+        // } else if (usingLtc) {
+        //     CryptoBalance(myAddress);
+        //     return
+        // } else {
+        //
+        //     provider.getBalance(myAddress).then(function (balance) {
+        //         var etherString = ethers.utils.formatEther(balance);
+        //         var n = parseFloat(etherString);
+        //         var ethValue = n.toLocaleString(
+        //             undefined, // use a string like 'en-US' to override browser locale
+        //             {
+        //                 minimumFractionDigits: 4
+        //             }
+        //         );
+        //         var messageEl = $('#ethbal');
+        //         var split = parseFloat(ethValue).toFixed(4).split(".");
+        //         ethBalance = parseFloat(ethValue);
+        //         messageEl.html(split[0] + ".<small>" + split[1] + "</small>");
+        //     });
+        //
+        //     GetTokenBalance(TOKEN_ADDRESS, myAddress, function (balance) {
+        //         if (bad(balance)) return;
+        //         tokenBalance = parseFloat(balance);
+        //         var split = parseFloat(balance).toFixed(4).split(".");
+        //         $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
+        //     });
+        //
+        //     $.each(availableTokens, function (key, val) {
+        //         GetTokenBalance(val, myAddress, function (balance) {
+        //             if (bad(balance)) return;
+        //             var tokenObj = "<div id=\"token_" + val.symbol + "\" onclick=\"FocusOnToken('" + val.address + "', " + val.decimals + ", '" + val.name + "', '" + val.symbol + "')\" class=\"row token_obj\">\n" +
+        //                 "    <div class=\"col-12\">\n" +
+        //                 "        <h5>" + val.name +
+        //                 "<span class=\"badge badge-secondary\">" + balance + "</span></h5>\n" +
+        //                 "    </div>\n" +
+        //                 "</div>";
+        //             $("#tokens_available").append(tokenObj);
+        //         });
+        //     });
+        //
+        //     CheckForPendingETH();
+        //
+        // }
+    });
 }
 
 
@@ -312,8 +382,14 @@ function SendEthereum(callback) {
                 $('#trxsentModal').modal('show');
                 $("#send_ether_amount").val('0');
                 $("#send_ether_to").val('');
+
+                pendingEthTransaction.push(hash);
+                WaitForTransaction(hash, function(hash) {
+                    ShowNotification(hash+" Confirmed")
+                });
+
                 AddPendingTransaction(hash, amount, "ETH");
-                UpdateBalance();
+                // UpdateBalance();
             });
         });
     }
@@ -362,6 +438,12 @@ function SendToken(callback) {
                 $('#trxsentModal').modal('show');
                 PopupNotification("Transaction Sent", "You sent " + amount + " "+tokenSymbol);
                 AddPendingTransaction(txid.hash, amount, tokenSymbol);
+
+                pendingEthTransaction.push(txid.hash);
+                WaitForTransaction(txid.hash, function(hash) {
+                    ShowNotification(hash+" Confirmed");
+                });
+
                 UpdateBalance();
             });
         });

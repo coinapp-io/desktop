@@ -78,3 +78,5 @@ var pendingBalance;
 
 var pendingEthTransaction = [];
 var lastEthBlock;
+
+var lastTrxScroll;
