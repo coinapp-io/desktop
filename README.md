@@ -19,14 +19,15 @@ A nifty crypto wallet application that lets you send and receive Ethereum, ERC20
 </p>
 
 # Features of CoinApp
-CoinApp trys to make this cryptocurrency process as simple as possible. The wallet accepts Keystore JSON Etheruem Wallets, Private Keys for ETH, BTC, LTC, and Mnemonic phrases 3-24 words long [BIP39](https://iancoleman.io/bip39/). With CoinApp you can view all of your wallet's transactions without downloading the entire blockchain. 
+CoinApp trys to make this cryptocurrency process as simple as possible. The wallet accepts Keystore JSON Etheruem Wallets, Private Keys for ETH, BTC, LTC, and Mnemonic phrases 3-24 words long [BIP39](https://iancoleman.io/bip39/). With CoinApp you can view all of your wallet's transactions without downloading the entire blockchain. This application is also great for developing on the Blockchain Testnet's.
 
 <p align="center">
   <img width="70%" src="https://i.imgur.com/iDeHHxy.png">
 </p>
 
 # ERC20 Tokens
-CoinApp will automatically fetch all your balances for the most popular coins when you use an Ethereum address. This token list is based off of MyEtherWallet [tokens-eth.json](https://github.com/MyEtherWallet/ethereum-lists/blob/master/tokens/tokens-eth.json) list. It will quickly scan for balances on ERC20 Tokens using my other project [TokenBalance.com API](https://github.com/hunterlong/tokenbalance). When using smart contracts you can change the Gas Limit and the Gas Price to match the requirements, the defaults are a safe limit for all coin transfers.
+CoinApp will automatically fetch all your balances for the most popular coins when you use an Ethereum address. This token list is based off of MyEtherWallet [tokens-eth.json](https://github.com/MyEtherWallet/ethereum-lists/blob/master/tokens/tokens-eth.json) list. It will quickly scan for balances on ERC20 Tokens using my other project [TokenBalance.com API](https://github.com/hunterlong/tokenbalance). When using smart contracts you can change the Gas Limit and the Gas Price to match the requirements, the defaults are a safe limit for all coin transfers. 
+If you need to add a custom token you can easily add your own contract address to parse ERC20 tokens!
 
 <p align="center">
   <img width="45%" src="https://i.imgur.com/N6poiQv.png"><img width="45%" src="https://i.imgur.com/tCdgr6e.png">
@@ -42,6 +43,9 @@ There are hundreds of cryptos these days, but this app lets you interact with th
 - ERC20 Tokens
 - Bitcoin
 - Litecoin
+- Ethereum Ropsten Testnet
+- Bitcoin Testnet
+- Litecoin Testnet
 
 This list will expand while trying to keep the "minimal" look. Any coin that has an insight api or any other open source API should be added in CoinApp. Coins like Bitcoin and Litecoin need to fetch previous transactions from the blockchain before you can create a new transaction. This application will give you the option to point everything to your own local servers. Below is a list of cryptos we want to accept in the near future. 
 - Bitcoin Cash
