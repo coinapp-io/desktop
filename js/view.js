@@ -35,21 +35,127 @@ ipcRenderer.on('ledgerEthAddress', function(info, address) {
 });
 
 
+
+
+$("#new_token_address").on("input", function() {
+    var address = $("#new_token_address").val();
+    console.log(address.length);
+    if (address.length == 42) {
+        QueryTokenContract(address);
+    }
+});
+
+
+
+function QueryTokenContract(address) {
+    var tmpToken = new ethers.Contract(address, TOKEN_ABI, configs.provider);
+    tmpToken.balanceOf(configs.address).then(function(tokenBal) {
+        $("#new_token_address").removeClass("is-invalid");
+        $("#new_token_address").addClass("is-valid");
+
+        tmpToken.symbol().then(function(sym) {
+                $("#new_token_symbol").val(sym);
+                $("#new_token_symbol").prop('readonly', true);
+
+            tmpToken.decimals().then(function(dec) {
+                $("#new_token_decimals").val(parseInt(dec));
+                $("#new_token_decimals").prop('readonly', true);
+
+                var trueBal = tokenBal * (0.1 ** parseInt(dec));
+                $("#new_token_balance").val(trueBal);
+
+                tmpToken.name().then(function(name) {
+                    $("#new_token_alert").html("Correct Token for: "+name);
+                    $("#new_token_name").val(name);
+                });
+
+            });
+
+        });
+
+    }).catch(function (err) {
+        $("#new_token_decimals").prop('readonly', false);
+        $("#new_token_symbol").prop('readonly', false);
+        $("#new_token_address").removeClass("is-valid");
+        $("#new_token_address").addClass("is-invalid");
+        $("#new_token_alert").html("Incorrect ERC20 Token Address");
+    });
+
+}
+
+
+
+function SaveNewToken() {
+    var address = $("#new_token_address").val();
+    var decimals = $("#new_token_decimals").val();
+    var symbol = $("#new_token_symbol").val();
+    var name = $("#new_token_name").val();
+    var balance = $("#new_token_balance").val();
+    $("#save_token_btn").prop("disabled", true);
+
+    // store.set("saved_tokens", JSON.stringify(configs.savedTokens));
+
+    configs.savedTokens = $.parseJSON(store.get("saved_tokens"));
+
+    tk = {address: address, decimals: decimals, symbol: symbol, name: name, balance: balance};
+
+    configs.savedTokens.push(tk);
+
+    store.set("saved_tokens", JSON.stringify(configs.savedTokens));
+
+    var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" +
+        "    <div class=\"col-12\">" +
+        "        <h5>" + tk.name +
+        "<span class=\"badge badge-secondary\">" + toNumber(tk.balance) + "</span></h5>" +
+        "    </div>" +
+        "</div>";
+    $(tokenObj).insertAfter("#new_token_dialog_btn");
+    $("#new_token_address").val('');
+    $('#add_token_modal').modal('hide');
+    $("#save_token_btn").prop("disabled", false);
+    $("#new_token_alert").html("");
+    $("#new_token_decimals").prop('readonly', false);
+    $("#new_token_symbol").prop('readonly', false);
+    $("#new_token_address").removeClass("is-valid");
+    $("#new_token_address").removeClass("is-invalid");
+}
+
+
+
+function LoadSavedTokens() {
+    console.log(configs.savedTokens);
+    $.each(configs.savedTokens, function(k, tk) {
+        var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" +
+            "    <div class=\"col-12\">" +
+            "        <h5>" + tk.name +
+            "<span class=\"badge badge-secondary\">" + toNumber(tk.balance) + "</span></h5>" +
+            "    </div>" +
+            "</div>";
+        $(tokenObj).insertAfter("#new_token_dialog_btn");
+    })
+}
+
+
+
+
+
+
 function TransactionFee(utxos) {
-    var isTesting = process.env.NODE_ENV;
     var fee = 0;
     if (configs.coin=="BTC") {
-        if (isTesting=='test'){
-            fee = (utxos.length) * 180 + 2 * 34 + 10;
-        } else {
-            fee = (utxos.length) * 180 + 2 * 34 + 10;
-        }
+        fee = (utxos.length) * 180 + 2 * 34 + 10;
     } else if (configs.coin=="LTC") {
-        if (isTesting == 'test') {
-            if (fee <= 37400) fee = 37400
-        } else {
-            if (fee <= 100000) fee = 100000
-        }
+        fee = (utxos.length) * 180 + 2 * 34 + 10;
+    } else if (configs.coin=="LTCTEST") {
+        fee = (utxos.length) * 180 + 2 * 34 + 10;
+    } else if (configs.coin=="BTCTEST") {
+        fee = (utxos.length) * 180 + 2 * 34 + 10;
+    }
+
+    if (configs.coin=="BTC" || configs.coin=="BTCTEST") {
+        if (fee <= 37400) fee = 37400
+    } else {
+        if (fee <= 100000) fee = 100000
     }
     console.log("current fee: "+fee);
     return fee
@@ -106,6 +212,10 @@ function SendCoins(to_address, send_amount, callback) {
 
                 resolve(tx_hex);
 
+            }).catch(function(err) {
+                console.error(err);
+                ShowNotification(err);
+                $("#sendethbutton").prop("disabled", false);
             });
 
         });
@@ -114,7 +224,7 @@ function SendCoins(to_address, send_amount, callback) {
 
 }
 
-function LoadUTXOs(address, callback) {
+function LoadUTXOs(address) {
     return new Promise(function(resolve, reject) {
         var api = configs.api + "/addr/" + address + "/utxo";
         $.get(api, function (utxos) {
@@ -205,9 +315,9 @@ function OpenBlockchainTx(txid, coin) {
 
 
 function FocusOnToken(token, decimals, name, symbol) {
-    console.log("Logging: " + token);
+    console.log("Logging Token: " + token);
 
-    tokenContract = new ethers.Contract(token, TOKEN_ABI, configs.provider);
+    tokenContract = new ethers.Contract(token, TOKEN_ABI, configs.wallet);
     configs.tokenAddress = token;
     configs.token = tokenContract;
     configs.tokenDecimals = decimals;
@@ -282,57 +392,37 @@ function UpdatePath(path) {
 
 
 function SuccessAccess() {
-        if (configs.coin == "BTC") {
-            $("#token_balance_area").hide();
-            $("#send_token_area").hide();
-            $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
-            $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
-            $("#send_ether_btn").html("Send Bitcoin");
-            $("#crypto_balance_area").html("<b id=\"ethbal\"></b> BTC");
-            $("#tokens_available-tab").remove();
-            $("#transaction_nav").attr("class", "nav-item col-12");
-            $("#crypto_modal_title").html('Send Bitcoin');
-            $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> BTC Available");
-            $("#crypto_data").remove();
-            $("#crypto_gas_limit").remove();
-            $("#crypto_gas_price").remove();
-            $("#sendethbutton").html("Send BTC");
-            ChangeCryptoSymbol("BTC");
-            // LoadBitcoinTransactions(configs.address, "btc");
-        } else if (configs.coin == "LTC") {
-            $("#token_balance_area").hide();
-            $("#send_token_area").hide();
-            $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
-            $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
-            $("#send_ether_btn").html("Send Litecoin");
-            $("#crypto_balance_area").html("<b id=\"ethbal\"></b> LTC");
-            $("#tokens_available-tab").remove();
-            $("#transaction_nav").attr("class", "nav-item col-12");
-            $("#crypto_modal_title").html('Send Litecoin');
-            $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> LTC Available");
-            $("#crypto_data").remove();
-            $("#crypto_gas_limit").remove();
-            $("#crypto_gas_price").remove();
-            $("#sendethbutton").html("Send LTC");
-            ChangeCryptoSymbol("LTC");
-            // LoadBitcoinTransactions(configs.address, "ltc");
-        } else {
-            // tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
-            // LoadEthereumTransactions(configs.address);
-            // ParseTokenList();
-            $(".block_number").removeClass("d-none");
-            OnEthereumBlock();
-        }
+    if (isBitcoin()) {
+        $("#token_balance_area").hide();
+        $("#send_token_area").hide();
+        $("#crypto_balance_area").attr("class", "col-md-12 coinBox");
+        $("#send_crypto_area").attr("class", "col-md-12 text-center sendBtns");
+        $("#tokens_available-tab").remove();
+        $("#transaction_nav").attr("class", "nav-item col-12");
+        $("#crypto_data").remove();
+        $("#crypto_gas_limit").remove();
+        $("#crypto_gas_price").remove();
+    } else {
+        $(".block_number").removeClass("d-none");
+        OnEthereumBlock();
+    }
 
-        var split = parseFloat(configs.balance).toFixed(4).split(".");
-        $('#ethbal').html(split[0] + ".<small>" + split[1] + "</small>");
+    $("#sendethbutton").html("Send "+configs.coin);
+    $("#crypto_modal_title").html('Send '+configs.coin);
+    $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> "+configs.coin+" Available");
+    $("#send_ether_btn").html("Send "+configs.coin);
+    $("#crypto_balance_area").html("<b id=\"ethbal\"></b> "+configs.coin);
+    ChangeCryptoSymbol(configs.coin);
 
-        $("#access_container").hide();
-        $("#token_container").removeAttr("hidden");
-        $(".tokens_list").removeAttr("hidden");
+    var split = parseFloat(configs.balance).toFixed(4).split(".");
+    $('#ethbal').html(split[0] + ".<small>" + split[1] + "</small>");
 
-        $(".main-container").css("left", "220px");
-        $(".main-container").css("width", "620px");
+    $("#access_container").hide();
+    $("#token_container").removeAttr("hidden");
+    $(".tokens_list").removeAttr("hidden");
+
+    $(".main-container").css("left", "220px");
+    $(".main-container").css("width", "620px");
 
     // $(".options").hide();
     // $(".walletInput").hide();
@@ -385,30 +475,6 @@ function SetBitcoinNetwork(coin) {
 }
 
 
-
-var configs = {
-    coin: "none",
-    wallet: null,
-    address: "",
-    network: null,
-    decimals: 18,
-    bigBalance: 0,
-    balance: "0.0",
-    pendingBalance: "0.0",
-    tokenBalance: "0.0",
-    bigTokenBalance: 0,
-    tokenDecimals: 0,
-    api: "",
-    provider: null,
-    myTransactions: [],
-    pendingTransactions: [],
-    tokenAddress: "",
-    token: null,
-    availableTokens: []
-};
-
-
-
 function UnlockBTC() {
     return new Promise(function(resolve, reject) {
         var key = $("#privatepass").val();
@@ -430,62 +496,147 @@ function UnlockETH() {
         if (key.substring(0, 2) !== '0x') {
             key = '0x' + key;
         }
-        configs.provider = new ethers.providers.JsonRpcProvider(geth);
-        provider = new ethers.providers.JsonRpcProvider(geth);
+        var provider = new ethers.providers.JsonRpcProvider(configs.api, configs.network);
+        configs.provider = provider;
         var myWallet = new Wallet(key);
         myWallet.provider = provider;
-        myAddress = myWallet.address;
-        $(".myaddress").html(myAddress);
         configs.wallet = myWallet;
-        configs.address = myAddress;
+        configs.address = myWallet.address;
+        $(".myaddress").html(configs.address);
         resolve(myWallet);
-        // SuccessAccess();
-        // UpdateBalance();
     });
 }
 
 
 
+function isBitcoin() {
+    var is = false;
+    if (configs.coin=="LTC" || configs.coin=="BTC" || configs.coin=="BTCTEST" || configs.coin=="LTCTEST") {
+        is = true;
+    } else {
+        is = false;
+    }
+    return is;
+}
+
+
+
+function toNumber(val) {
+    var fixed = parseFloat(val).toFixed(6);
+    return parseFloat(fixed.toString());
+}
+
+
+
+
+
+function UnlockWalletKeystore() {
+    var password = $("#keystorewalletpass").val();
+
+    if (password=="" || keyFile==undefined) return false;
+
+    var buffer = fs.readFileSync(keyFile);
+    var walletData = buffer.toString();
+
+    if (password != '' && keyFile != '' && Wallet.isEncryptedWallet(walletData)) {
+
+        Wallet.fromEncryptedWallet(walletData, password).then(function(wallet) {
+            console.log("Opened Address: " + wallet.address);
+            configs.coin = "ETH";
+            configs.api = store.get("geth");
+            configs.network = ethers.networks.mainnet;
+            var provider = new ethers.providers.JsonRpcProvider(configs.api, configs.network);
+            configs.provider = provider;
+            var myWallet = wallet;
+            myWallet.provider = provider;
+            configs.wallet = myWallet;
+            configs.address = myWallet.address;
+
+            console.log(configs);
+
+            LoadSavedTokens();
+
+            UpdateBalance().then(function(balance) {
+                tokenList = require('../js/tokens-eth.json');
+                LoadEthereumTransactions(configs.address).then(function(tsx) {
+                    SuccessAccess();
+                    RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
+                        BeginTokenLoading();
+
+                        // render trnsactions
+                    });
+                }).catch(function(err) {
+                    ShowNotification(err);
+                });
+            });
+
+        });
+    } else {
+        ShowNotification("Invalid Keystore JSON File");
+    }
+    $("#keystorewalletpass").val('');
+}
+
+
 
 function UnlockPrivateKey() {
         var coin = $( "#unlock_coin_type option:selected").val();
+        var key = $("#privatepass").val();
+        if (coin=="" || key == "") return false;
+
+        $("#unlock_priv_key").html("<div class='loader'></div>");
+
         if (coin=="btc") {
-            configs.coin = "BTC";
             configs.network = bitcoin.networks.bitcoin;
             configs.api = store.get("btc");
         } else if (coin=="ltc") {
-            configs.coin = "LTC";
             configs.api = store.get("ltc");
             configs.network = bitcoin.networks.litecoin;
-        }
-
-        if (process.env.NODE_ENV=='test') {
+        } else if (coin=="btctest") {
+            configs.api = store.get("btc");
             configs.network = bitcoin.networks.testnet;
+            configs.isTestnet = true;
+        } else if (coin=="ltctest") {
+            configs.api = store.get("ltc");
+            configs.network = bitcoin.networks.testnet;
+            configs.isTestnet = true;
+        } else if (coin=="eth") {
+            configs.api = store.get("geth");
+            configs.network = ethers.networks.mainnet;
+        } else if (coin=="ropsten") {
+            configs.api = store.get("geth");
+            configs.network = ethers.networks.testnet;
+            configs.isTestnet = true;
         }
+        configs.coin = coin.toUpperCase();
 
-        if (coin=="ltc" || coin=="btc") {
+        if (isBitcoin()) {
             UnlockBTC().then(function (r) {
                 UpdateBalance().then(function (balance) {
                     LoadBitcoinTransactions().then(function (tsx) {
+                        LoadUTXOs(configs.address).then(function(utxos) {
+                            configs.utxos = utxos;
+                        });
                         SuccessAccess();
-                        RenderTransactions(configs.myTransactions, 0, 16);
+                        RenderTransactions(configs.myTransactions, 0, 12);
                             // render trnsactions
                         });
                 });
             }).catch(function (err) {
+                $("#unlock_priv_key").html("Unlock");
                 ShowNotification(err);
             });
-        }
+            return false;
 
-        if (coin=="eth") {
-            configs.coin = "ETH";
-            configs.api = store.get("geth");
+        } else {
 
             UnlockETH().then(function() {
+                LoadSavedTokens();
                 UpdateBalance().then(function(balance) {
+                    tokenList = require('../js/tokens-eth.json');
                     LoadEthereumTransactions(configs.address).then(function(tsx) {
                         SuccessAccess();
-                            RenderTransactions(configs.myTransactions, 0, 16).then(function(t) {
+                            RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
                                 BeginTokenLoading();
 
                             // render trnsactions
@@ -494,7 +645,8 @@ function UnlockPrivateKey() {
                         ShowNotification(err);
                     });
                 });
-            }).catch(function(err) {
+            }).catch(function (err) {
+                $("#unlock_priv_key").html("Unlock");
                 ShowNotification(err.reason);
             });
         }
@@ -503,7 +655,6 @@ function UnlockPrivateKey() {
 
 
 function BeginTokenLoading() {
-    var tokenList = require('../js/tokens-eth.json');
     tokenWorker.postMessage({"address": configs.address, "tokens": tokenList});
 }
 
@@ -540,40 +691,12 @@ tokenWorker.onmessage = function(e) {
 };
 
 
-
-
-
-function UnlockWalletKeystore() {
-    var password = $("#keystorewalletpass").val();
-
-    if (password=="" || keyFile==undefined) return false;
-
-    var buffer = fs.readFileSync(keyFile);
-    var walletData = buffer.toString();
-
-    if (password != '' && keyFile != '' && Wallet.isEncryptedWallet(walletData)) {
-
-        Wallet.fromEncryptedWallet(walletData, password).then(function(wallet) {
-            console.log("Opened Address: " + wallet.address);
-            provider = new ethers.providers.JsonRpcProvider(geth);
-            wallet.provider = provider;
-            myWallet = wallet;
-            myAddress = myWallet.address;
-            SuccessAccess();
-            UpdateBalance();
-        });
-    } else {
-        ShowNotification("Invalid Keystore JSON File");
-    }
-    $("#keystorewalletpass").val('');
-}
-
-function reject() {
-    $("#keystorejsonerror").html("Incorrect Password for Keystore Wallet");
-    $("#keystorejsonerror").show();
-    $("#keystorebtn").prop("disabled", false);
-    $("#keystorebtn").html("Open");
-}
+// function reject() {
+//     $("#keystorejsonerror").html("Incorrect Password for Keystore Wallet");
+//     $("#keystorejsonerror").show();
+//     $("#keystorebtn").prop("disabled", false);
+//     $("#keystorebtn").html("Open");
+// }
 
 
 function OpenKeystoreFile() {
@@ -625,14 +748,14 @@ function UpdateEthFees() {
     var txCost = gasLimit * price;
     var available = 0;
 
-    if (configs.coin=="LTC") {
+    if (configs.coin=="LTC" || configs.coin=="LTCTEST") {
         $(".ethspend").val(configs.balance);
         available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
         txCost = 0.000374;
         $("#send_ether_to").attr("placeholder", "LKmC2Gda9LMAWWDYP6wqN2N8qKhnVzbgE5");
-    } else if (configs.coin=="BTC") {
+    } else if (configs.coin=="BTC" || configs.coin=="BTCTEST") {
         $(".ethspend").val(configs.balance);
         available = configs.balance - parseFloat(amount);
         gasPrice = 1;
@@ -651,7 +774,7 @@ function UpdateEthFees() {
     }
     $("#ethtxfee").val(txCost.toFixed(6));
     $(".ethspend").html(available.toFixed(6));
-    if (configs.coin=="ETH") {
+    if (configs.coin=="ETH" || configs.coin=="ROPSTEN") {
         var correctAddr = isEthAddress($("#send_ether_to").val());
     } else {
         var correctAddr = true;

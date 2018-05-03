@@ -30,13 +30,13 @@ function CryptoBalance(address) {
                 } else {
                     $("#pending_amount").attr("class", "col-12 text-center text-danger");
                 }
-                $("#pending_amount").html(pendBal.toFixed(6) + " Pending");
+                $("#pending_amount").html(toNumber(pendBal) + " Pending");
 
                 if (pendBal < 0) {
-                    btcBalance = btcBalance + pendBal;
+                    configs.balance = configs.balance + pendBal;
                 }
 
-                splits = btcBalance.toString().split(".");
+                splits = configs.balance.toString().split(".");
                 $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
 
                 resolve(bal);
@@ -154,7 +154,7 @@ function CheckForPendingETH() {
 
 
 function WaitForTransaction(hash, callback) {
-    provider.once(hash, function(transaction) {
+    configs.provider.once(hash, function(transaction) {
         console.log('Transaction Minded: ' + transaction.hash);
         callback(transaction);
     });
@@ -164,7 +164,7 @@ function WaitForTransaction(hash, callback) {
 
 
 function OnEthereumBlock(callback) {
-    provider.on('block', function(blockNumber) {
+    configs.provider.on('block', function(blockNumber) {
         console.log('New Block: ' + blockNumber);
         $(".block_number").html("Block #"+blockNumber);
         if (callback) callback(blockNumber);
@@ -175,7 +175,7 @@ function OnEthereumBlock(callback) {
 
 function UpdateBalance() {
     return new Promise(function(resolve, reject) {
-        if (configs.coin=="BTC" || configs.coin=="LTC") {
+        if (isBitcoin()) {
             CryptoBalance(configs.address).then(function(balance) {
                 resolve(balance);
             });
@@ -299,19 +299,21 @@ function SendEthereum() {
     var amount = $('#send_ether_amount').val();
     var gasLimit = $("#ethgaslimit").val();
     var gasPrice = $("#ethgasprice").val();
+    var data = $("#eth_data").val();
+    gasPrice = parseInt(gasPrice) * 1000000000;
 
     var BTCamount = parseFloat(amount) * (10 ** 8);
 
     $("#sendethbutton").prop("disabled", true);
 
-    if (configs.coin=="BTC" || configs.coin=="LTC"){
+    if (isBitcoin()){
         SendCoins(to, BTCamount).then(function(raw) {
             BroadcastTransaction(raw).then(function(hash) {
                 NewTransactionView(hash.txid, amount, to);
             });
         });
 
-    } else if (configs.coin=="ETH"){
+    } else {
 
         var amountWei = ethers.utils.parseEther(amount);
         var targetAddress = ethers.utils.getAddress(to);
@@ -322,7 +324,7 @@ function SendEthereum() {
         configs.wallet.getTransactionCount('pending').then(function(nonce) {
             var transaction = {
                 gasLimit: parseInt(gasLimit),
-                gasPrice: price,
+                gasPrice: gasPrice,
                 to: targetAddress,
                 data: data,
                 value: amountWei,
@@ -348,6 +350,10 @@ function SendEthereum() {
 }
 
 
+function toBigInt(val) {
+    return ethers.utils.bigNumberify(parseInt(val).toString())
+}
+
 
 function SendToken() {
     var to = $('#send_to_token').val();
@@ -355,18 +361,17 @@ function SendToken() {
     var gasLimit = parseInt($('#tokengaslimit').val());
     $("#sendtokenbutton").prop("disabled", true);
     var price = parseInt($("#tokengasprice").val());
-
     price = parseInt(price) * 1000000000;
+    var bigamount = parseFloat(amount) * (10 ** configs.tokenDecimals);
 
-    var bigamount = parseFloat(amount) * (10 ** tokenDecimals);
-
-    console.log("decimals: "+tokenDecimals);
+    $("#sendtokenbutton").prop("disabled", true);
+    console.log("decimals: "+configs.tokenDecimals);
     console.log("sending tokens: "+amount);
     console.log("sending tokens big: "+bigamount);
     console.log("sending to: "+to);
 
-    var trueamount = ethers.utils.bigNumberify(parseInt(bigamount).toString());
-    var decBalance = tokenBalance * (10 ** tokenDecimals);
+    var trueamount = toBigInt(bigamount);
+    var decBalance = configs.tokenBalance * (10 ** configs.tokenDecimals);
     var targetAddress = ethers.utils.getAddress(to);
 
     if (to != '' && bigamount != '' && parseFloat(bigamount) <= decBalance) {
@@ -385,12 +390,12 @@ function SendToken() {
                 $(".txidLink").attr("onclick", "OpenEtherScan('" + txid.hash + "')");
                 $("#senttxamount").html(amount);
                 $("#txtoaddress").html(to);
-                $("#txtype").html(tokenSymbol);
+                $("#txtype").html(configs.tokenSymbol);
                 $('#trxsentModal').modal('show');
-                PopupNotification("Transaction Sent", "You sent " + amount + " "+tokenSymbol);
-                AddPendingTransaction(txid.hash, amount, tokenSymbol);
+                PopupNotification("Transaction Sent", "You sent " + amount + " "+configs.tokenSymbol);
+                AddPendingTransaction(txid.hash, amount, configs.tokenSymbol);
 
-                pendingEthTransaction.push(txid.hash);
+                configs.pendingTransactions.push(txid.hash);
                 WaitForTransaction(txid.hash, function(hash) {
                     ShowNotification(hash+" Confirmed");
                 });

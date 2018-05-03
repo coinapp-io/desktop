@@ -1,18 +1,24 @@
 
 
 
-function GetTokenBalance(contract, address, callback) {
-    var api = "https://api.tokenbalance.com/balance/" + contract + "/" + address;
-    $.ajax({
-        url: api,
-        type: "get",
-        async: false,
-        success: function (bal) {
-            callback(bal)
-        },
-        error: function (data) {
-            callback(bal)
+function GetTokenBalance(contract, address) {
+    return new Promise(function(resolve, reject) {
+        if (configs.isTestnet) {
+            var api = "https://test.tokenbalance.com/balance/" + contract + "/" + address;
+        } else {
+            var api = "https://api.tokenbalance.com/balance/" + contract + "/" + address;
         }
+        $.ajax({
+            url: api,
+            type: "get",
+            async: false,
+            success: function (bal) {
+                resolve(bal)
+            },
+            error: function (data) {
+                reject(data)
+            }
+        });
     });
 }
 
@@ -129,7 +135,7 @@ function RenderTransactions(txs, start, end) {
 
             var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\""+element+"\">\n" +
                 "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + out.id.substring(0, 32) + "...</b></div>\n" +
-                "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + parseFloat(out.value).toFixed(4) + " " + out.symbol + "</b></div>" +
+                "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "</b></div>" +
                 "        </div>";
             $("#transactions_tab").append(html);
         });
@@ -170,20 +176,20 @@ function AddPendingTransaction(hash, amount, coin, isRecieving=false) {
 
 
 function TransactionURL(out, coin) {
-    if (coin=="ETH") {
+    if (out.symbol=="ETH" && !configs.isTestnet) {
         return "https://etherscan.io/tx/"+out.id;
-    } else if (coin=="BTC") {
-        if (process.env.NODE_ENV=='test') {
-            return "https://btctest.coinapp.io/tx/"+out.id;
-        } else {
-            return "https://blockchain.info/tx/"+out.id;
-        }
-    } else if (coin=="LTC") {
-        if (process.env.NODE_ENV=='test') {
-            return "https://ltctest.coinapp.io/tx/"+out.id;
-        } else {
-            return "https://live.blockcypher.com/ltc/tx/" + out.id;
-        }
+    } else if (out.symbol=="ETH" && configs.isTestnet) {
+        return "https://ropsten.etherscan.io/tx/"+out.id;
+    } else if (out.symbol=="BTC") {
+        return "https://blockchain.info/tx/" + out.id;
+    } else if (out.symbol=="BTCTEST") {
+        return "https://btctest.coinapp.io/tx/"+out.id;
+    } else if (out.symbol=="LTCTEST") {
+        return "https://ltctest.coinapp.io/tx/"+out.id;
+    } else if (out.symbol=="LTC") {
+        return "https://live.blockcypher.com/ltc/tx/" + out.id;
+    } else {
+        return "https://etherscan.io/tx/"+out.id;
     }
 }
 
@@ -209,7 +215,11 @@ $('#left_tabs').on('scroll', function() {
 
 function LoadEthereumTransactions(addr) {
     return new Promise(function(resolve, reject) {
-        var url = "http://api.etherscan.io/api?module=account&action=txlist&address=" + addr + "&startblock=0&endblock=99999999&sort=desc";
+        if (configs.coin=="ETH") {
+            var url = "http://api.etherscan.io/api?module=account&action=txlist&address=" + addr + "&startblock=0&endblock=99999999&sort=desc";
+        } else if (configs.coin=="ROPSTEN") {
+            var url = "http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=" + addr + "&startblock=0&endblock=99999999&sort=desc";
+        }
         $.get(url, function (data) {
             $.each(data.result, function (key, val) {
                 var incoming = false;
@@ -235,7 +245,6 @@ function LoadEthereumTransactions(addr) {
                             txValue = tokenValues * (0.1 ** decimals);
                         }
                     }
-
                 }
 
                 data = {

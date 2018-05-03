@@ -20,6 +20,31 @@ var pathjs = require('path');
 var tokenWorker = new Worker('../js/token_parser.js');
 
 
+var configs = {
+    coin: "none",
+    wallet: null,
+    address: "",
+    network: null,
+    decimals: 18,
+    bigBalance: 0,
+    balance: "0.0",
+    pendingBalance: "0.0",
+    tokenBalance: "0.0",
+    bigTokenBalance: 0,
+    tokenDecimals: 0,
+    api: "",
+    provider: null,
+    myTransactions: [],
+    pendingTransactions: [],
+    tokenAddress: "",
+    token: null,
+    availableTokens: [],
+    isTestnet: false,
+    savedTokens: [],
+    utxos: []
+};
+
+
 var btcHD;
 var ethHD;
 var xpriv;

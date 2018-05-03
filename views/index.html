@@ -41,6 +41,8 @@
                 <div id="progress_token_load" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
 
+            <button class="btn btn-default btn-block mb-1 mt-1" id="new_token_dialog_btn" data-toggle="modal" data-target="#add_token_modal">Add Token</button>
+
         </div>
     </div>
 
@@ -56,7 +58,7 @@
 <div class="main-container">
 
 
-    <div class="popup_notifications text-center">Incorrect Password! Try that one more time...</div>
+    <div class="popup_notifications text-center"></div>
 
     <div class="container-fluid" id="access_container">
 
@@ -105,6 +107,9 @@
                                     <option value="eth">Ethereum</option>
                                     <option value="btc">Bitcoin</option>
                                     <option value="ltc">Litecoin</option>
+                                    <option value="ropsten">Ethereum Ropsten</option>
+                                    <option value="btctest">Bitcoin Testnet</option>
+                                    <option value="ltctest">Litecoin Testnet</option>
                                 </select>
                             </div>
                             <div class="col-sm-1">
@@ -391,6 +396,68 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+<div class="modal fade" id="add_token_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Add Custom Token</h4>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <div class="form-row align-items-center">
+                        <div class="col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Token Address</div>
+                                </div>
+                                <input type="text" class="form-control" id="new_token_address" placeholder="0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F">
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Decimals</div>
+                                </div>
+                                <input type="number" class="form-control" id="new_token_decimals" placeholder="8" minimum="0">
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Symbol</div>
+                                </div>
+                                <input type="text" class="form-control" id="new_token_symbol" placeholder="SYMBL">
+                                <input type="hidden" class="form-control" id="new_token_name">
+                                <input type="hidden" class="form-control" id="new_token_balance">
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-7">
+                    <span id="new_token_alert"></span>
+                </div>
+                <div class="col-5 text-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="sendtokenbutton" class="btn btn-primary" id="save_token_btn" onclick="SaveNewToken();">Save Token</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 
