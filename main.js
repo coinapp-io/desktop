@@ -24,9 +24,6 @@ var os = require('os');
 const Store = require('electron-store');
 const store = new Store();
 
-var alreadySet = store.get('set');
-store.set('version', app.getVersion());
-
 
 //
 // import Transport from "@ledgerhq/hw-transport-node-hid";
@@ -82,6 +79,8 @@ store.set('version', app.getVersion());
 //
 
 
+var alreadySet = store.get('set');
+store.set('version', app.getVersion());
 
 if (!alreadySet) {
     store.set('set', true);

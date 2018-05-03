@@ -13,11 +13,15 @@ function CryptoBalance(address) {
             configs.bigBalance = bal;
             configs.balance = parseInt(bal) * 0.00000001;
 
+            console.log("Balance is: "+configs.balance);
+
             ltcBalance = parseInt(bal) * 0.00000001;
             btcBalance = ltcBalance;
 
             var pendingapi = configs.api + "/addr/" + address + "/unconfirmedBalance";
             $.get(pendingapi, function (pendBal, status) {
+
+                if (pendBal==0) resolve(bal);
 
                 configs.pendingBalance = parseInt(pendBal) * 0.00000001;
 
@@ -37,6 +41,7 @@ function CryptoBalance(address) {
                 }
 
                 splits = configs.balance.toString().split(".");
+                if (!splits[1]) splits[1]="0";
                 $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
 
                 resolve(bal);

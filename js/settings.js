@@ -9,9 +9,9 @@ $(".about").html("CoinApp "+store.get('version'));
 LoadSettings();
 
 function LoadSettings() {
-    geth = store.get('geth');
-    btc = store.get('btc');
-    ltc = store.get('ltc');
+    var geth = store.get('geth');
+    var btc = store.get('btc');
+    var ltc = store.get('ltc');
     $("#setting_geth_server").val(geth);
     $("#setting_btc_server").val(btc);
     $("#setting_ltc_server").val(ltc);
@@ -29,12 +29,12 @@ function SaveSettings() {
     store.set('geth', gethurl);
     store.set('btc', btcurl);
     store.set('ltc', ltcurl);
-    geth = gethurl;
-    provider = new providers.JsonRpcProvider(gethurl);
+    configs.provider = new providers.JsonRpcProvider(gethurl);
     $("#save_settings_btn").html("Saved");
     CheckLTCServer();
-    CheckETHServer()
+    CheckETHServer();
     CheckBTCServer();
+    ShowNotification("Settings Saved");
 }
 
 

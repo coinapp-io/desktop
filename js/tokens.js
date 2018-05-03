@@ -123,7 +123,7 @@ function RenderTransactions(txs, start, end) {
                 trueAmount = 0;
             }
 
-            var txUrl = TransactionURL(out, out.symbol);
+            var txUrl = TransactionURL(out);
 
             if (out.confirms == 0) {
                 var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button>";
@@ -160,7 +160,8 @@ function FadeInTransactions() {
 
 
 function AddPendingTransaction(hash, amount, coin, isRecieving=false) {
-    var txUrl = TransactionURL(hash, coin);
+    var obj = {id: hash, symbol: coin};
+    var txUrl = TransactionURL(obj);
     var design = "row transaction_box_neg pendingFlash";
     if (isRecieving) {
         var design = "row transaction_box pendingFlash";

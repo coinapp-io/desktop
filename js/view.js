@@ -71,7 +71,13 @@ function QueryTokenContract(address) {
 
             });
 
-        });
+        }).catch(function (err) {
+            $("#new_token_decimals").prop('readonly', false);
+            $("#new_token_symbol").prop('readonly', false);
+            $("#new_token_address").removeClass("is-valid");
+            $("#new_token_address").addClass("is-invalid");
+            $("#new_token_alert").html("Token has no Symbol");
+        });;
 
     }).catch(function (err) {
         $("#new_token_decimals").prop('readonly', false);
@@ -309,7 +315,8 @@ function OpenMyEtherWallet() {
 }
 
 function OpenBlockchainTx(txid, coin) {
-    var url = TransactionURL(txid, coin);
+    var obj = {id: txid, symbol: coin};
+    var url = TransactionURL(obj);
     shell.openExternal(url);
 }
 
@@ -612,7 +619,9 @@ function UnlockPrivateKey() {
 
         if (isBitcoin()) {
             UnlockBTC().then(function (r) {
+                console.log(r);
                 UpdateBalance().then(function (balance) {
+                    console.log(balance);
                     LoadBitcoinTransactions().then(function (tsx) {
                         LoadUTXOs(configs.address).then(function(utxos) {
                             configs.utxos = utxos;
@@ -621,6 +630,9 @@ function UnlockPrivateKey() {
                         RenderTransactions(configs.myTransactions, 0, 12);
                             // render trnsactions
                         });
+                }).catch(function (err) {
+                    $("#unlock_priv_key").html("Unlock");
+                    ShowNotification(err);
                 });
             }).catch(function (err) {
                 $("#unlock_priv_key").html("Unlock");
