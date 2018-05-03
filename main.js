@@ -28,7 +28,6 @@ var alreadySet = store.get('set');
 store.set('version', app.getVersion());
 
 
-
 //
 // import Transport from "@ledgerhq/hw-transport-node-hid";
 // import AppBtc from "@ledgerhq/hw-app-btc";
@@ -129,6 +128,8 @@ function createWindow () {
 
 }
 
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -152,6 +153,7 @@ app.on('ready', function(){
   createWindow();
 
 });
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

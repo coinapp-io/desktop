@@ -38,33 +38,20 @@ ipcRenderer.on('ledgerEthAddress', function(info, address) {
 function TransactionFee(utxos) {
     var isTesting = process.env.NODE_ENV;
     var fee = 0;
-    if (usingLtc) {
+    if (configs.coin=="BTC") {
         if (isTesting=='test'){
             fee = (utxos.length) * 180 + 2 * 34 + 10;
         } else {
             fee = (utxos.length) * 180 + 2 * 34 + 10;
         }
-    } else if (usingBtc) {
-        if (isTesting=='test'){
-            fee = (utxos.length) * 180 + 2 * 34 + 10;
-        } else {
-            fee = (utxos.length) * 180 + 2 * 34 + 10;
-        }
-    }
-    console.log("current fee: "+fee);
-    if (usingLtc) {
-        if (isTesting=='test'){
+    } else if (configs.coin=="LTC") {
+        if (isTesting == 'test') {
             if (fee <= 37400) fee = 37400
         } else {
             if (fee <= 100000) fee = 100000
         }
-    } else if (usingBtc) {
-        if (isTesting=='test'){
-            if (fee <= 100000) fee = 100000
-        } else {
-            if (fee <= 1130) fee = 1130
-        }
     }
+    console.log("current fee: "+fee);
     return fee
 }
 
@@ -82,40 +69,44 @@ function PendingBalance() {
 
 
 function SendCoins(to_address, send_amount, callback) {
-    var tx = new bitcoin.TransactionBuilder(coinNetwork);
+    return new Promise(function(resolve, reject) {
+        var tx = new bitcoin.TransactionBuilder(configs.network);
+        CryptoBalance(configs.address).then(function(bal) {
 
-    CryptoBalance(configs.address, function(bal) {
+            console.log("tx bal: " + bal);
 
-        console.log("tx bal: "+bal);
+            LoadUTXOs(configs.address).then(function(utxos) {
 
-        LoadUTXOs(configs.address, function(utxos) {
+                console.log(utxos);
 
-            $.each(utxos, function (key, out) {
-                tx.addInput(out.txid, out.vout);
+                $.each(utxos, function (key, out) {
+                    tx.addInput(out.txid, out.vout);
+                });
+
+                var transactionFee = TransactionFee(utxos);
+
+                console.log("fee: " + transactionFee);
+                var remaining = parseInt(bal) - parseInt(send_amount) - transactionFee;
+
+                console.log("sending:   ", send_amount);
+                console.log("remaining: ", remaining);
+                console.log("to: ", to_address);
+                console.log("my addr: ", configs.address);
+
+                tx.addOutput(to_address, parseInt(send_amount));
+                tx.addOutput(configs.address, parseInt(remaining));
+
+                $.each(utxos, function (key, out) {
+                    tx.sign(key, configs.wallet);
+                });
+
+                console.log(tx);
+
+                var tx_hex = tx.build().toHex();
+
+                resolve(tx_hex);
+
             });
-
-            var transactionFee = TransactionFee(utxos);
-
-            console.log("fee: "+transactionFee);
-            var remaining = parseInt(bal) - parseInt(send_amount) - transactionFee;
-
-            console.log("sending:   ", send_amount);
-            console.log("remaining: ", remaining);
-            console.log("to: ", to_address);
-            console.log("my addr: ", configs.address);
-
-            tx.addOutput(to_address, parseInt(send_amount));
-            tx.addOutput(configs.address, parseInt(remaining));
-
-            $.each(utxos, function (key, out) {
-                tx.sign(key, myWallet);
-            });
-
-            console.log(tx);
-
-            var tx_hex = tx.build().toHex();
-
-            callback(tx_hex);
 
         });
 
@@ -124,9 +115,11 @@ function SendCoins(to_address, send_amount, callback) {
 }
 
 function LoadUTXOs(address, callback) {
-    var api = apiEndpoint+"/addr/"+address+"/utxo";
-    $.get(api, function(utxos) {
-        callback(utxos)
+    return new Promise(function(resolve, reject) {
+        var api = configs.api + "/addr/" + address + "/utxo";
+        $.get(api, function (utxos) {
+            resolve(utxos)
+        });
     });
 }
 
@@ -289,7 +282,6 @@ function UpdatePath(path) {
 
 
 function SuccessAccess() {
-    return new Promise(function(resolve, reject) {
         if (configs.coin == "BTC") {
             $("#token_balance_area").hide();
             $("#send_token_area").hide();
@@ -342,9 +334,6 @@ function SuccessAccess() {
         $(".main-container").css("left", "220px");
         $(".main-container").css("width", "620px");
 
-        resolve(configs);
-
-    });
     // $(".options").hide();
     // $(".walletInput").hide();
     // $("#addressArea").attr("class", "row");
@@ -414,7 +403,8 @@ var configs = {
     myTransactions: [],
     pendingTransactions: [],
     tokenAddress: "",
-    token: null
+    token: null,
+    availableTokens: []
 };
 
 
@@ -455,6 +445,8 @@ function UnlockETH() {
 }
 
 
+
+
 function UnlockPrivateKey() {
         var coin = $( "#unlock_coin_type option:selected").val();
         if (coin=="btc") {
@@ -475,11 +467,10 @@ function UnlockPrivateKey() {
             UnlockBTC().then(function (r) {
                 UpdateBalance().then(function (balance) {
                     LoadBitcoinTransactions().then(function (tsx) {
-                        SuccessAccess().then(function (c) {
-                            RenderTransactions(configs.myTransactions, 0, 16);
+                        SuccessAccess();
+                        RenderTransactions(configs.myTransactions, 0, 16);
                             // render trnsactions
                         });
-                    });
                 });
             }).catch(function (err) {
                 ShowNotification(err);
@@ -489,15 +480,14 @@ function UnlockPrivateKey() {
         if (coin=="eth") {
             configs.coin = "ETH";
             configs.api = store.get("geth");
+
             UnlockETH().then(function() {
                 UpdateBalance().then(function(balance) {
                     LoadEthereumTransactions(configs.address).then(function(tsx) {
-                        SuccessAccess().then(function(c) {
+                        SuccessAccess();
                             RenderTransactions(configs.myTransactions, 0, 16).then(function(t) {
-                                ParseTokenList().then(function() {
+                                BeginTokenLoading();
 
-                                });
-                            });
                             // render trnsactions
                         });
                     }).catch(function(err) {
@@ -509,6 +499,48 @@ function UnlockPrivateKey() {
             });
         }
 }
+
+
+
+function BeginTokenLoading() {
+    var tokenList = require('../js/tokens-eth.json');
+    tokenWorker.postMessage({"address": configs.address, "tokens": tokenList});
+}
+
+var tkCount = 0;
+
+tokenWorker.onmessage = function(e) {
+    tkCount++
+
+    if (tkCount >= tokenList.length) {
+        console.log("hide now");
+        $("#tokens_loading_msg").hide();
+        $("#progress_token").hide();
+    }
+
+    $("#tokens_loading_msg").html("Loading Tokens (" + tkCount + "/" + tokenList.length + ")");
+    var percent = (tkCount / tokenList.length) * 100;
+    $("#progress_token_load").css("width", percent + "%");
+
+    if (e.data.balance != 0) {
+
+        var tokenObj = "<div id=\"token_" + e.data.symbol + "\" onclick=\"FocusOnToken('" + e.data.address + "', " + e.data.decimals + ", '" + e.data.name + "', '" + e.data.symbol + "')\" class=\"row token_obj\">\n" +
+            "    <div class=\"col-12\">\n" +
+            "        <h5>" + e.data.name +
+            "<span class=\"badge badge-secondary\">" + parseFloat(e.data.balance).toFixed(6) + "</span></h5>\n" +
+            "    </div>\n" +
+            "</div>";
+        $("#tokens_available").append(tokenObj);
+        var data = {address: e.data.contract, symbol: e.data.symbol, decimals: e.data.decimals, name: e.data.name};
+        configs.availableTokens.push(data);
+        $("#tokens_count").html("(" + configs.availableTokens.length + ")");
+
+    }
+
+};
+
+
+
 
 
 function UnlockWalletKeystore() {

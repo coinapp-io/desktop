@@ -1,66 +1,21 @@
 
 
 
-function GetTokenBalance(contract, address) {
-    return new Promise(function(resolve, reject) {
-        var api = "https://api.tokenbalance.com/balance/" + contract + "/" + address;
-        $.get(api, function(bal, status) {
-            resolve(bal)
-        });
-    });
-}
-
-
-
-
-function ParseTokenList() {
-    return new Promise(function(resolve, reject) {
-        if (alreadyCheckTokens) {
-            return false
+function GetTokenBalance(contract, address, callback) {
+    var api = "https://api.tokenbalance.com/balance/" + contract + "/" + address;
+    $.ajax({
+        url: api,
+        type: "get",
+        async: false,
+        success: function (bal) {
+            callback(bal)
+        },
+        error: function (data) {
+            callback(bal)
         }
-        var count = 1;
-        $.each(tokenList, function () {
-            var name = this.name;
-            var address = this.address;
-            var decimals = this.decimals;
-            var symbol = this.symbol;
-
-
-            GetTokenBalance(address, configs.address).then(function(balance) {
-                count += 1;
-                $("#tokens_loading_msg").html("Loading Tokens (" + count + "/" + tokenList.length + ")");
-                var percent = (count / tokenList.length) * 100;
-                $("#progress_token_load").css("width", percent + "%");
-                if (count >= tokenList.length) {
-                    console.log("hide now");
-                    $("#tokens_loading_msg").hide();
-                    $("#progress_token").hide();
-                    alreadyCheckTokens = true;
-                    resolve();
-                }
-
-                if (bad(balance)) {
-                    return
-                }
-
-                var tokenObj = "<div id=\"token_" + symbol + "\" onclick=\"FocusOnToken('" + address + "', " + decimals + ", '" + name + "', '" + symbol + "')\" class=\"row token_obj\">\n" +
-                    "    <div class=\"col-12\">\n" +
-                    "        <h5>" + name +
-                    "<span class=\"badge badge-secondary\">" + parseFloat(balance).toFixed(6) + "</span></h5>\n" +
-                    "    </div>\n" +
-                    "</div>";
-                $("#tokens_available").append(tokenObj);
-                var data = {address: address, symbol: symbol, decimals: decimals, name: name};
-                availableTokens.push(data);
-                $("#tokens_count").html("(" + availableTokens.length + ")");
-            });
-
-            console.log(count, tokenList.length);
-
-        });
     });
-
 }
+
 
 
 function LoadBitcoinTransactions(address, coin) {
@@ -162,7 +117,7 @@ function RenderTransactions(txs, start, end) {
                 trueAmount = 0;
             }
 
-            var txUrl = TransactionURL(out);
+            var txUrl = TransactionURL(out, out.symbol);
 
             if (out.confirms == 0) {
                 var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button>";
@@ -170,7 +125,9 @@ function RenderTransactions(txs, start, end) {
                 var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">View</button>";
             }
 
-            var html = "<div class=\"row " + thisClass + " fadeInEach\">\n" +
+            var element = "tx_"+out.id;
+
+            var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\""+element+"\">\n" +
                 "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + out.id.substring(0, 32) + "...</b></div>\n" +
                 "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + parseFloat(out.value).toFixed(4) + " " + out.symbol + "</b></div>" +
                 "        </div>";
@@ -202,8 +159,9 @@ function AddPendingTransaction(hash, amount, coin, isRecieving=false) {
     if (isRecieving) {
         var design = "row transaction_box pendingFlash";
     }
-    var html = "<div class=\"row "+design+"\">\n" +
-        "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>"+hash.substring(0,32)+"...</b></div>\n" +
+    var element = "tx_"+hash;
+    var html = "<div class=\"row "+design+"\" id=\""+element+"\">" +
+        "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>"+hash.substring(0,32)+"...</b></div>" +
         "<div class=\"col-12\"><button onclick=\"OpenURL('"+txUrl+"')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button> <b class=\"float-right\">" + amount + " "+coin.toUpperCase()+"</b></div>" +
         "        </div>";
     $("#transactions_tab").prepend(html);
@@ -211,23 +169,21 @@ function AddPendingTransaction(hash, amount, coin, isRecieving=false) {
 
 
 
-function TransactionURL(out) {
-    if (out.coin=="ETH") {
+function TransactionURL(out, coin) {
+    if (coin=="ETH") {
         return "https://etherscan.io/tx/"+out.id;
-    } else if (out.coin=="BTC") {
+    } else if (coin=="BTC") {
         if (process.env.NODE_ENV=='test') {
             return "https://btctest.coinapp.io/tx/"+out.id;
         } else {
             return "https://blockchain.info/tx/"+out.id;
         }
-    } else if (out.coin=="LTC") {
+    } else if (coin=="LTC") {
         if (process.env.NODE_ENV=='test') {
             return "https://ltctest.coinapp.io/tx/"+out.id;
         } else {
             return "https://live.blockcypher.com/ltc/tx/" + out.id;
         }
-    } else {
-        return "https://etherscan.io/tx/"+out.id;
     }
 }
 

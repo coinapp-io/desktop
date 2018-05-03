@@ -7,11 +7,7 @@ const fs = require('fs');
 const clipboardy = require('clipboardy');
 const { dialog } = require('electron').remote;
 
-if (process.env.TRAVIS) {
-    var tokenList = require('../.travis/tokens_testnet.json');
-} else {
-    var tokenList = require('../js/tokens-eth.json');
-}
+var tokenList;
 
 const ipcRenderer = require('electron').ipcRenderer;
 const EthereumTx = require('ethereumjs-tx');
@@ -20,6 +16,8 @@ const Store = require('electron-store');
 const store = new Store();
 const notifier = require('node-notifier');
 var pathjs = require('path');
+
+var tokenWorker = new Worker('../js/token_parser.js');
 
 
 var btcHD;

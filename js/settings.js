@@ -114,23 +114,24 @@ function CheckBTCServer() {
 }
 
 
-
-function BroadcastTransaction(rawtx, callback) {
-    var data = JSON.stringify({"rawtx": rawtx});
+function BroadcastTransaction(rawtx) {
+    return new Promise(function(resolve, reject) {
+        var data = JSON.stringify({"rawtx": rawtx});
         $.ajax({
             type: 'POST',
-            url: apiEndpoint + "/tx/send",
+            url: configs.api + "/tx/send",
             contentType: 'application/json',
             dataType: 'json',
             data: data,
             success: function (hh) {
                 console.log(hh);
-                return callback(hh);
+                resolve(hh);
             },
-            error: function(e) {
-                ShowNotification(e.responseText)
+            error: function (e) {
+                reject(e.responseText)
             }
         });
+    });
 }
 
 
