@@ -13,7 +13,7 @@ afterEach(() => {
 const phrase = 'myth like bonus scare over problem client lizard pioneer submit female collect';
 const correct_address = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
-const ETH_PRIV = process.env.ETH_PRIV;
+const ETH_PRIV = "4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d";
 const BTC_PRIV = process.env.BTC_PRIV;
 const LTC_PRIV = process.env.LTC_PRIV;
 
@@ -40,11 +40,13 @@ return app.client.waitUntilWindowLoaded()
     .should.eventually.equal("https://ltctest.coinapp.io/api")
     .getValue("#setting_btc_server")
     .should.eventually.equal("https://btctest.coinapp.io/api")
-    .click('#save_settings_btn').pause(2000)
+    .click('#save_settings_btn')
 });
+
+
 it('should load settings', () => {
 return app.client.waitUntilWindowLoaded()
-    .click("#setup_panel-tab").pause(1000)
+    .click("#setup_panel-tab")
     .getValue("#setting_geth_server")
     .should.eventually.equal("http://localhost:8545")
     .getValue("#setting_ltc_server")
@@ -83,17 +85,6 @@ return app.client.waitUntilWindowLoaded()
 //         .should.eventually.equal("0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F")
 // });
 
-it('should insert a ETH private key', () => {
-    return app.client.waitUntilWindowLoaded()
-        .setValue('#privatepass', ETH_PRIV)
-        .getValue("#privatepass")
-        .should.eventually.equal(ETH_PRIV)
-        .click("//select/option[@value=\'eth\']")
-        .click('#unlock_priv_key').pause(7000)
-        .getText(".myaddress")
-        .should.eventually.equal(correct_address)
-});
-
 
 it('should insert a ETH ROPSTEN private key', () => {
     return app.client.waitUntilWindowLoaded()
@@ -101,7 +92,7 @@ it('should insert a ETH ROPSTEN private key', () => {
         .getValue("#privatepass")
         .should.eventually.equal(ETH_PRIV)
         .click("//select/option[@value=\'ropsten\']")
-        .click('#unlock_priv_key').pause(7000)
+        .click('#unlock_priv_key').pause(10000)
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
 });
@@ -113,9 +104,49 @@ it('should insert a BTC TESTNET private key', () => {
         .getValue("#privatepass")
         .should.eventually.equal("cVVGgzVgcc5S3owCskoneK8R1BNGkBveiEcGDaxu8RRDvFcaQaSG")
         .click("//select/option[@value=\'btctest\']")
-        .click('#unlock_priv_key').pause(7000)
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
         .should.eventually.equal("mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo")
+});
+
+
+it('should insert a LTC TESTNET private key', () => {
+    return app.client.waitUntilWindowLoaded()
+        .setValue('#privatepass', "cVVGgzVgcc5S3owCskoneK8R1BNGkBveiEcGDaxu8RRDvFcaQaSG")
+        .getValue("#privatepass")
+        .should.eventually.equal("cVVGgzVgcc5S3owCskoneK8R1BNGkBveiEcGDaxu8RRDvFcaQaSG")
+        .click("//select/option[@value=\'ltctest\']")
+        .click('#unlock_priv_key').pause(4000)
+        .getText(".myaddress")
+        .should.eventually.equal("mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo")
+});
+
+
+it('should save settings for LIVE NET settings', () => {
+    return app.client.waitUntilWindowLoaded()
+        .click("#setup_panel-tab")
+        .setValue('#setting_geth_server', "https://eth.coinapp.io")
+        .setValue('#setting_btc_server', "https://btc.coinapp.io/api")
+        .setValue('#setting_ltc_server', "https://ltc.coinapp.io/api")
+        .getValue("#setting_geth_server")
+        .should.eventually.equal("https://eth.coinapp.io")
+        .getValue("#setting_ltc_server")
+        .should.eventually.equal("https://ltc.coinapp.io/api")
+        .getValue("#setting_btc_server")
+        .should.eventually.equal("https://btc.coinapp.io/api")
+        .click('#save_settings_btn')
+});
+
+
+it('should insert a ETH private key', () => {
+    return app.client.waitUntilWindowLoaded()
+        .setValue('#privatepass', ETH_PRIV)
+        .getValue("#privatepass")
+        .should.eventually.equal(ETH_PRIV)
+        .click("//select/option[@value=\'eth\']")
+        .click('#unlock_priv_key').pause(4000)
+        .getText(".myaddress")
+        .should.eventually.equal(correct_address)
 });
 
 
@@ -125,7 +156,7 @@ it('should insert a BTC private key', () => {
         .getValue("#privatepass")
         .should.eventually.equal("KzsR1xok4mGjbMXUY8wuYwx3z6nShsGPaxaXPTxH1YZ3csWyPNzz")
         .click("//select/option[@value=\'btc\']")
-        .click('#unlock_priv_key').pause(7000)
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
         .should.eventually.equal("16JBSn4LBnpnEUoPhDcYnX7VeZizm4iFFj")
 });
@@ -137,30 +168,36 @@ it('should insert a LTC private key', () => {
         .getValue("#privatepass")
         .should.eventually.equal("T7JJQrvjiX8Xmd5k8XdwUdFCViy3jLGYSMgymbBMwoA9RESSx25k")
         .click("//select/option[@value=\'ltc\']")
-        .click('#unlock_priv_key').pause(7000)
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
         .should.eventually.equal("LLNWymPhGRHY5pPoMsqjAnjHz3jWqZuwJJ")
 });
 
 
-it('should insert a LTC TESTNET private key', () => {
+it('should save settings back to TESTNET', () => {
     return app.client.waitUntilWindowLoaded()
-        .setValue('#privatepass', "cVVGgzVgcc5S3owCskoneK8R1BNGkBveiEcGDaxu8RRDvFcaQaSG")
-        .getValue("#privatepass")
-        .should.eventually.equal("cVVGgzVgcc5S3owCskoneK8R1BNGkBveiEcGDaxu8RRDvFcaQaSG")
-        .click("//select/option[@value=\'ltctest\']")
-        .click('#unlock_priv_key').pause(7000)
-        .getText(".myaddress")
-        .should.eventually.equal("mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo")
+        .click("#setup_panel-tab")
+        .setValue('#setting_geth_server', "http://localhost:8545")
+        .setValue('#setting_btc_server', "https://btctest.coinapp.io/api")
+        .setValue('#setting_ltc_server', "https://ltctest.coinapp.io/api")
+        .getValue("#setting_geth_server")
+        .should.eventually.equal("http://localhost:8545")
+        .getValue("#setting_ltc_server")
+        .should.eventually.equal("https://ltctest.coinapp.io/api")
+        .getValue("#setting_btc_server")
+        .should.eventually.equal("https://btctest.coinapp.io/api")
+        .click('#save_settings_btn')
 });
+
+
 
 it('should open ether sending modal and send ETH', () => {
     return app.client.waitUntilWindowLoaded()
         .setValue('#privatepass', ETH_PRIV)
         .getValue("#privatepass")
         .should.eventually.equal(ETH_PRIV)
-        .click("//select/option[@value=\'eth\']")
-        .click('#unlock_priv_key')
+        .click("//select/option[@value=\'ropsten\']")
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
         .click('#send_ether_btn').pause(7000)
@@ -171,7 +208,7 @@ it('should open ether sending modal and send ETH', () => {
         .setValue('#ethgaslimit', "50000").pause(500)
         .setValue('#ethgasprice', "5").pause(500)
         .getValue("#ethtxfee")
-        .should.eventually.equal("0.000250")
+        .should.eventually.equal("0.00025")
         .getText(".ethspend")
         .should.eventually.equal("98.876300")
         .click('#sendethbutton').pause(8000)
@@ -190,11 +227,11 @@ it('should open litecoin sending modal and send LTC', () => {
         .getValue("#privatepass")
         .should.eventually.equal(LTC_PRIV)
         .click("//select/option[@value=\'ltctest\']")
-        .click('#unlock_priv_key')
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
-        .should.eventually.equal("muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C")
+        .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
         .click('#send_ether_btn').pause(7000)
-        .setValue('#send_ether_to', "muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C").pause(500)
+        .setValue('#send_ether_to', "myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD").pause(500)
         .setValue('#send_ether_amount', "0.123").pause(500)
         .click('#sendethbutton').pause(12000)
         .getText(".txidLink")
@@ -202,7 +239,7 @@ it('should open litecoin sending modal and send LTC', () => {
         .getText("#senttxamount")
         .should.eventually.equal("0.123")
         .getText("#txtoaddress")
-        .should.eventually.equal("muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C")
+        .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
 });
 
 
@@ -212,53 +249,53 @@ it('should open bitcoin sending modal and send BTC', () => {
         .getValue("#privatepass")
         .should.eventually.equal(BTC_PRIV)
         .click("//select/option[@value=\'btctest\']")
-        .click('#unlock_priv_key')
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
-        .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
+        .should.eventually.equal("mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd")
         .click('#send_ether_btn').pause(7000)
-        .setValue('#send_ether_to', "myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD").pause(500)
-        .setValue('#send_ether_amount', "1.12345").pause(500)
+        .setValue('#send_ether_to', "mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd").pause(500)
+        .setValue('#send_ether_amount', "0.012345").pause(500)
         .click('#sendethbutton').pause(12000)
         .getText(".txidLink")
         .should.eventually.not.equal("")
         .getText("#senttxamount")
-        .should.eventually.equal("1.12345")
+        .should.eventually.equal("0.012345")
         .getText("#txtoaddress")
-        .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
+        .should.eventually.equal("mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd")
 });
 
 
-it('should insert a phrase', () => {
-return app.client.waitUntilWindowLoaded()
-    .setValue('#phrase', phrase)
-    .getValue("#phrase")
-    .should.eventually.equal(phrase)
-    .click('#open_hd_wallet')
-    .getText(".myaddress")
-    .should.eventually.equal(correct_address)
-});
+// it('should insert a phrase', () => {
+// return app.client.waitUntilWindowLoaded()
+//     .setValue('#phrase', phrase)
+//     .getValue("#phrase")
+//     .should.eventually.equal(phrase)
+//     .click('#open_hd_wallet').pause(10000)
+//     .getText(".myaddress")
+//     .should.eventually.equal(correct_address)
+// });
 
 it('should get my eth balance', () => {
     return app.client.waitUntilWindowLoaded()
         .setValue('#privatepass', ETH_PRIV)
         .getValue("#privatepass")
         .should.eventually.equal(ETH_PRIV)
-        .click("//select/option[@value=\'eth\']")
-        .click('#unlock_priv_key').pause(2000)
+        .click("//select/option[@value=\'ropsten\']")
+        .click('#unlock_priv_key').pause(4000)
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
         .getText("#ethbal")
         .should.eventually.equal("98.8764")
 });
 
-it('should insert a phrase and see hd path', () => {
-return app.client.waitUntilWindowLoaded()
-    .setValue('#phrase', phrase)
-    .getValue("#phrase")
-    .should.eventually.equal(phrase)
-    .click('#open_hd_wallet')
-    .getText(".myaddress")
-    .should.eventually.equal(correct_address)
-});
+// it('should insert a phrase and see hd path', () => {
+// return app.client.waitUntilWindowLoaded()
+//     .setValue('#phrase', phrase)
+//     .getValue("#phrase")
+//     .should.eventually.equal(phrase)
+//     .click('#open_hd_wallet')
+//     .getText(".myaddress")
+//     .should.eventually.equal(correct_address)
+// });
 
 });

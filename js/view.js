@@ -77,7 +77,7 @@ function QueryTokenContract(address) {
             $("#new_token_address").removeClass("is-valid");
             $("#new_token_address").addClass("is-invalid");
             $("#new_token_alert").html("Token has no Symbol");
-        });;
+        });
 
     }).catch(function (err) {
         $("#new_token_decimals").prop('readonly', false);
@@ -145,8 +145,33 @@ function LoadSavedTokens() {
 
 
 
+function QuickBTCFee(amount, price) {
+    feeutil.BASE_SATOSHI_PER_BYTE = price;
+    var total = 0;
+    var usingUtxos = [];
+    $.each(configs.utxos, function(k, utxo) {
+        var sats = utxo.amount;
+        if (total <= amount) {
+            usingUtxos.push(utxo);
+        }
+        total += sats;
+    });
+    const satoshi = feeutil.p2pkh_tx_calc_fee(usingUtxos.length, 2);
+    return parseFloat(satoshi * (0.1 ** 8)).toFixed(8)
+}
+
+
+
+
 
 function TransactionFee(utxos) {
+
+    feeutil.BASE_SATOSHI_PER_BYTE = 225;
+
+    const satoshi = feeutil.p2pkh_tx_calc_fee(configs.utxos.length, 2);
+
+    console.log(satoshi);
+
     var fee = 0;
     if (configs.coin=="BTC") {
         fee = (utxos.length) * 180 + 2 * 34 + 10;
@@ -157,11 +182,16 @@ function TransactionFee(utxos) {
     } else if (configs.coin=="BTCTEST") {
         fee = (utxos.length) * 180 + 2 * 34 + 10;
     }
+    console.log("Calculated fee: "+fee);
 
-    if (configs.coin=="BTC" || configs.coin=="BTCTEST") {
-        if (fee <= 37400) fee = 37400
-    } else {
+    if (configs.coin=="BTC") {
         if (fee <= 100000) fee = 100000
+    } else if (configs.coin=="BTCTEST") {
+        if (fee <= 5000000) fee = 5000000
+    } else if (configs.coin=="LTC") {
+        if (fee <= 100000) fee = 100000
+    } else if (configs.coin=="LTCTEST") {
+        if (fee <= 37400) fee = 37400
     }
     console.log("current fee: "+fee);
     return fee
@@ -180,7 +210,9 @@ function PendingBalance() {
 }
 
 
-function SendCoins(to_address, send_amount, callback) {
+
+
+function SendCoins(to_address, send_amount, tranx_fee) {
     return new Promise(function(resolve, reject) {
         var tx = new bitcoin.TransactionBuilder(configs.network);
         CryptoBalance(configs.address).then(function(bal) {
@@ -195,10 +227,15 @@ function SendCoins(to_address, send_amount, callback) {
                     tx.addInput(out.txid, out.vout);
                 });
 
-                var transactionFee = TransactionFee(utxos);
+                // var transactionFee = QuickBTCFee(send_amount);
 
-                console.log("fee: " + transactionFee);
-                var remaining = parseInt(bal) - parseInt(send_amount) - transactionFee;
+                console.log("fee input: " + tranx_fee);
+
+                tranx_fee = parseInt(tranx_fee * (10 ** 8));
+
+                console.log("fee input: " + tranx_fee);
+
+                var remaining = parseInt(bal) - parseInt(send_amount) - tranx_fee;
 
                 console.log("sending:   ", send_amount);
                 console.log("remaining: ", remaining);
@@ -215,6 +252,8 @@ function SendCoins(to_address, send_amount, callback) {
                 console.log(tx);
 
                 var tx_hex = tx.build().toHex();
+
+                console.log("raw: "+tx_hex);
 
                 resolve(tx_hex);
 
@@ -409,6 +448,8 @@ function SuccessAccess() {
         $("#crypto_data").remove();
         $("#crypto_gas_limit").remove();
         $("#crypto_gas_price").remove();
+        DefaultTxFees();
+        // $("#ethtxfee").prop("readonly", false);
     } else {
         $(".block_number").removeClass("d-none");
         OnEthereumBlock();
@@ -621,20 +662,21 @@ function UnlockPrivateKey() {
             UnlockBTC().then(function (r) {
                 console.log(r);
                 UpdateBalance().then(function (balance) {
-                    console.log(balance);
+                    SuccessAccess();
                     LoadBitcoinTransactions().then(function (tsx) {
                         LoadUTXOs(configs.address).then(function(utxos) {
                             configs.utxos = utxos;
                         });
-                        SuccessAccess();
                         RenderTransactions(configs.myTransactions, 0, 12);
                             // render trnsactions
                         });
                 }).catch(function (err) {
+                    configs = {};
                     $("#unlock_priv_key").html("Unlock");
-                    ShowNotification(err);
+                    ShowNotification("Can't fetch balance from API URL!\n"+err);
                 });
             }).catch(function (err) {
+                configs = {};
                 $("#unlock_priv_key").html("Unlock");
                 ShowNotification(err);
             });
@@ -757,24 +799,28 @@ function UpdateEthFees() {
     var gasLimit = parseInt($("#ethgaslimit").val());
     var gasPrice = parseInt($("#ethgasprice").val());
     var price = parseInt(gasPrice) * 0.000000001;
-    var txCost = gasLimit * price;
+    var bytePrice = parseInt($("#btc_byte_price").val());
+    var txCost = 0;
     var available = 0;
 
     if (configs.coin=="LTC" || configs.coin=="LTCTEST") {
         $(".ethspend").val(configs.balance);
+        $("#btc_byte_price").parent().removeClass("d-none");
         available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
-        txCost = 0.000374;
+        txCost = QuickBTCFee(parseFloat(amount), bytePrice);
         $("#send_ether_to").attr("placeholder", "LKmC2Gda9LMAWWDYP6wqN2N8qKhnVzbgE5");
     } else if (configs.coin=="BTC" || configs.coin=="BTCTEST") {
         $(".ethspend").val(configs.balance);
+        $("#btc_byte_price").parent().removeClass("d-none");
         available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
-        txCost = 0.001;
+        txCost = QuickBTCFee(parseFloat(amount), bytePrice);
         $("#send_ether_to").attr("placeholder", "1GkYGJ8vmxT8JpEWJWFPUHgwYAAccapD2a");
     } else {
+        txCost = gasLimit * price;
         $(".ethspend").val(configs.balance);
         available = configs.balance - amount - txCost;
     }
@@ -784,7 +830,8 @@ function UpdateEthFees() {
         $("#sendethbutton").prop("disabled", true);
         return
     }
-    $("#ethtxfee").val(txCost.toFixed(6));
+
+    $("#ethtxfee").val(txCost);
     $(".ethspend").html(available.toFixed(6));
     if (configs.coin=="ETH" || configs.coin=="ROPSTEN") {
         var correctAddr = isEthAddress($("#send_ether_to").val());

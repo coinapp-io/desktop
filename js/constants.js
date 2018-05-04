@@ -6,6 +6,7 @@ const {shell} = require('electron');
 const fs = require('fs');
 const clipboardy = require('clipboardy');
 const { dialog } = require('electron').remote;
+const feeutil = require('bitcoin-util-fee');
 
 var tokenList;
 

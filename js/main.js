@@ -69,7 +69,7 @@ function UpdatePricing() {
 }
 
 setInterval(function() {
-    if (myWallet) UpdateBalance();
+    if (configs.wallet) UpdateBalance();
 }, 5000);
 
 

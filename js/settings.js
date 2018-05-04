@@ -1,8 +1,12 @@
 var geth = store.get('geth');
 var btc = store.get('btc');
 var ltc = store.get('ltc');
-configs.savedTokens = $.parseJSON(store.get("saved_tokens"));
 
+if (store.get("saved_tokens")==undefined) {
+    configs.savedTokens = [];
+} else {
+    configs.savedTokens = $.parseJSON(store.get("saved_tokens"));
+}
 
 $(".about").html("CoinApp "+store.get('version'));
 

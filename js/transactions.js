@@ -55,8 +55,12 @@ function CryptoBalance(address) {
                 pendingBalance = pendBal;
 
                 // if (callback) callback(bal);
+            }).catch(function(e) {
+                reject(e)
             });
 
+        }).catch(function(e) {
+            reject(e)
         });
     });
 }
@@ -183,6 +187,8 @@ function UpdateBalance() {
         if (isBitcoin()) {
             CryptoBalance(configs.address).then(function(balance) {
                 resolve(balance);
+            }).catch(function(e) {
+                reject(e.responseText);
             });
         } else {
             configs.provider.getBalance(configs.address).then(function (balance) {
@@ -299,6 +305,22 @@ function NewTransactionView(hash, amount, to) {
 }
 
 
+
+
+function DefaultTxFees() {
+    var amount;
+    switch (configs.coin) {
+        case "BTC": amount = 135;
+        case "BTCTEST": amount = 443;
+        case "LTC": amount = 443;
+        case "LTCTEST": amount = 443;
+    }
+    $("#btc_byte_price").val(amount);
+}
+
+
+
+
 function SendEthereum() {
     var to = $('#send_ether_to').val();
     var amount = $('#send_ether_amount').val();
@@ -307,14 +329,20 @@ function SendEthereum() {
     var data = $("#eth_data").val();
     gasPrice = parseInt(gasPrice) * 1000000000;
 
+    var thisTxfee = $("#ethtxfee").val();
+
     var BTCamount = parseFloat(amount) * (10 ** 8);
 
     $("#sendethbutton").prop("disabled", true);
 
     if (isBitcoin()){
-        SendCoins(to, BTCamount).then(function(raw) {
+        SendCoins(to, BTCamount, thisTxfee).then(function(raw) {
             BroadcastTransaction(raw).then(function(hash) {
                 NewTransactionView(hash.txid, amount, to);
+            }).catch(function(e) {
+                console.error(e);
+                ShowNotification(e);
+                $("#sendethbutton").prop("disabled", false);
             });
         });
 

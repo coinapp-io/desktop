@@ -53,6 +53,7 @@
     },
     "dependencies": {
         "bip39": "2.5.0",
+        "bitcoin-util-fee": "0.0.6",
         "bitcoinjs-lib": "3.3.2",
         "clipboardy": "^1.2.3",
         "electron-default-menu": "^1.0.1",
