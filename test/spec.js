@@ -249,7 +249,7 @@ it('should open bitcoin sending modal and send BTC', () => {
         .getValue("#privatepass")
         .should.eventually.equal(BTC_PRIV)
         .click("//select/option[@value=\'btctest\']")
-        .click('#unlock_priv_key').pause(4000)
+        .click('#unlock_priv_key').pause(8000)
         .getText(".myaddress")
         .should.eventually.equal("mmnZGkQ6bJbVbmuRpXUvgzgB1NPoBFg8xd")
         .click('#send_ether_btn').pause(7000)
