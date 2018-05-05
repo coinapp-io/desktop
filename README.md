@@ -10,7 +10,7 @@
   <br><br>
   <a href="https://travis-ci.org/coinapp-io/desktop"><img src="https://travis-ci.org/coinapp-io/desktop.svg?branch=master"></a>
 </p>
-````
+
 # CoinApp - A Simple Cryptocurrency Wallet
 A nifty crypto wallet application that lets you send and receive Ethereum, ERC20 Tokens, Bitcoin and Litecoin. CoinApp has a minimal UI for people who just want to move their coins, there's some advanced features for the knowledgable users too. <a href="https://github.com/hunterlong/coinapp/releases/latest">Download Latest</a> and try out this new opensource wallet. This application uses [insight-api](https://github.com/bitpay/insight-api) to fetch up-to-date balances and UTXO's rather than depending on a central server to collect transaction information. For Ethereum, this application uses a normal connect to geth JSON RPC server. You can use [infura.io](https://infura.io/) or connect to your local geth server. CoinApp lets the user modify their connections to fit their own decentralized server. 
 

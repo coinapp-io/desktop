@@ -1,15 +1,12 @@
 var geth = store.get('geth');
 var btc = store.get('btc');
 var ltc = store.get('ltc');
-
-if (store.get("saved_tokens")==undefined) {
+if(store.get("saved_tokens") == undefined) {
     configs.savedTokens = [];
 } else {
     configs.savedTokens = $.parseJSON(store.get("saved_tokens"));
 }
-
-$(".about").html("CoinApp "+store.get('version'));
-
+$(".about").html("CoinApp " + store.get('version'));
 LoadSettings();
 
 function LoadSettings() {
@@ -23,7 +20,6 @@ function LoadSettings() {
     CheckETHServer();
     CheckBTCServer();
 }
-
 
 function SaveSettings() {
     ResetServerChecks();
@@ -41,8 +37,6 @@ function SaveSettings() {
     ShowNotification("Settings Saved");
 }
 
-
-
 function ResetServerChecks() {
     $("#eth_server_conn").html("X");
     $("#eth_server_conn").attr("class", "input-group-text bg-danger text-white");
@@ -52,18 +46,22 @@ function ResetServerChecks() {
     $("#btc_server_conn").attr("class", "input-group-text bg-danger text-white");
 }
 
-
 function CheckETHServer() {
     var api = store.get('geth');
-    var data = JSON.stringify({"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"});
+    var data = JSON.stringify({
+        "method": "web3_clientVersion",
+        "params": [],
+        "id": 1,
+        "jsonrpc": "2.0"
+    });
     $.ajax({
         type: 'POST',
         url: api,
         contentType: 'application/json',
         dataType: 'json',
         data: data,
-        success: function (hh) {
-            if (hh.result!="") {
+        success: function(hh) {
+            if(hh.result != "") {
                 $("#eth_server_conn").html("✓");
                 $("#eth_server_conn").attr("class", "input-group-text bg-success text-white");
             } else {
@@ -71,20 +69,15 @@ function CheckETHServer() {
                 $("#eth_server_conn").attr("class", "input-group-text bg-danger text-white");
             }
         }
-
-
     });
-
 }
-
-
 
 function CheckLTCServer() {
     var api = store.get('ltc');
     try {
-        $.get(api + "/peer", function (data, status) {
+        $.get(api + "/peer", function(data, status) {
             var connected = data.connected;
-            if (connected) {
+            if(connected) {
                 $("#ltc_server_conn").html("✓");
                 $("#ltc_server_conn").attr("class", "input-group-text bg-success text-white");
             } else {
@@ -97,15 +90,12 @@ function CheckLTCServer() {
     }
 }
 
-
-
-
 function CheckBTCServer() {
     var api = store.get('btc');
     try {
-        $.get(api+"/peer", function(data, status) {
+        $.get(api + "/peer", function(data, status) {
             var connected = data.connected;
-            if (connected) {
+            if(connected) {
                 $("#btc_server_conn").html("✓");
                 $("#btc_server_conn").attr("class", "input-group-text bg-success text-white");
             } else {
@@ -118,25 +108,24 @@ function CheckBTCServer() {
     }
 }
 
-
 function BroadcastTransaction(rawtx) {
     return new Promise(function(resolve, reject) {
-        var data = JSON.stringify({"rawtx": rawtx});
+        var data = JSON.stringify({
+            "rawtx": rawtx
+        });
         $.ajax({
             type: 'POST',
             url: configs.api + "/tx/send",
             contentType: 'application/json',
             dataType: 'json',
             data: data,
-            success: function (hh) {
+            success: function(hh) {
                 console.log(hh);
                 resolve(hh);
             },
-            error: function (e) {
+            error: function(e) {
                 reject(e.responseText)
             }
         });
     });
 }
-
-

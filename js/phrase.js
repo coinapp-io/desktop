@@ -1,12 +1,10 @@
-
 function OpenPhrase() {
     var words = $("#phrase").val();
-    if (words!='') GenerateFromPhrase(words);
+    if(words != '') GenerateFromPhrase(words);
 }
 
-
 function GenerateFromPhrase(phrase) {
-    if (!bip39.validateMnemonic(phrase)) {
+    if(!bip39.validateMnemonic(phrase)) {
         $("#phrase").val('');
         ShowNotification("That Mnemonic phrase is not correct");
         return
@@ -24,20 +22,14 @@ function GenerateFromPhrase(phrase) {
     SuccessAccess();
 }
 
-
 function UpdateWalletFromHD(path) {
-    if (usingBtc) {
-        var privKey = BTCprivate(path);
-    } else if (usingLtc) {
-        var privKey = BTCprivate(path);
-    } else {
-        var privKey = ETHprivate(path);
-    }
-    console.log(privKey);
+    configs.coin = 'ETH';
+    configs.provider = new providers.JsonRpcProvider(geth);
+    var privKey = ETHprivate(path);
+    $("#unlock_coin_type").val('eth').change();
     $("#privatepass").val(privKey);
-    OpenPrivateKey();
+    UnlockPrivateKey();
 }
-
 
 function XPRIV() {
     return btcHD.toBase58();
@@ -49,42 +41,31 @@ function BTCaddress(path) {
 
 function ETHaddress(path) {
     var addr = ethHD.derivePath(path).getWallet().getAddress();
-    var out = "0x"+addr.toString('hex');
+    var out = "0x" + addr.toString('hex');
     return out;
 }
 
 function ETHprivate(path) {
     var addr = ethHD.derivePath(path).getWallet().getPrivateKey();
-    var out = "0x"+addr.toString('hex');
+    var out = "0x" + addr.toString('hex');
     return out;
 }
-
 
 function BTCprivate(path) {
     addr = btcHD.derivePath(path).getWallet().getPrivateKey();
     return addr.toString('hex');
 }
-
-
-
 // phrase = "nerve heart bicycle thing holiday theme fury orient discover custom tell account shy elite grid like gallery license piece also cannon exist target same";
 //
 // GenerateFromPhrase(phrase);
-
 // console.log(XPRIV());
 //
 // console.log(BTCaddress("m/0"));
 //
 // console.log(ETHaddress("m/0"));
-
-
 //var node = bitcoin.HDNode.fromBase58(xpriv, bitcoin.networks.testnet)
 //node.keyPair.toWIF()
-
 //fixturehd.privateExtendedKey()
-
 //fixturehd.getWallet().getPrivateKeyString(
-
 //  HDKey.fromExtendedKey()
-
 // mnemonicToSeedHex

@@ -44,6 +44,45 @@ return app.client.waitUntilWindowLoaded()
 });
 
 
+
+it('should open token sending modal and send tokens', () => {
+    return app.client.waitUntilWindowLoaded()
+        .setValue('#privatepass', ETH_PRIV)
+        .getValue("#privatepass")
+        .should.eventually.equal(ETH_PRIV)
+        .click("//select/option[@value=\'ropsten\']")
+        .click('#unlock_priv_key').pause(4000)
+        .getText(".myaddress")
+        .should.eventually.equal(correct_address)
+        .click('#tokens_available-tab').pause(2000)
+        .click('#new_token_dialog_btn').pause(2000)
+        .setValue('#new_token_address', "0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab").pause(4000)
+        .getText("#new_token_alert")
+        .should.eventually.equal("Correct Token for: BASIC")
+        .click('#savetokenbutton').pause(2000)
+        .click("#token_BASIC").pause(3000)
+        .getText("#token_bal")
+        .should.eventually.equal("10000000.0000")
+        .click("#send_tokens_btn").pause(1000)
+        .setValue('#send_to_token', "0xffcf8fdee72ac11b5c542428b35eef5769c409f0").pause(1000)
+        .setValue('#send_amount_token', "1234567.999").pause(1000)
+        .getText(".token_spend")
+        .should.eventually.equal("8765432.001000")
+        .setValue('#tokengasprice', "21").pause(1000)
+        .getText(".ethavailable")
+        .should.eventually.equal("99.998635")
+        .click("#sendtokenbutton").pause(5000)
+        .getText("#senttxamount")
+        .should.eventually.equal("1234567.999")
+        .getText("#txtoaddress")
+        .should.eventually.equal("0xffcf8fdee72ac11b5c542428b35eef5769c409f0")
+        .click("#trxsentModal")
+});
+
+
+
+
+
 it('should load settings', () => {
 return app.client.waitUntilWindowLoaded()
     .click("#setup_panel-tab")
@@ -210,7 +249,7 @@ it('should open ether sending modal and send ETH', () => {
         .getValue("#ethtxfee")
         .should.eventually.equal("0.00025")
         .getText(".ethspend")
-        .should.eventually.equal("98.876300")
+        .should.eventually.equal("98.875217")
         .click('#sendethbutton').pause(8000)
         // .getText(".txidLink")
         // .should.eventually.equal("0x106121baa49de38090ccdd35071ed7c7757639f783eba0ae5b8e126ee443e278")
@@ -218,6 +257,20 @@ it('should open ether sending modal and send ETH', () => {
         .should.eventually.equal("1.12345")
         .getText("#txtoaddress")
         .should.eventually.equal("0xffcf8fdee72ac11b5c542428b35eef5769c409f0")
+});
+
+
+it('should get my eth balance', () => {
+    return app.client.waitUntilWindowLoaded()
+        .setValue('#privatepass', ETH_PRIV)
+        .getValue("#privatepass")
+        .should.eventually.equal(ETH_PRIV)
+        .click("//select/option[@value=\'ropsten\']")
+        .click('#unlock_priv_key').pause(4000)
+        .getText(".myaddress")
+        .should.eventually.equal(correct_address)
+        .getText("#ethbal")
+        .should.eventually.equal("98.8754").pause(888888)
 });
 
 
@@ -265,15 +318,15 @@ it('should open bitcoin sending modal and send BTC', () => {
 });
 
 
-// it('should insert a phrase', () => {
-// return app.client.waitUntilWindowLoaded()
-//     .setValue('#phrase', phrase)
-//     .getValue("#phrase")
-//     .should.eventually.equal(phrase)
-//     .click('#open_hd_wallet').pause(10000)
-//     .getText(".myaddress")
-//     .should.eventually.equal(correct_address)
-// });
+it('should insert a phrase', () => {
+return app.client.waitUntilWindowLoaded()
+    .setValue('#phrase', phrase)
+    .getValue("#phrase")
+    .should.eventually.equal(phrase)
+    .click('#open_hd_wallet').pause(10000)
+    .getText(".myaddress")
+    .should.eventually.equal(correct_address)
+});
 
 it('should get my eth balance', () => {
     return app.client.waitUntilWindowLoaded()
@@ -285,17 +338,17 @@ it('should get my eth balance', () => {
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
         .getText("#ethbal")
-        .should.eventually.equal("98.8764")
+        .should.eventually.equal("98.8754").pause(888888)
 });
 
-// it('should insert a phrase and see hd path', () => {
-// return app.client.waitUntilWindowLoaded()
-//     .setValue('#phrase', phrase)
-//     .getValue("#phrase")
-//     .should.eventually.equal(phrase)
-//     .click('#open_hd_wallet')
-//     .getText(".myaddress")
-//     .should.eventually.equal(correct_address)
-// });
+it('should insert a phrase and see hd path', () => {
+return app.client.waitUntilWindowLoaded()
+    .setValue('#phrase', phrase)
+    .getValue("#phrase")
+    .should.eventually.equal(phrase)
+    .click('#open_hd_wallet')
+    .getText(".myaddress")
+    .should.eventually.equal(correct_address)
+});
 
 });

@@ -16,6 +16,7 @@ ganache-cli -d 75.12345 --seed visit exotic maximum -a 100 > /dev/null &
 
 sleep 10
 
+# 0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab
 curl -X POST -H 'Content-Type: application/json' -d @test/newcoin.json http://localhost:8545
 
 export NODE_ENV='test'
