@@ -270,7 +270,7 @@ it('should get my eth balance', () => {
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
         .getText("#ethbal")
-        .should.eventually.equal("98.8754").pause(888888)
+        .should.eventually.equal("98.8754")
 });
 
 
@@ -328,18 +328,6 @@ return app.client.waitUntilWindowLoaded()
     .should.eventually.equal(correct_address)
 });
 
-it('should get my eth balance', () => {
-    return app.client.waitUntilWindowLoaded()
-        .setValue('#privatepass', ETH_PRIV)
-        .getValue("#privatepass")
-        .should.eventually.equal(ETH_PRIV)
-        .click("//select/option[@value=\'ropsten\']")
-        .click('#unlock_priv_key').pause(4000)
-        .getText(".myaddress")
-        .should.eventually.equal(correct_address)
-        .getText("#ethbal")
-        .should.eventually.equal("98.8754").pause(888888)
-});
 
 it('should insert a phrase and see hd path', () => {
 return app.client.waitUntilWindowLoaded()
