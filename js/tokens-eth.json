@@ -1,5 +1,38 @@
 [
 	{
+		"symbol": "FANX",
+		"address": "0x7f6715c3fc4740a02f70de85b9fd50ac6001fed9",
+		"decimals": 18,
+		"name": "FANX Token",
+		"ens_address": "",
+		"website": "http://www.fanx.one/",
+		"logo": {
+			"src": "http://www.fanx.one/static/img/logo.png",
+			"width": "132",
+			"height": "132",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "contact@fanx.one",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
 		"symbol": "GIF",
 		"address": "0xFcD862985628b254061F7A918035B80340D045d3",
 		"decimals": 18,
@@ -4504,7 +4537,7 @@
 	},
 	{
 		"symbol": "CTG",
-		"address": "0xc87c5dd86a3d567ff28701886fb0745aaa898da4 ",
+		"address": "0xc87c5dd86a3d567ff28701886fb0745aaa898da4",
 		"decimals": 18,
 		"name": "CT Global Token",
 		"ens_address": "christiantraders.eth",
@@ -4523,7 +4556,8 @@
 			"blog": "http://emini.cfrn.net",
 			"chat": "https://christiantraders.com",
 			"facebook": "facebook.com/cryptodailyinfo/",
-			"forum": "https://discordapp.com/channels/432450856319975424/432451525093359618",
+			"forum":
+				"https://discordapp.com/channels/432450856319975424/432451525093359618",
 			"github": "github.com/CTGlobal/ChristianTraders",
 			"gitter": "",
 			"instagram": "",
@@ -5057,6 +5091,39 @@
 		}
 	},
 	{
+		"symbol": "DATABroker",
+		"address": "0x1b5f21ee98eed48d292e8e2d3ed82b40a9728a22",
+		"decimals": 18,
+		"name": "DATABroker",
+		"ens_address": "",
+		"website": "",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
 		"symbol": "DATACoin",
 		"address": "0x0cf0ee63788a0849fe5297f3407f701e122cc023",
 		"decimals": 18,
@@ -5355,6 +5422,40 @@
 		}
 	},
 	{
+		"symbol": "DTH",
+		"address": "0x5adc961D6AC3f7062D2eA45FEFB8D8167d44b190",
+		"decimals": 18,
+		"name": "dether",
+		"ens_address": "",
+		"website": "https://dether.io",
+		"logo": {
+			"src":
+				"https://ipfs.io/ipfs/QmTbnd1okDoU188cLCFvZorxWgfVHdoLwwnLKxkJJFcncv",
+			"width": "349",
+			"height": "349",
+			"ipfs_hash": "QmTbnd1okDoU188cLCFvZorxWgfVHdoLwwnLKxkJJFcncv"
+		},
+		"support": {
+			"email": "support@dether.io",
+			"url": "https://dether.io"
+		},
+		"social": {
+			"blog": "https://medium.com/@DETHER",
+			"chat": "https://t.me/joinchat/GkdUjUQ4jx_Apxmz2km4ww",
+			"facebook": "https://www.facebook.com/dether.io/",
+			"forum": "https://medium.com/@DETHER",
+			"github": "https://github.com/dethertech",
+			"gitter": "https://gitter.im/dether-js",
+			"instagram": "https://www.instagram.com/dether.io/",
+			"linkedin": "https://www.linkedin.com/company/dether-io/",
+			"reddit": "https://www.reddit.com/r/Dether/",
+			"slack": "https://dether.slack.com/messages/C4HEL2KLK/details/",
+			"telegram": "https://t.me/joinchat/GkdUjUQ4jx_Apxmz2km4ww",
+			"twitter": "https://twitter.com/dether_io",
+			"youtube": "https://www.youtube.com/channel/UCXkA5w4KdpnBMeIsu62ZS8w"
+		}
+	},
+	{
 		"symbol": "DGD",
 		"address": "0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A",
 		"decimals": 9,
@@ -5650,6 +5751,39 @@
 			"telegram": "https://t.me/Dencity",
 			"twitter": "https://twitter.com/dencity_life",
 			"youtube": ""
+		}
+	},
+	{
+		"symbol": "DoBETacceptBET(DCA)",
+		"name": "DCA",
+		"address": "0x386Faa4703a34a7Fdb19Bec2e14Fd427C9638416",
+		"decimals": 18,
+		"website": "www.dobetacceptbet.com",
+		"logo": {
+			"src": "https://cloud.mail.ru/public/CTJL/QwWyu3Y4e",
+			"width": 200,
+			"height": 200,
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "support@dobet.info",
+			"url": "www.dobetacceptbet.com"
+		},
+		"social": {
+			"blog": "https://medium.com/@doBETacceptBET",
+			"chat": "https://bitcointalk.org/index.php?topic=1958953.0",
+			"facebook": "https://www.facebook.com/betcoin.dobetacceptbet",
+			"fourm": "https://bitcointalk.org/index.php?topic=1958953.0",
+			"github": "https://github.com/dobetacceptbet",
+			"gitter": "",
+			"instagram": "",
+			"linkedin":
+				"https://www.linkedin.com/in/betcoin-dobetacceptbet-1a6073144/",
+			"reddit": "https://www.reddit.com/user/doBETacceptBET",
+			"slack": "",
+			"telegram": "@doBETacceptBET",
+			"twitter": "@doBETacceptBET",
+			"youtube": "https://www.youtube.com/channel/UC1zXY-rO7_EPUyuKzPEVKfg"
 		}
 	},
 	{
@@ -5954,15 +6088,15 @@
 	},
 	{
 		"symbol": "DUBI",
-		"address": "0xd4cffeef10f60eca581b5e1146b5aca4194a4c3b",
+		"address": "0x9c6Fa42209169bCeA032e401188a6fc3e9C9f59c",
 		"decimals": 18,
 		"name": "Decentralized Universal Basic Income",
 		"ens_address": "",
 		"website": "https://prps.io",
 		"logo": {
-			"src": "",
-			"width": "",
-			"height": "",
+			"src": "https://imgur.com/qoz7jTX",
+			"width": "50",
+			"height": "61",
 			"ipfs_hash": ""
 		},
 		"support": {
@@ -9270,6 +9404,39 @@
 		}
 	},
 	{
+		"symbol": "INRM",
+		"address": "0x48e5413b73add2434e47504E2a22d14940dBFe78",
+		"decimals": 3,
+		"name": "Integrated Money",
+		"ens_address": "",
+		"website": "",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
 		"symbol": "INS",
 		"address": "0x5b2e4a700dfbc560061e957edec8f6eeeb74a320",
 		"decimals": 10,
@@ -11251,7 +11418,7 @@
 		"symbol": "MFG",
 		"address": "0x6710c63432a2de02954fc0f851db07146a6c0312",
 		"decimals": 18,
-		"name": "SyncFab Smart Manufacturing Blockchain",
+		"name": "SyncFab Manufacturing",
 		"ens_address": "",
 		"website": "https://syncfab.com/",
 		"logo": {
@@ -11891,6 +12058,36 @@
 			"telegram": "https://t.me/MUXEproject",
 			"twitter": "https://twitter.com/muxeproject",
 			"youtube": "https://www.youtube.com/channel/UCH6oO2fazB72bTdvMGK-H7w"
+		}
+	},
+	{
+		"symbol": "MVP",
+		"address": "0x8a77e40936bbc27e80e9a3f526368c967869c86d",
+		"decimals": 18,
+		"name": "Merculet",
+		"ens_address": "",
+		"website": "https://www.merculet.io",
+		"logo": {
+			"src": "https://merculet.io/static/image/newimg/logo.png",
+			"width": "356",
+			"height": "366",
+			"ipfs_hash": ""
+		},
+		"support": { "email": "support@merculet.io", "url": "" },
+		"social": {
+			"blog": "https://medium.com/merculet",
+			"chat": "",
+			"facebook": "https://www.facebook.com/Merculet-347541915747100",
+			"forum": "https://bitcointalk.org/index.php?topic=3180239",
+			"github": "https://github.com/Merculet",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "https://www.linkedin.com/company/merculet/",
+			"reddit": "https://www.reddit.com/r/Merculet/",
+			"slack": "",
+			"telegram": "https://t.me/merculet",
+			"twitter": "https://twitter.com/Merculet_io",
+			"youtube": ""
 		}
 	},
 	{
@@ -12649,7 +12846,7 @@
 	},
 	{
 		"symbol": "OPEN",
-		"address": "0xe9dE1C630753A15d7021Cc563429c21d4887506F",
+		"address": "0x69c4BB240cF05D51eeab6985Bab35527d04a8C64",
 		"decimals": 8,
 		"name": "OPEN",
 		"ens_address": "",
@@ -13911,15 +14108,15 @@
 	},
 	{
 		"symbol": "PRPS",
-		"address": "0x7641b2Ca9DDD58adDf6e3381c1F994Aac5f1A32f",
+		"address": "0xd94F2778e2B3913C53637Ae60647598bE588c570",
 		"decimals": 18,
 		"name": "Purpose",
 		"ens_address": "",
 		"website": "https://prps.io",
 		"logo": {
-			"src": "",
-			"width": "",
-			"height": "",
+			"src": "https://imgur.com/hm9naIz",
+			"width": "385",
+			"height": "385",
 			"ipfs_hash": ""
 		},
 		"support": {
@@ -15430,9 +15627,44 @@
 	},
 	{
 		"symbol": "SGT",
+		"address": "0x37427576324fE1f3625c9102674772d7CF71377d",
+		"decimals": 18,
+		"name": "SelfieYo Gold Token",
+		"ens_address": "",
+		"website": "https://sgt.selfieyo.com",
+		"logo": {
+			"src":
+				"https://sgt.selfieyo.com/wp-content/uploads/2018/01/token-new.png",
+			"width": "400",
+			"height": "400",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "sgt@selfieyo.com",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"discord": "https://discord.gg/QY6EVuY",
+			"facebook": "https://www.facebook.com/SelfieYoApp/",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "https://t.me/SGTcoin",
+			"twitter": "https://twitter.com/SelfieYo",
+			"youtube": ""
+		}
+	},
+	{
+		"symbol": "SGT",
 		"address": "0xd248B0D48E44aaF9c49aea0312be7E13a6dc1468",
 		"decimals": 1,
-		"name": "SGT",
+		"name": "StatusGenesis",
 		"ens_address": "",
 		"website": "",
 		"logo": {
@@ -16446,6 +16678,72 @@
 			"slack": "",
 			"telegram": "https://t.me/sharder_talk",
 			"twitter": "https://twitter.com/SharderChain",
+			"youtube": ""
+		}
+	},
+	{
+		"symbol": "SS",
+		"address": "0xB15fE5a123e647ba594CEa7A1E648646f95EB4AA",
+		"decimals": 18,
+		"name": "SS",
+		"ens_address": "",
+		"website": "",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
+		"symbol": "SSH",
+		"address": "0x6e2050CBFB3eD8A4d39b64cC9f47E711a03a5a89",
+		"decimals": 18,
+		"name": "StreamShares",
+		"ens_address": "",
+		"website": "",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
 			"youtube": ""
 		}
 	},
@@ -17665,6 +17963,41 @@
 		}
 	},
 	{
+		"symbol": "UMKA",
+		"address": "0x105d97ef2e723f1cfb24519bc6ff15a6d091a3f1",
+		"decimals": 4,
+		"name": "UMKA",
+		"ens_address": "",
+		"website": "https://umka.city",
+		"logo": {
+			"src":
+				"https://cdn-images-1.medium.com/fit/c/200/200/1*2qbLwo61-mobpkNCWeBcLQ.jpeg",
+			"width": 200,
+			"height": 200,
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "umka.labormarket@gmail.com",
+			"url": ""
+		},
+		"social": {
+			"blog": "https://medium.com/@umka_",
+			"chat": "https://t.me/umka2018",
+			"facebook": "https://www.facebook.com/freelance.umka/",
+			"forum":
+				"https://bitcointalk.org/index.php?topic=3382203.msg35440294#msg35440294",
+			"github": "https://github.com/UMKAman",
+			"gitter": "",
+			"instagram": "https://www.instagram.com/umka_freelance/",
+			"linkedin": "https://www.linkedin.com/company/umka/",
+			"reddit": "https://www.reddit.com/user/UMKA_Labor_Market",
+			"slack": "",
+			"telegram": "https://t.me/umkachannel",
+			"twitter": "https://twitter.com/umka_freelance",
+			"youtube": "https://www.youtube.com/channel/UCzuPC-job7i8A8ycobx939w"
+		}
+	},
+	{
 		"symbol": "UQC",
 		"address": "0xd01db73e047855efb414e6202098c4be4cd2423b",
 		"decimals": 18,
@@ -17694,6 +18027,39 @@
 			"slack": "https://uquid.herokuapp.com",
 			"telegram": "https://t.me/uquidcoin",
 			"twitter": "https://twitter.com/UquidC",
+			"youtube": ""
+		}
+	},
+	{
+		"symbol": "USDM",
+		"address": "0xD760ADdFb24D9C01Fe4Bfea7475C5e3636684058",
+		"decimals": 2,
+		"name": "Mether (USDM)",
+		"ens_address": "",
+		"website": "",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "",
+			"url": ""
+		},
+		"social": {
+			"blog": "",
+			"chat": "",
+			"facebook": "",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "",
+			"twitter": "",
 			"youtube": ""
 		}
 	},
@@ -19450,6 +19816,39 @@
 		}
 	},
 	{
+		"symbol": "ZMN",
+		"address": "0x554ffc77f4251a9fb3c0e3590a6a205f8d4e067d",
+		"decimals": 18,
+		"name": "ZMINE",
+		"ens_address": "",
+		"website": "https://www.zmine.com",
+		"logo": {
+			"src": "https://zmine.com/img/logo_300x300.png",
+			"width": "300",
+			"height": "300",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "support@zmine.com",
+			"url": ""
+		},
+		"social": {
+			"blog": "https://zmine.com/blog/en/",
+			"chat": "https://t.me/zminegroupchat",
+			"facebook": "https://www.facebook.com/zmineofficial",
+			"forum": "",
+			"github": "",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "",
+			"telegram": "https://t.me/zmineofficial",
+			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
 		"symbol": "ZRX",
 		"address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498",
 		"decimals": 18,
@@ -19877,6 +20276,39 @@
 			"slack": "",
 			"telegram": "",
 			"twitter": "",
+			"youtube": ""
+		}
+	},
+	{
+		"symbol": "XGG",
+		"address": "0xf6b6aa0ef0f5edc2c1c5d925477f97eaf66303e7",
+		"decimals": 8,
+		"name": "Going Gems",
+		"ens_address": "",
+		"website": "https://www.going-gems.com",
+		"logo": {
+			"src": "",
+			"width": "",
+			"height": "",
+			"ipfs_hash": ""
+		},
+		"support": {
+			"email": "support@going-gems.com",
+			"url": ""
+		},
+		"social": {
+			"blog": "https://www.going-gems.com/#blog",
+			"chat": "",
+			"facebook": "https://web.facebook.com/Going-Gems-307192689810299/",
+			"forum": "",
+			"github": "https://github.com/GoingGems",
+			"gitter": "",
+			"instagram": "",
+			"linkedin": "",
+			"reddit": "",
+			"slack": "https://goinggemsholding.slack.com",
+			"telegram": "https://t.me/GoingGemsChannel",
+			"twitter": "https://twitter.com/GoingGems",
 			"youtube": ""
 		}
 	}

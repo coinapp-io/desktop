@@ -94,10 +94,46 @@ function SaveNewToken() {
     $("#new_token_address").removeClass("is-invalid");
 }
 
+
+
+function CoinIcon(coin) {
+    switch (coin.toUpperCase()) {
+        case "ETH": return "../images/icons/eth.png"
+        case "BTC": return "../images/icons/btc.png"
+        case "BTCTEST": return "../images/icons/btc.png"
+        case "LTC": return "../images/icons/ltc.png"
+        case "LTCTEST": return "../images/icons/ltc.png"
+        case "OMG": return "../images/icons/omg.png"
+        case "ZRX": return "../images/icons/zrx.png"
+        case "SNT": return "../images/icons/snt.png"
+        case "ENG": return "../images/icons/eng.png"
+        case "WAX": return "../images/icons/wax.png"
+        case "GMT": return "../images/icons/gmt.png"
+        case "STORJ": return "../images/icons/storj.png"
+        case "TRX": return "../images/icons/trx.png"
+        case "CAT": return "../images/icons/cat.png"
+        case "DNT": return "../images/icons/dnt.png"
+        case "REP": return "../images/icons/rep.png"
+        case "LISK": return "../images/icons/lisk.png"
+        case "BNT": return "../images/icons/bnt.png"
+        case "STEEM": return "../images/icons/steem.png"
+        case "DTC": return "../images/icons/dtc.png"
+        case "CVC": return "../images/icons/cvc.png"
+        case "KIN": return "../images/icons/kin.png"
+        case "VIU": return "../images/icons/viu.png"
+        case "VEN": return "../images/icons/ven.png"
+        case "BNB": return "../images/icons/bnb.png"
+        case "SALT": return "../images/icons/salt.png"
+        default: return "../images/icons/eth.png"
+    }
+}
+
+
+
 function LoadSavedTokens() {
     console.log(configs.savedTokens);
     $.each(configs.savedTokens, function(k, tk) {
-        var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" + "    <div class=\"col-12\">" + "        <h5>" + tk.name + "<span class=\"badge badge-secondary\">" + toNumber(tk.balance) + "</span></h5>" + "    </div>" + "</div>";
+        var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" + "    <div class=\"col-12\"><img src=\""+CoinIcon(tk.symbol)+"\">" + "        <h5>" + tk.name + "<span>" + toNumber(tk.balance) + "</span></h5>" + "    </div>" + "</div>";
         $(tokenObj).insertAfter("#new_token_dialog_btn");
     })
 }
@@ -592,7 +628,10 @@ tokenWorker.onmessage = function(e) {
     var percent = (tkCount / tokenList.length) * 100;
     $("#progress_token_load").css("width", percent + "%");
     if(e.data.balance != 0) {
-        var tokenObj = "<div id=\"token_" + e.data.symbol + "\" onclick=\"FocusOnToken('" + e.data.address + "', " + e.data.decimals + ", '" + e.data.name + "', '" + e.data.symbol + "')\" class=\"row token_obj\">\n" + "    <div class=\"col-12\">\n" + "        <h5>" + e.data.name + "<span class=\"badge badge-secondary\">" + parseFloat(e.data.balance).toFixed(6) + "</span></h5>\n" + "    </div>\n" + "</div>";
+        var tokenObj = "<div id=\"token_" + e.data.symbol + "\" onclick=\"FocusOnToken('" + e.data.address + "', " + e.data.decimals + ", '" + e.data.name + "', '" + e.data.symbol + "')\" class=\"row token_obj\">\n" + "    <div class=\"col-12\">\n" +
+            "<img src=\""+CoinIcon(e.data.symbol)+"\"><h5>" + e.data.name + "<span>" +
+            toNumber(e.data.balance) + "</span></h5>" +
+            "</div>" + "</div>";
         $("#tokens_available").append(tokenObj);
         var data = {
             address: e.data.contract,

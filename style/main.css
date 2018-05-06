@@ -15,6 +15,13 @@ BODY {
     text-align: center;
 }
 
+#transactions_tab IMG {
+    float: right;
+    width: 17px;
+    height: 17px;
+    margin-left: 5px;
+}
+
 .windows_close {
     width: 35px;
     height: 21px;
@@ -77,19 +84,44 @@ BODY {
 }
 
 .token_obj {
-    background-color: #ffffff;
-    padding: 20px 0;
+    background-color: #f1f1f1;
+    padding: 10px 5px;
     margin-bottom: 1px;
     cursor: pointer;
+    height: 50px;
 }
+
+
+.token_obj IMG {
+    width: 20px;
+    height: 20px;
+    float: left;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.token_obj H5 {
+    float: right;
+    font-size: 10pt;
+    display: block;
+    width: 165px;
+    text-align: right;
+    cursor: pointer;
+}
+
+.token_obj SPAN {
+    width: 165px;
+    height: 20px;
+    font-size: 11pt;
+    float: left;
+    margin-top: 0px;
+    cursor: pointer;
+}
+
 
 .token_obj:HOVER {
     background-color: #f9f9f9;
     cursor: pointer;
-}
-
-.token_obj .badge {
-    float: right;
 }
 
 .main-container {
@@ -98,7 +130,7 @@ BODY {
     border-left: 1px solid #bdbdbd;
     left: 0px;
     top: 22px;
-    height: 535px;
+    height: 538px;
     width: 100%;
     float: right;
     background-color: #f7f7f7;

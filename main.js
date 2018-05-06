@@ -96,7 +96,16 @@ let mainWindow;
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({backgroundColor: '#f7f7f7', frame: false, titleBarStyle: 'hidden', width: 840, height: 560});
+  mainWindow = new BrowserWindow({
+      backgroundColor: '#f7f7f7',
+      frame: false,
+      titleBarStyle: 'hidden',
+      width: 840,
+      height: 560,
+      webPreferences: {
+          preload: __dirname+'/js/constants.js'
+      }
+  });
 
     if (process.env.NODE_ENV=="test") {
         mainWindow.setResizable(true);

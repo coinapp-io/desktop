@@ -105,7 +105,7 @@ function RenderTransactions(txs, start, end) {
                 var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">View</button>";
             }
             var element = "tx_" + out.id;
-            var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">\n" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + out.id.substring(0, 32) + "...</b></div>\n" + "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "</b></div>" + "        </div>";
+            var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">\n" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + out.id.substring(0, 32) + "...</b></div>\n" + "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "<img src=\""+CoinIcon(out.symbol)+"\"></b></div>" + "        </div>";
             $("#transactions_tab").append(html);
         });
         lastTrxScroll = end;
