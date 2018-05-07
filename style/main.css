@@ -24,7 +24,7 @@ BODY {
 
 .windows_close {
     width: 35px;
-    height: 21px;
+    height: 22px;
     background-color: rgb(177, 177, 177);
     position: absolute;
     top: 0;
@@ -34,9 +34,14 @@ BODY {
     cursor: pointer;
 }
 
+.windows_close:HOVER {
+    background-color: rgb(255, 190, 39);
+    cursor: pointer;
+}
+
 .windows_minimize {
     width: 35px;
-    height: 21px;
+    height: 22px;
     background-color: rgb(177, 177, 177);
     position: absolute;
     top: 0;
@@ -44,6 +49,10 @@ BODY {
     text-align: center;
     color: white;
     cursor: pointer;
+}
+
+.windows_minimize:HOVER {
+    background-color: rgb(130, 130, 130);
 }
 
 ::-webkit-scrollbar {
@@ -76,8 +85,9 @@ BODY {
 
 .tokens_list {
     width: 220px;
-    height: 513px;
+    height: 514px;
     border-bottom: 1px solid #d2d2d2;
+    border-top: 1px solid #d2d2d2;
     position: absolute;
     top: 22px;
     display: block;
@@ -89,6 +99,13 @@ BODY {
     margin-bottom: 1px;
     cursor: pointer;
     height: 50px;
+}
+
+
+.token_obj .close {
+    position: relative;
+    left: -65px;
+    top: -20px;
 }
 
 
@@ -128,6 +145,7 @@ BODY {
     display: block;
     position: absolute;
     border-left: 1px solid #bdbdbd;
+    border-top: 1px solid #d2d2d2;
     left: 0px;
     top: 22px;
     height: 538px;
@@ -147,8 +165,7 @@ BODY {
 }
 
 .draggable {
-    border-bottom: 1px solid #d2d2d2;
-    width: 100%;
+    width: 765px;
     height: 22px;
     display: block;
     position: absolute;
@@ -254,6 +271,10 @@ BODY {
 
 .updateLoader .progress-bar {
     transition: width 5s ease;
+}
+
+#progress_token_load {
+    background-color: #f7ba10!important;
 }
 
 .about {
@@ -369,12 +390,84 @@ BODY {
 }
 
 
+#qrcode_img {
+    display: block;
+    margin: 0 auto;
+    width: 225px;
+}
+
+
+.mini_icon {
+    width: 17px;
+    height: 17px;
+    margin-left: 5px;
+    margin-bottom: 3px;
+}
+
+
+.settings_icon {
+    position: absolute;
+    width: 13px;
+    display: block;
+    opacity: 0.4;
+    bottom: 6px;
+    left: 200px;
+    display: none;
+}
+
+.settings_icon:HOVER {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.settings_page {
+    background-color: #f3f3f3;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 23px;
+    z-index: 2;
+}
+
+.qr_icon {
+    position: absolute;
+    width: 20px;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    opacity: 0.3;
+}
+
+.qr_icon:HOVER {
+    opacity: 1;
+}
+
 .block_number {
     position: absolute;
     bottom: 2px;
     right: 10px;
     font-size: 12pt;
     color: #dadada;
+    transition-duration: 100ms;
+}
+
+.transaction_view {
+    width: 100%;
+    height: 100%;
+    background-color: #fbfbfb;
+    position: absolute;
+    z-index: 9;
+    overflow-y: scroll;
+}
+
+
+.transaction_view .close {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    color: rgb(236, 175, 26);
+    opacity: 1;
+    font-size: 25pt;
 }
 
 .popup_notifications {

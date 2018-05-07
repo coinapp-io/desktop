@@ -57,7 +57,10 @@ function UpdatePricing() {
 setInterval(function() {
     if(configs.wallet) UpdateBalance();
 }, 5000);
+
+
 $(".updateable_token_ether").on("input", UpdateTokenFees);
+
 $(".updateable_ether").on("input", UpdateEthFees);
 
 function isEthAddress(address) {

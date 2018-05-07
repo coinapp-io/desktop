@@ -1,6 +1,6 @@
 {
     "name": "coinapp",
-    "version": "0.0.22",
+    "version": "0.0.23",
     "description": "A Simple Cryptocurrency Wallet for Ethereum, ERC20 Tokens, Bitcoin and Litecoin",
     "author": "Hunter Long <info@socialeck.com>",
     "main": "main.js",
@@ -64,6 +64,7 @@
         "ethereumjs-tx": "^1.3.4",
         "ethereumjs-wallet": "0.6.0",
         "ethers": "3.0.15",
-        "node-notifier": "^5.2.1"
+        "node-notifier": "^5.2.1",
+        "qrcode": "^1.2.0"
     }
 }

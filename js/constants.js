@@ -20,11 +20,13 @@ const store = new Store();
 const notifier = require('node-notifier');
 var pathjs = require('path');
 var tokenWorker = new Worker('../js/token_parser.js');
+var QRCode = require('qrcode');
 var configs = {
     coin: "none",
     wallet: null,
     address: "",
     network: null,
+    transactions: [],
     decimals: 18,
     bigBalance: 0,
     balance: "0.0",

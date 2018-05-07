@@ -9,12 +9,12 @@
 
 <body>
 
-<div class="draggable">
+<div class="draggable"></div>
 
-    <div onclick="CloseApp()" class="windows_close d-none">x</div>
-    <div onclick="MinimizeApp()" class="windows_minimize d-none">-</div>
 
-</div>
+<div onclick="CloseApp()" class="windows_close d-none">x</div>
+<div onclick="MinimizeApp()" class="windows_minimize d-none">-</div>
+
 
 <div class="tokens_list" hidden>
 
@@ -57,6 +57,79 @@
 
 <div class="main-container">
 
+    <div class="transaction_view d-none">
+
+        <div class="col-12 mt-3">
+
+            <h3>Transaction
+                <button type="button" class="close" aria-label="Close" onclick="CloseTransactionView()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </h3>
+
+            <table class="table" style="font-size: 0.9em;">
+                <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td id="tx_view_hash"></td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td id="tx_view_status"></td>
+                </tr>
+                <tr>
+                    <th>Block Height</th>
+                    <td id="tx_view_height"></td>
+                </tr>
+                <tr>
+                    <th>To</th>
+                    <td id="tx_view_to"></td>
+                </tr>
+                <tr>
+                    <th>From</th>
+                    <td id="tx_view_from"></td>
+                </tr>
+                <tr>
+                    <th>Value</th>
+                    <td id="tx_view_value"></td>
+                </tr>
+                <tr>
+                    <th>Gas Limit</th>
+                    <td id="tx_view_limit"></td>
+                </tr>
+                <tr>
+                    <th>Gas Used</th>
+                    <td id="tx_view_used"></td>
+                </tr>
+                <tr>
+                    <th>Gas Price</th>
+                    <td id="tx_view_price"></td>
+                </tr>
+                <tr>
+                    <th>Actual Fee</th>
+                    <td id="tx_view_fee"></td>
+                </tr>
+                <tr>
+                    <th>Nonce</th>
+                    <td id="tx_view_nonce"></td>
+                </tr>
+                <tr>
+                    <th>Method</th>
+                    <td id="tx_view_method"></td>
+                </tr>
+                <tr>
+                    <th>Data</th>
+                    <td><textarea class="form-control" id="tx_view_data" rows="3"></textarea></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+    </div>
 
     <div class="popup_notifications text-center"></div>
 
@@ -76,7 +149,7 @@
             <nav class="col-12">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active col-4 text-center" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Crypto Wallet</a>
-                    <a class="nav-item nav-link col-4 text-center" id="setup_panel-tab" data-toggle="tab" href="#setup_panel" role="tab" aria-controls="nav-profile" aria-selected="false">Settings</a>
+                    <a id="setup_panel-tab" onclick="OpenSettings()" class="nav-item nav-link col-4 text-center">Settings</a>
                     <a class="nav-item nav-link col-4 text-center" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">New Wallet</a>
                 </div>
             </nav>
@@ -87,6 +160,7 @@
                             <label for="walletpass" class="col-3 col-form-label">Keystore Wallet</label>
                             <div class="col-3">
                                 <button onclick="OpenKeystoreFile();" class="btn btn-default">Choose File</button>
+                                <input type="hidden" id="keystore_file">
                             </div>
                             <div class="col-4">
                                 <input type="password" class="form-control" id="keystorewalletpass" placeholder="Keystore Password">
@@ -143,56 +217,6 @@
 
                     <div class="tab-pane" id="setup_panel" role="tabpanel" aria-labelledby="setup_panel-tab">
 
-                        <div class="row">
-
-                        <div class="col-12">
-                                <div class="form-group row">
-                                    <label for="inputPassword" class="col-3 col-form-label">Geth Server</label>
-                                    <div class="col-5 input-group">
-                                        <input type="text" class="form-control" id="setting_geth_server" placeholder="Ethereum Server Endpoint">
-                                        <div class="input-group-append">
-                                            <div id="eth_server_conn" class="input-group-text bg-success text-white">✓</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-                                            <option value="geth" selected>JSON RPC</option>
-                                            <option value="etherscan">EtherScan.io</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="inputPassword" class="col-3 col-form-label">BTC Server</label>
-                                    <div class="col-5 input-group">
-                                        <input type="text" class="form-control" id="setting_btc_server" placeholder="Bitcoin Server Endpoint">
-                                        <div class="input-group-append">
-                                            <div id="btc_server_conn" class="input-group-text bg-secondary text-white">?</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-                                            <option value="insight" selected>Insight API</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                    <div class="form-group row">
-                                    <label for="inputPassword" class="col-3 col-form-label">LTC Server</label>
-                                    <div class="col-5 input-group">
-                                        <input type="text" class="form-control" id="setting_ltc_server" placeholder="Litecoin Server Endpoint">
-                                        <div class="input-group-append">
-                                            <div id="ltc_server_conn" class="input-group-text bg-secondary text-white">?</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-                                            <option value="insight" selected>Insight API</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            <button id="save_settings_btn" class="btn btn-primary mb-2" onclick="SaveSettings()">Save Settings</button>
-                        </div>
-
-                        </div>
 
                     </div>
                     <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
@@ -214,6 +238,8 @@
     <div class="container-fluid mt-5" id="token_container" hidden>
 
         <div class="row walletInfo">
+
+            <img class="qr_icon" onclick="OpenQRCodeAddress();" src="../images/icons/qrcode.png">
 
             <div class="col-md-12 mb-5">
 
@@ -250,7 +276,7 @@
 
             <div id="send_token_area" class="col-md-4 offset-md-2 text-center sendBtns d-none">
                 <button id="send_tokens_btn" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#token_modal" onclick="UpdateTokenFees();">
-                    Send <span class="token_name">SENSE</span>
+                    Send <span class="token_symbol">TOKEN</span>
                 </button>
             </div>
 
@@ -318,7 +344,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <p class="help-block" id="cryptos_available"><u class="ethspend">0.0</u> ETH Available</p>
+                            <p class="help-block" id="cryptos_available"><u onclick="UseFullBalance()" class="ethspend">0.0</u> ETH Available</p>
                         </div>
 
                     </div>
@@ -371,7 +397,7 @@
                                 <div class="input-group-prepend">
                                     <div class="input-group-text"><span class="token_name">TOKEN</span></div>
                                 </div>
-                                <input type="text" class="form-control updateable_token_ether" id="send_amount_token" placeholder="Amount of TOKENS">
+                                <input type="text" class="form-control updateable_token_ether" id="send_amount_token" value="0" placeholder="Amount of TOKENS">
                             </div>
                         </div>
                         <div class="col-12">
@@ -384,7 +410,7 @@
             <div class="modal-footer">
 
                 <div class="col-9">
-                    <div class="btn btn-default">Gas Limit: <input class="form-control updateable_token_ether" id="tokengaslimit" type="number" value="65000" style="width: 100px;" min="65000" max="8000000"> gwei</div>
+                    <div class="btn btn-default">Gas Limit: <input class="form-control updateable_token_ether" id="tokengaslimit" type="number" value="55000" style="width: 100px;" min="21000" max="8000000">(maximum)</div>
                     <div class="btn btn-default">Gas Price: <input class="form-control updateable_token_ether" id="tokengasprice" type="number" value="3" style="width: 70px;" min="1" max="200"> gwei</div>
                     <div class="btn btn-default">Fee: <input class="form-control" id="tokentxfee" type="text" value="0.00044" readonly style="width: 115px;"> ETH</div>
                 </div>
@@ -509,9 +535,144 @@
 
 
 
+
+
+<div class="modal fade" id="qrcode_address" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Address QR Code</h4>
+            </div>
+            <div class="modal-body text-center">
+
+                <img id="qrcode_img">
+
+                <span id="qr_code_data" onclick="CopyAddress();"></span>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="settings_page d-none">
+
+    <div class="row">
+
+    <div class="col-5 mt-2 ml-3">
+        <img src="../images/banner.png" style="height: 60px;">
+        <span id="settings_version">v.0.0.22</span>
+    </div>
+
+    <div class="col-6 mt-3">
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="my_settings_tab" data-toggle="tab" href="#my_settings" role="tab" aria-controls="my_settings" aria-selected="true">Server</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="export_functions_tab" data-toggle="tab" href="#export_functions" role="tab" aria-controls="export_functions" aria-selected="false">Export</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Updates</a>
+            </li>
+            <li class="nav-item" onclick="CloseSettings()">
+                <a class="nav-link" id="close_settings" href="#">Close</a>
+            </li>
+        </ul>
+    </div>
+
+
+        <div class="col-12">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="my_settings" role="tabpanel" aria-labelledby="my_settings">
+
+                    <div class="col-12">
+                        <div class="form-group row">
+                            <label for="inputPassword" class="col-3 col-form-label">Geth Server</label>
+                            <div class="col-5 input-group">
+                                <input type="text" class="form-control" id="setting_geth_server" placeholder="Ethereum Server Endpoint">
+                                <div class="input-group-append">
+                                    <div id="eth_server_conn" class="input-group-text bg-success text-white">✓</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <select class="custom-select mr-sm-2 setting_change" data-id="setting_geth_server" id="inlineFormCustomSelect">
+                                    <option value="geth" selected>Custom JSON RPC URL</option>
+                                    <option value="localhostETH">Localhost Parity/Mist/Geth</option>
+                                    <option value="etherscan">EtherScan.io</option>
+                                    <option value="coinappETH" selected>CoinApp.io ETH</option>
+                                    <option value="coinappROPSTEN">CoinApp.io ETH Testnet (Ropsten)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputPassword" class="col-3 col-form-label">BTC Server</label>
+                            <div class="col-5 input-group">
+                                <input type="text" class="form-control" id="setting_btc_server" placeholder="Bitcoin Server Endpoint">
+                                <div class="input-group-append">
+                                    <div id="btc_server_conn" class="input-group-text bg-secondary text-white">?</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <select class="custom-select mr-sm-2 setting_change" data-id="setting_btc_server" id="inlineFormCustomSelect">
+                                    <option value="insight">Custom Insight API</option>
+                                    <option value="blockchain_info">Blockchain.info API</option>
+                                    <option value="coinappBTC" selected>CoinApp.io BTC</option>
+                                    <option value="coinappBTCTEST">CoinApp.io BTC Testnet</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputPassword" class="col-3 col-form-label">LTC Server</label>
+                            <div class="col-5 input-group">
+                                <input type="text" class="form-control" id="setting_ltc_server" placeholder="Litecoin Server Endpoint">
+                                <div class="input-group-append">
+                                    <div id="ltc_server_conn" class="input-group-text bg-secondary text-white">?</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <select class="custom-select mr-sm-2 setting_change" data-id="setting_ltc_server" id="inlineFormCustomSelect">
+                                    <option value="insight">Custom Insight API</option>
+                                    <option value="coinappLTC" selected>CoinApp.io LTC</option>
+                                    <option value="coinappLTCTEST">CoinApp.io LTC Testnet</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="save_settings_btn" class="btn btn-primary mb-2" onclick="SaveSettings()">Save Settings</button>
+                    </div>
+
+                </div>
+
+
+                <div class="tab-pane fade" id="export_functions" role="tabpanel" aria-labelledby="export_functions">
+                    You can't export your wallet yet!
+
+                </div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                    There will be updates from Github here.
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+
 <span class="block_number d-none">Block #5352546</span>
 
 <span class="about" data-toggle="modal" data-target="#aboutmodal"></span>
+
+<img onclick="OpenSettings()" class="settings_icon" src="../images/icons/settings.png">
 
 </body>
 

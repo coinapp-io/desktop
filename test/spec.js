@@ -22,6 +22,7 @@ const LTC_PRIV = process.env.LTC_PRIV;
 // Litecoin Testnet Donations: muvvhtaYDV1SpRPARHdtruG3nBv38MtS3C
 //
 
+
 it('opens a window', () => {
     return app.client.waitUntilWindowLoaded()
         .getWindowCount().should.eventually.equal(1)
@@ -60,7 +61,7 @@ it('should open token sending modal and send tokens', () => {
         .getText("#new_token_alert")
         .should.eventually.equal("Correct Token for: BASIC")
         .click('#savetokenbutton').pause(2000)
-        .click("#token_BASIC").pause(3000)
+        .click("#token_0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab").pause(3000)
         .getText("#token_bal")
         .should.eventually.equal("10000000.0000")
         .click("#send_tokens_btn").pause(1000)
@@ -70,7 +71,7 @@ it('should open token sending modal and send tokens', () => {
         .should.eventually.equal("8765432.001000")
         .setValue('#tokengasprice', "21").pause(1000)
         .getText(".ethavailable")
-        .should.eventually.equal("99.998635")
+        .should.eventually.equal("99.998845")
         .click("#sendtokenbutton").pause(5000)
         .getText("#senttxamount")
         .should.eventually.equal("1234567.999")

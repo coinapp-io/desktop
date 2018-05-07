@@ -132,12 +132,144 @@ function OnEthereumBlock(callback) {
     configs.provider.on('block', function(blockNumber) {
         console.log('New Block: ' + blockNumber);
         $(".block_number").html("Block #" + blockNumber);
+        $(".block_number").css("color", "#979797");
+        setTimeout(function() {
+            $(".block_number").css("color", "#dadada");
+        }, 300);
         if(callback) callback(blockNumber);
     });
 }
 
+
+function FindTransaction(id) {
+    return $.grep(configs.transactions, function(e) {
+        return e.hash.toLowerCase() == id.toLowerCase();
+    })[0];
+}
+
+
+
+function FindBTCTransaction(id) {
+    return $.grep(configs.transactions, function(e) {
+        return e.txid.toLowerCase() == id.toLowerCase();
+    })[0];
+}
+
+
+function CloseTransactionView() {
+    $(".transaction_view").addClass('d-none');
+}
+
+
+function ViewTransaction(id) {
+    if (isBitcoin()) {
+        OpenBlockchainTx(id, configs.coin)
+    } else {
+        ViewEthereumTransaction(id)
+    }
+}
+
+
+
+function ViewBitcoinTransaction(id) {
+    var tx = FindBTCTransaction(id);
+    $(".transaction_view").removeClass('d-none');
+    var fee = tx.fees;
+    var value = tx.valueOut;
+    var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/"+id+"')\">"+id+"</a>";
+    var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx+"')\">"+tx+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.to+"');\" src=\"../images/icons/qrcode.png\">";
+    var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx+"')\">"+tx+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.from+"');\" src=\"../images/icons/qrcode.png\">";
+
+    if (tx.txreceipt_status==1) {
+        var tx_status = "<span class='text-success'>Success</span>";
+    } else {
+        var tx_status = "<span class='text-danger'>Error</span>";
+    }
+
+    var method = GetDataMethod(tx.input);
+
+    var symbol = "ETH";
+    var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
+    if (method=="transfer") {
+        var transfer = DecodeData(tx.input);
+        to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
+        var tk = FindToken(tx.to);
+        coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
+        symbol = tk.symbol;
+        value = transfer.value * (0.1 ** tk.decimals);
+    }
+
+    $("#tx_view_hash").html(tx_link);
+    $("#tx_view_status").html(tx_status);
+    $("#tx_view_height").html(tx.blockNumber);
+    $("#tx_view_to").html(to_link);
+    $("#tx_view_from").html(from_link);
+    $("#tx_view_value").html(toNumber(value)+ " "+symbol+coinicon);
+    $("#tx_view_limit").html(tx.gas);
+    $("#tx_view_used").html(tx.gasUsed);
+    $("#tx_view_price").html(tx.gasPrice);
+    $("#tx_view_fee").html(fee.toFixed(8)+" ETH");
+    $("#tx_view_nonce").html(tx.nonce);
+    var method = GetDataMethod(tx.input);
+    $("#tx_view_method").val(method);
+    $("#tx_view_data").val(tx.input);
+}
+
+
+
+
+
+function ViewEthereumTransaction(id) {
+    var tx = FindTransaction(id);
+    $(".transaction_view").removeClass('d-none');
+    var fee = (tx.gasUsed * tx.gasPrice) * (0.1 ** 18);
+    var value = tx.value * (0.1 ** 18);
+    var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/"+id+"')\">"+id+"</a>";
+    var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx.to+"')\">"+tx.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.to+"');\" src=\"../images/icons/qrcode.png\">";
+    var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx.from+"')\">"+tx.from+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.from+"');\" src=\"../images/icons/qrcode.png\">";
+
+    if (tx.txreceipt_status==1) {
+        var tx_status = "<span class='text-success'>Success</span>";
+    } else {
+        var tx_status = "<span class='text-danger'>Error</span>";
+    }
+
+    var method = GetDataMethod(tx.input);
+
+    var symbol = "ETH";
+    var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
+    if (method=="transfer") {
+        var transfer = DecodeData(tx.input);
+        to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
+        var tk = FindToken(tx.to);
+        coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
+        symbol = tk.symbol;
+        value = transfer.value * (0.1 ** tk.decimals);
+    }
+
+    $("#tx_view_hash").html(tx_link);
+    $("#tx_view_status").html(tx_status);
+    $("#tx_view_height").html(tx.blockNumber);
+    $("#tx_view_to").html(to_link);
+    $("#tx_view_from").html(from_link);
+    $("#tx_view_value").html(toNumber(value)+ " "+symbol+coinicon);
+    $("#tx_view_limit").html(tx.gas);
+    $("#tx_view_used").html(tx.gasUsed);
+    $("#tx_view_price").html(tx.gasPrice);
+    $("#tx_view_fee").html(fee.toFixed(8)+" ETH");
+    $("#tx_view_nonce").html(tx.nonce);
+    var method = GetDataMethod(tx.input);
+    $("#tx_view_method").val(method);
+    $("#tx_view_data").val(tx.input);
+}
+
+
+
+
+
 function UpdateBalance() {
     return new Promise(function(resolve, reject) {
+        console.log("Updating "+configs.coin+" Balance.");
         if(isBitcoin()) {
             CryptoBalance(configs.address).then(function(balance) {
                 resolve(balance);
@@ -258,12 +390,16 @@ function DefaultTxFees() {
     switch(configs.coin) {
         case "BTC":
             amount = 135;
+            break;
         case "BTCTEST":
             amount = 443;
+            break;
         case "LTC":
             amount = 443;
+            break;
         case "LTCTEST":
             amount = 443;
+            break;
     }
     $("#btc_byte_price").val(amount);
 }

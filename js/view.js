@@ -45,7 +45,8 @@ function QueryTokenContract(address) {
                 var trueBal = tokenBal * (0.1 ** parseInt(dec));
                 $("#new_token_balance").val(trueBal);
                 tmpToken.name().then(function(name) {
-                    $("#new_token_alert").html("Correct Token for: " + name);
+                    var coinicon = "<img class='mini_icon' src='"+CoinIcon(sym)+"'>";
+                    $("#new_token_alert").html("Correct Token for: " + name+" "+coinicon);
                     $("#new_token_name").val(name);
                 });
             });
@@ -71,6 +72,11 @@ function SaveNewToken() {
     var symbol = $("#new_token_symbol").val();
     var name = $("#new_token_name").val();
     var balance = $("#new_token_balance").val();
+
+    if (address.length != 42 || decimals=='' || symbol == '') {
+        return false;
+    }
+
     $("#save_token_btn").prop("disabled", true);
     // store.set("saved_tokens", JSON.stringify(configs.savedTokens));
     tk = {
@@ -82,8 +88,9 @@ function SaveNewToken() {
     };
     configs.savedTokens.push(tk);
     store.set("saved_tokens", JSON.stringify(configs.savedTokens));
-    var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" + "    <div class=\"col-12\">" + "        <h5>" + tk.name + "<span class=\"badge badge-secondary\">" + toNumber(tk.balance) + "</span></h5>" + "    </div>" + "</div>";
-    $(tokenObj).insertAfter("#new_token_dialog_btn");
+
+    AddTokenDiv(tk.symbol, tk.address, tk.decimals, tk.name, tk.balance, true);
+
     $("#new_token_address").val('');
     $('#add_token_modal').modal('hide');
     $("#save_token_btn").prop("disabled", false);
@@ -92,6 +99,18 @@ function SaveNewToken() {
     $("#new_token_symbol").prop('readonly', false);
     $("#new_token_address").removeClass("is-valid");
     $("#new_token_address").removeClass("is-invalid");
+}
+
+
+
+function CloseSettings() {
+    $(".settings_page").addClass("d-none");
+}
+
+
+
+function OpenSettings() {
+    $(".settings_page").removeClass("d-none");
 }
 
 
@@ -133,9 +152,8 @@ function CoinIcon(coin) {
 function LoadSavedTokens() {
     console.log(configs.savedTokens);
     $.each(configs.savedTokens, function(k, tk) {
-        var tokenObj = "<div id=\"token_" + tk.symbol + "\" onclick=\"FocusOnToken('" + tk.address + "', " + tk.decimals + ", '" + tk.name + "', '" + tk.symbol + "')\" class=\"row token_obj\">" + "    <div class=\"col-12\"><img src=\""+CoinIcon(tk.symbol)+"\">" + "        <h5>" + tk.name + "<span>" + toNumber(tk.balance) + "</span></h5>" + "    </div>" + "</div>";
-        $(tokenObj).insertAfter("#new_token_dialog_btn");
-    })
+        AddTokenDiv(tk.symbol, tk.address, tk.decimals, tk.name, tk.balance, true);
+    });
 }
 
 function QuickBTCFee(amount, price) {
@@ -318,7 +336,7 @@ function OpenBlockchainTx(txid, coin) {
 }
 
 function FocusOnToken(token, decimals, name, symbol) {
-    console.log("Logging Token: " + token);
+    console.log("Focusing on Token: " + token);
     tokenContract = new ethers.Contract(token, TOKEN_ABI, configs.wallet);
     configs.tokenAddress = token;
     configs.token = tokenContract;
@@ -330,6 +348,7 @@ function FocusOnToken(token, decimals, name, symbol) {
         var split = parseFloat(configs.tokenBalance).toFixed(4).split(".");
         $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
     });
+    $(".transaction_view").addClass('d-none');
     $("#token_balance_area").removeClass("d-none");
     $("#send_token_area").removeClass("d-none");
     $("#token_balance_area").attr("class", "col-4 offset-2 coinBox");
@@ -340,6 +359,53 @@ function FocusOnToken(token, decimals, name, symbol) {
     ChangeTokenName(name);
     ChangeTokenSymbol(symbol);
 }
+
+
+
+$(".setting_change").change(function(e) {
+    var id = $(this).data("id");
+    var element = $("#"+id);
+    element.prop("readonly", false);
+
+    console.log($(this).val(), "#"+id);
+
+    switch ($(this).val()) {
+        case "localhostETH":
+            element.val("http://127.0.0.1:8545");
+            element.prop("readonly", true);
+            break;
+        case "coinappETH":
+            element.val("https://eth.coinapp.io");
+            element.prop("readonly", true);
+            break;
+        case "coinappROPSTEN":
+            element.val("https://ropsten.coinapp.io");
+            element.prop("readonly", true);
+            break;
+        case "etherscan":
+            element.val("https://api.etherscan.io/api");
+            element.prop("readonly", true);
+            break;
+        case "coinappBTC":
+            element.val("https://btc.coinapp.io/api");
+            element.prop("readonly", true);
+            break;
+        case "coinappBTCTEST":
+            element.val("https://btctest.coinapp.io/api");
+            element.prop("readonly", true);
+            break;
+        case "coinappLTC":
+            element.val("https://ltc.coinapp.io/api");
+            element.prop("readonly", true);
+            break;
+        case "coinappLTCTEST":
+            element.val("https://ltctest.coinapp.io/api");
+            element.prop("readonly", true);
+            break;
+    }
+});
+
+
 $("#hdpath_coin").change(function() {
     coin = $('#hdpath_coin option:selected').val();
     if(coin == "eth") {
@@ -397,7 +463,7 @@ function SuccessAccess() {
     }
     $("#sendethbutton").html("Send " + configs.coin);
     $("#crypto_modal_title").html('Send ' + configs.coin);
-    $("#cryptos_available").html("<u class=\"ethspend\">0.0</u> " + configs.coin + " Available");
+    $("#cryptos_available").html("<u onclick=\"UseFullBalance()\" class=\"ethspend\">0.0</u> " + configs.coin + " Available");
     $("#send_ether_btn").html("Send " + configs.coin);
     $("#crypto_balance_area").html("<b id=\"ethbal\"></b> " + configs.coin);
     ChangeCryptoSymbol(configs.coin);
@@ -408,6 +474,7 @@ function SuccessAccess() {
     $(".tokens_list").removeAttr("hidden");
     $(".main-container").css("left", "220px");
     $(".main-container").css("width", "620px");
+    $(".settings_icon").show();
     // $(".options").hide();
     // $(".walletInput").hide();
     // $("#addressArea").attr("class", "row");
@@ -500,6 +567,7 @@ function toNumber(val) {
 }
 
 function UnlockWalletKeystore() {
+    var keyFile = $("#keystore_file").val();
     var password = $("#keystorewalletpass").val();
     if(password == "" || keyFile == undefined) return false;
     var buffer = fs.readFileSync(keyFile);
@@ -509,19 +577,20 @@ function UnlockWalletKeystore() {
             console.log("Opened Address: " + wallet.address);
             configs.coin = "ETH";
             configs.api = store.get("geth");
-            configs.network = ethers.networks.mainnet;
+            configs.network = ethers.networks.testnet;
             var provider = new ethers.providers.JsonRpcProvider(configs.api, configs.network);
             configs.provider = provider;
             var myWallet = wallet;
             myWallet.provider = provider;
             configs.wallet = myWallet;
             configs.address = myWallet.address;
-            console.log(configs);
+            $(".myaddress").html(configs.address);
             LoadSavedTokens();
             UpdateBalance().then(function(balance) {
                 tokenList = require('../js/tokens-eth.json');
                 LoadEthereumTransactions(configs.address).then(function(tsx) {
                     SuccessAccess();
+                    SaveTransactions(configs.address);
                     RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
                         BeginTokenLoading();
                         // render trnsactions
@@ -536,6 +605,28 @@ function UnlockWalletKeystore() {
     }
     $("#keystorewalletpass").val('');
 }
+
+
+
+
+function UseFullBalance() {
+
+    alert('plk');
+
+}
+
+
+
+function OpenQRCodeAddress(address="") {
+    if (address=="") address = configs.address;
+    QRCode.toDataURL(address, function (err, url) {
+        $('#qrcode_address').modal('show');
+        $("#qr_code_data").html(address);
+        $("#qrcode_img").attr("src", url);
+    });
+}
+
+
 
 function UnlockPrivateKey() {
     var coin = $("#unlock_coin_type option:selected").val();
@@ -567,14 +658,14 @@ function UnlockPrivateKey() {
     configs.coin = coin.toUpperCase();
     if(isBitcoin()) {
         UnlockBTC().then(function(r) {
+            SuccessAccess();
             console.log(r);
             UpdateBalance().then(function(balance) {
-                SuccessAccess();
-                LoadBitcoinTransactions().then(function(tsx) {
+                LoadBitcoinTransactions(configs.address).then(function(tsx) {
+                    RenderTransactions(tsx, 0, 12);
                     LoadUTXOs(configs.address).then(function(utxos) {
                         configs.utxos = utxos;
                     });
-                    RenderTransactions(configs.myTransactions, 0, 12);
                     // render trnsactions
                 });
             }).catch(function(err) {
@@ -610,17 +701,58 @@ function UnlockPrivateKey() {
     }
 }
 
+
+function DeleteToken(address) {
+    var newList = [];
+    $.each(configs.savedTokens, function (k, tk) {
+        if (tk.address != address) {
+            newList.push(tk);
+        }
+    });
+    var tokenObj = $("#token_"+address);
+    tokenObj.slideUp('fast', function() {
+        tokenObj.remove();
+    });
+    console.log(newList);
+    configs.savedTokens = newList;
+    store.set("saved_tokens", JSON.stringify(configs.savedTokens));
+    return newList
+}
+
+
+function AddTokenDiv(symbol, address, decimals, name, balance, after) {
+    var closeButton = "";
+    if (after) {
+        console.log(symbol + " has close");
+        closeButton = "<button type=\"button\" id=\"delete_token\" onclick=\"DeleteToken('" + address + "');\" class=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
+    }
+    var tokenObj = "<div id=\"token_" + address + "\" onclick=\"FocusOnToken('" + address + "', " + decimals + ", '" + name + "', '" + symbol + "')\" class=\"row token_obj\">" +
+        "<div class=\"col-12\"><img src=\""+CoinIcon(symbol)+"\"><h5 class=\"text-truncate\">" + name + "<span>"+toNumber(balance) + "</span>" +
+        "</h5></div>"+closeButton+"</div>";
+
+    if (after) {
+        $(tokenObj).insertAfter("#new_token_dialog_btn");
+    } else {
+        $("#tokens_available").append(tokenObj);
+    }
+}
+
+
+
+
 function BeginTokenLoading() {
     tokenWorker.postMessage({
         "address": configs.address,
         "tokens": tokenList
     });
 }
+
+
 var tkCount = 0;
 tokenWorker.onmessage = function(e) {
     tkCount++
     if(tkCount >= tokenList.length) {
-        console.log("hide now");
+        console.log("All Token Balances loaded");
         $("#tokens_loading_msg").hide();
         $("#progress_token").hide();
     }
@@ -628,18 +760,20 @@ tokenWorker.onmessage = function(e) {
     var percent = (tkCount / tokenList.length) * 100;
     $("#progress_token_load").css("width", percent + "%");
     if(e.data.balance != 0) {
-        var tokenObj = "<div id=\"token_" + e.data.symbol + "\" onclick=\"FocusOnToken('" + e.data.address + "', " + e.data.decimals + ", '" + e.data.name + "', '" + e.data.symbol + "')\" class=\"row token_obj\">\n" + "    <div class=\"col-12\">\n" +
-            "<img src=\""+CoinIcon(e.data.symbol)+"\"><h5>" + e.data.name + "<span>" +
-            toNumber(e.data.balance) + "</span></h5>" +
-            "</div>" + "</div>";
-        $("#tokens_available").append(tokenObj);
+
+        console.log(e.data.symbol+ "  has "+e.data.balance);
+
         var data = {
             address: e.data.contract,
             symbol: e.data.symbol,
             decimals: e.data.decimals,
-            name: e.data.name
+            name: e.data.name,
+            balance: e.data.balance
         };
         configs.availableTokens.push(data);
+
+        AddTokenDiv(e.data.symbol, e.data.address, e.data.decimals, e.data.name, e.data.balance, false);
+
         $("#tokens_count").html("(" + configs.availableTokens.length + ")");
     }
 };
@@ -654,6 +788,7 @@ function OpenKeystoreFile() {
         if(fileNames === undefined) return;
         keyFile = fileNames[0];
         console.log(keyFile);
+        $("#keystore_file").val(keyFile);
     });
 }
 
@@ -666,7 +801,7 @@ function UpdateTokenFees() {
     var amount = parseFloat($("#send_amount_token").val());
     var gasLimit = $("#tokengaslimit").val();
     var gasPrice = $("#tokengasprice").val();
-    if(bad(amount) || bad(gasLimit) || bad(gasPrice) || bad(amount)) {
+    if(amount<0|| bad(gasLimit) || bad(gasPrice)) {
         $(".ethavailable").html(parseFloat(configs.balance).toFixed(6));
         $(".token_spend").html(parseFloat(configs.tokenBalance).toFixed(6));
         $("#sendtokenbutton").prop("disabled", true);
@@ -716,7 +851,7 @@ function UpdateEthFees() {
         $(".ethspend").val(configs.balance);
         available = configs.balance - amount - txCost;
     }
-    if(bad(amount) || bad(gasLimit) || bad(gasPrice) || bad(amount)) {
+    if(amount < 0 || bad(gasLimit) || bad(gasPrice)) {
         $(".ethspend").html(available.toFixed(6));
         $("#sendethbutton").prop("disabled", true);
         return

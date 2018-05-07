@@ -19,13 +19,50 @@ function GetTokenBalance(contract, address) {
     });
 }
 
+
+
+
+function DownloadTransactionPage(address, page){
+    return new Promise(function(resolve, reject) {
+        var api = configs.api + "/txs/?address=" + address + "&pageNum=" + page;
+        $.get(api, function (data) {
+            resolve(data);
+        });
+    });
+}
+
+
+
+function DownloadAllBitcoinTransactions(address){
+    return new Promise(function(resolve, reject) {
+        DownloadTransactionPage(address, 0).then(function(tranxs) {
+            configs.transactions = tranxs.txs;
+
+            console.log("Loading btc transactions for pages: "+tranxs.pagesTotal);
+
+            for (i=1;i<=tranxs.pagesTotal;i++) {
+                DownloadTransactionPage(address, i).then(function(txdata) {
+                    $.each(txdata.txs, function(k, v) {
+                        configs.transactions.push(v);
+                    });
+                });
+            }
+            console.log("resolving: "+configs.transactions.length);
+            resolve(configs.transactions);
+        });
+    });
+}
+
+
+
 function LoadBitcoinTransactions(address, coin) {
     return new Promise(function(resolve, reject) {
-        var api = configs.api + "/txs/?address=" + configs.address;
-        $.get(api, function(data) {
-            btcTransactions = data;
-            allTransactions = [];
-            $.each(data.txs, function(key, val) {
+        var allTransactions = [];
+        DownloadAllBitcoinTransactions(address).then(function(trxs) {
+            console.log(trxs);
+            console.log("redneiring btc transactions: "+trxs.length);
+            $.each(configs.transactions, function(key, val) {
+                console.log(val);
                 var total = val.valueOut;
                 var confirms = val.confirmations;
                 var fees = val.fees;
@@ -58,18 +95,13 @@ function LoadBitcoinTransactions(address, coin) {
                 };
                 allTransactions.push(data);
             });
-            if(lastTransactions != undefined) {
-                console.log("last: " + lastTransactions.length + " current: " + allTransactions.length);
-            }
-            if(lastTransactions != undefined && allTransactions.length != lastTransactions.length) {
-                console.log(lastTransactions);
-                console.log("last transaction length changed!!!");
-                CheckNewTransactions(allTransactions, lastTransactions);
-            }
-            // if (callback) {
-            //     callback(allTransactions);
-            // } else {
-            //     RenderTransactions(allTransactions, 0, 16);
+            // if(lastTransactions != undefined) {
+            //     console.log("last: " + lastTransactions.length + " current: " + allTransactions.length);
+            // }
+            // if(lastTransactions != undefined && allTransactions.length != lastTransactions.length) {
+            //     console.log(lastTransactions);
+            //     console.log("last transaction length changed!!!");
+            //     CheckNewTransactions(allTransactions, lastTransactions);
             // }
             configs.myTransactions = allTransactions;
             resolve(allTransactions);
@@ -77,6 +109,41 @@ function LoadBitcoinTransactions(address, coin) {
         });
     });
 }
+
+
+
+function AddTransaction(out) {
+    if(out.in) {
+        var thisClass = "transaction_box";
+    } else {
+        var thisClass = "transaction_box_neg";
+    }
+    if(out.confirms == 0) {
+        thisClass += " pendingFlash";
+    }
+    if(out.value == 0) {
+        thisClass = "transaction_box_misc";
+        trueAmount = 0;
+    }
+    var txUrl = TransactionURL(out);
+    if(out.confirms == 0) {
+        var btn = "<button onclick=\"ViewTransaction('" + out.id + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button>";
+    } else {
+        var btn = "<button onclick=\"ViewTransaction('" + out.id + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">View</button>";
+    }
+
+    var element = "tx_" + out.id;
+    var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">\n" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + out.id.substring(0, 32) + "...</i></div>\n" + "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "<img src=\""+CoinIcon(out.symbol)+"\"></b></div>" + "        </div>";
+    $("#transactions_tab").append(html);
+}
+
+
+
+function SaveTransactions(address) {
+    var storeVar = address+"_txs";
+    store.set(storeVar, JSON.stringify(configs.transactions))
+}
+
 
 function RenderTransactions(txs, start, end) {
     // $("#transactions_tab").html('');
@@ -86,27 +153,7 @@ function RenderTransactions(txs, start, end) {
         }
         var limitedTxs = txs.slice(start, end);
         $.each(limitedTxs, function(key, out) {
-            if(out.in) {
-                var thisClass = "transaction_box";
-            } else {
-                var thisClass = "transaction_box_neg";
-            }
-            if(out.confirms == 0) {
-                thisClass += " pendingFlash";
-            }
-            if(out.value == 0) {
-                thisClass = "transaction_box_misc";
-                trueAmount = 0;
-            }
-            var txUrl = TransactionURL(out);
-            if(out.confirms == 0) {
-                var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button>";
-            } else {
-                var btn = "<button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">View</button>";
-            }
-            var element = "tx_" + out.id;
-            var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">\n" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + out.id.substring(0, 32) + "...</b></div>\n" + "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "<img src=\""+CoinIcon(out.symbol)+"\"></b></div>" + "        </div>";
-            $("#transactions_tab").append(html);
+            AddTransaction(out);
         });
         lastTrxScroll = end;
         FadeInTransactions();
@@ -175,23 +222,24 @@ function LoadEthereumTransactions(addr) {
             var url = "http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=" + addr + "&startblock=0&endblock=99999999&sort=desc";
         }
         $.get(url, function(data) {
+            configs.transactions = data.result;
             $.each(data.result, function(key, val) {
                 var incoming = false;
                 var symbol = "ETH";
                 var txValue = val.value * (0.1 ** 18);
                 var decimals = 18;
                 if(val.to.toLowerCase() == addr.toLowerCase()) incoming = true;
-                if(val.input != "0x") {
-                    var method = val.input.slice(0, 10);
-                    if(method == "0xa9059cbb") {
-                        var tokenValues = ethers.utils.bigNumberify("0x" + val.input.slice(74, 138));
-                        var tokensToAddress = ethers.utils.getAddress("0x" + val.input.slice(34, 74));
-                        if(tokensToAddress == addr) incoming = true;
+                if(val.input != "0x" && val.input!=undefined) {
+
+                    var method = GetDataMethod(val.input);
+                    if(method == "transfer") {
+                        var transfer = DecodeData(val.input);
+                        if(transfer.to == addr) incoming = true;
                         var thisTxToken = FindToken(val.to);
                         if(thisTxToken != undefined) {
                             symbol = thisTxToken.symbol;
                             decimals = thisTxToken.decimals;
-                            txValue = tokenValues * (0.1 ** decimals);
+                            txValue = transfer.value * (0.1 ** decimals);
                         }
                     }
                 }
@@ -212,6 +260,24 @@ function LoadEthereumTransactions(addr) {
     });
 }
 
+
+function GetDataMethod(data) {
+    var value;
+    if (data.length<138) value = "eth";
+    switch (data.slice(0, 10)) {
+        case "0xa9059cbb":
+            value = "transfer";
+            break;
+    }
+    return value;
+}
+
 function DecodeData(data) {
-    var method = val.input.slice(0, 10);
+    var method = GetDataMethod(data);
+    if(method == "transfer") {
+        var tokenValues = ethers.utils.bigNumberify("0x" + data.slice(74, 138));
+        var tokensToAddress = ethers.utils.getAddress("0x" + data.slice(34, 74));
+        var data = {method: method, to: tokensToAddress, value: tokenValues};
+        return data
+    }
 }

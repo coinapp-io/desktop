@@ -7,6 +7,7 @@ if(store.get("saved_tokens") == undefined) {
     configs.savedTokens = $.parseJSON(store.get("saved_tokens"));
 }
 $(".about").html("CoinApp " + store.get('version'));
+$("#settings_version").html("v"+store.get('version'));
 LoadSettings();
 
 function LoadSettings() {
