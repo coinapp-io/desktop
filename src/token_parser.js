@@ -1,5 +1,6 @@
 var tokenList = [];
 var address;
+var available = [];
 var testest = [];
 
 
@@ -7,6 +8,7 @@ onmessage = function(e) {
     console.log(e);
     tokenList = e.data.tokens;
     address = e.data.address;
+    available = e.data.available;
     ParseTokenList();
 };
 
@@ -47,6 +49,12 @@ function LoadToken(i, reversed) {
 }
 
 function ParseTokenList() {
+    if (available.length!=0) {
+        for (i = 0; i <= available.length; i++) {
+            var obj = available[i];
+            postMessage(obj);
+        }
+    }
     if (tokenList.length > 0) {
         LoadToken(0, false);
     }

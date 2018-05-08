@@ -35,23 +35,68 @@ function DownloadTransactionPage(address, page){
 
 function DownloadAllBitcoinTransactions(address){
     return new Promise(function(resolve, reject) {
+        var transactions = [];
+        var myTransactions = [];
         DownloadTransactionPage(address, 0).then(function(tranxs) {
-            configs.transactions = tranxs.txs;
-
-            console.log("Loading btc transactions for pages: "+tranxs.pagesTotal);
-
+            $.each(tranxs.txs, function(k, v) {
+                transactions.push(v);
+                var obj = TransactionToObject(v);
+                myTransactions.push(obj);
+            });
             for (i=1;i<=tranxs.pagesTotal;i++) {
                 DownloadTransactionPage(address, i).then(function(txdata) {
                     $.each(txdata.txs, function(k, v) {
-                        configs.transactions.push(v);
+                        transactions.push(v);
+                        var obj = TransactionToObject(v);
+                        myTransactions.push(obj);
                     });
                 });
             }
-            console.log("resolving: "+configs.transactions.length);
-            resolve(configs.transactions);
+            var out = {myTransactions: myTransactions, transactions: transactions};
+            resolve(out);
         });
     });
 }
+
+
+
+
+
+function TransactionToObject(val) {
+    var total = val.valueOut;
+    var confirms = val.confirmations;
+    var fees = val.fees;
+    var time = val.time;
+    var txId = val.txid;
+    var truVal = 0;
+    var incoming = true;
+    var inAddresses = [];
+    $.each(val.vin, function(key, inn) {
+        inAddresses.push(inn.addr);
+    });
+    if($.inArray(configs.address, inAddresses) !== -1) {
+        incoming = false;
+    }
+    $.each(val.vout, function(key, out) {
+        if(incoming) {
+            if($.inArray(configs.address, out.scriptPubKey.addresses) !== -1) truVal += parseFloat(out.value);
+        } else {
+            if($.inArray(configs.address, out.scriptPubKey.addresses) === -1) truVal += parseFloat(out.value);
+        }
+    });
+    data = {
+        id: txId,
+        time: time,
+        value: truVal,
+        in : incoming,
+        confirms: confirms,
+        symbol: configs.coin,
+        decimals: 8
+    };
+    return data;
+}
+
+
 
 
 
@@ -59,41 +104,41 @@ function LoadBitcoinTransactions(address, coin) {
     return new Promise(function(resolve, reject) {
         var allTransactions = [];
         DownloadAllBitcoinTransactions(address).then(function(trxs) {
-            console.log(trxs);
+            configs.transactions = trxs;
             console.log("redneiring btc transactions: "+trxs.length);
-            $.each(configs.transactions, function(key, val) {
-                console.log(val);
-                var total = val.valueOut;
-                var confirms = val.confirmations;
-                var fees = val.fees;
-                var time = val.time;
-                var txId = val.txid;
-                var truVal = 0;
-                var incoming = true;
-                var inAddresses = [];
-                $.each(val.vin, function(key, inn) {
-                    inAddresses.push(inn.addr);
-                });
-                if($.inArray(configs.address, inAddresses) !== -1) {
-                    incoming = false;
-                }
-                $.each(val.vout, function(key, out) {
-                    if(incoming) {
-                        if($.inArray(configs.address, out.scriptPubKey.addresses) !== -1) truVal += parseFloat(out.value);
-                    } else {
-                        if($.inArray(configs.address, out.scriptPubKey.addresses) === -1) truVal += parseFloat(out.value);
-                    }
-                });
-                data = {
-                    id: txId,
-                    time: time,
-                    value: truVal,
-                    in : incoming,
-                    confirms: confirms,
-                    symbol: configs.coin,
-                    decimals: 8
-                };
-                allTransactions.push(data);
+            $.each(trxs, function(key, val) {
+                // console.log(val);
+                // var total = val.valueOut;
+                // var confirms = val.confirmations;
+                // var fees = val.fees;
+                // var time = val.time;
+                // var txId = val.txid;
+                // var truVal = 0;
+                // var incoming = true;
+                // var inAddresses = [];
+                // $.each(val.vin, function(key, inn) {
+                //     inAddresses.push(inn.addr);
+                // });
+                // if($.inArray(configs.address, inAddresses) !== -1) {
+                //     incoming = false;
+                // }
+                // $.each(val.vout, function(key, out) {
+                //     if(incoming) {
+                //         if($.inArray(configs.address, out.scriptPubKey.addresses) !== -1) truVal += parseFloat(out.value);
+                //     } else {
+                //         if($.inArray(configs.address, out.scriptPubKey.addresses) === -1) truVal += parseFloat(out.value);
+                //     }
+                // });
+                // data = {
+                //     id: txId,
+                //     time: time,
+                //     value: truVal,
+                //     in : incoming,
+                //     confirms: confirms,
+                //     symbol: configs.coin,
+                //     decimals: 8
+                // };
+                // allTransactions.push(data);
             });
             // if(lastTransactions != undefined) {
             //     console.log("last: " + lastTransactions.length + " current: " + allTransactions.length);
@@ -103,9 +148,9 @@ function LoadBitcoinTransactions(address, coin) {
             //     console.log("last transaction length changed!!!");
             //     CheckNewTransactions(allTransactions, lastTransactions);
             // }
-            configs.myTransactions = allTransactions;
+            // configs.myTransactions = allTransactions;
+            // lastTransactions = allTransactions;
             resolve(allTransactions);
-            lastTransactions = allTransactions;
         });
     });
 }
@@ -210,7 +255,11 @@ function FindToken(address) {
 $('#left_tabs').on('scroll', function() {
     if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 10) {
         var nextStep = lastTrxScroll + 6;
-        RenderTransactions(allTransactions, lastTrxScroll + 1, nextStep)
+        if (lastTrxScroll > configs.myTransactions.length) {
+            return false;
+        }
+        console.log("rendering transactions", lastTrxScroll+1, nextStep, "out of: ", configs.myTransactions.length);
+        RenderTransactions(configs.myTransactions, lastTrxScroll + 1, nextStep)
     }
 });
 

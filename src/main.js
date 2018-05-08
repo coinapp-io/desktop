@@ -31,6 +31,10 @@ ipcRenderer.on('completedDownload', function(event, info) {
     ShowNotification("<button onclick=\"RestartApp()\" id=\"restart_app\" type=\"button\" class=\"btn btn-sm btn-primary\">Update Complete Restart CoinApp</button>", 60000);
 });
 
+// https://raw.githubusercontent.com/coinapp-io/desktop/master/
+$("#updates").load("../UPDATES.txt");
+
+
 function CloseApp() {
     ipcRenderer.send('closeApplication');
 }
@@ -58,10 +62,6 @@ setInterval(function() {
     if(configs.wallet) UpdateBalance();
 }, 5000);
 
-
-$(".updateable_token_ether").on("input", UpdateTokenFees);
-
-$(".updateable_ether").on("input", UpdateEthFees);
 
 function isEthAddress(address) {
     if(!/^(0x)?[0-9a-f]{40}$/i.test(address)) {

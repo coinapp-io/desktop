@@ -103,7 +103,11 @@ function createWindow () {
       width: 840,
       height: 560,
       webPreferences: {
-          preload: __dirname+'/js/constants.js'
+          // allowRunningInsecureContent: false,
+          // experimentalFeatures: false,
+          // webSecurity: true,
+          // nodeIntegration: false,
+          preload: __dirname+'/src/constants.js'
       }
   });
 

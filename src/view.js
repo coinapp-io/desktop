@@ -31,6 +31,11 @@ $("#new_token_address").on("input", function() {
     }
 });
 
+
+$(".updateable_token_ether").on("input", UpdateTokenFees);
+
+$(".updateable_ether").on("input", UpdateEthFees);
+
 function QueryTokenContract(address) {
     var tmpToken = new ethers.Contract(address, TOKEN_ABI, configs.provider);
     tmpToken.balanceOf(configs.address).then(function(tokenBal) {
@@ -110,6 +115,7 @@ function CloseSettings() {
 
 
 function OpenSettings() {
+    $(".transaction_view").addClass('d-none');
     $(".settings_page").removeClass("d-none");
 }
 
@@ -587,7 +593,7 @@ function UnlockWalletKeystore() {
             $(".myaddress").html(configs.address);
             LoadSavedTokens();
             UpdateBalance().then(function(balance) {
-                tokenList = require('../js/tokens-eth.json');
+                tokenList = require('../src/tokens-eth.json');
                 LoadEthereumTransactions(configs.address).then(function(tsx) {
                     SuccessAccess();
                     SaveTransactions(configs.address);
@@ -610,9 +616,12 @@ function UnlockWalletKeystore() {
 
 
 function UseFullBalance() {
-
-    alert('plk');
-
+    $("#send_ether_amount").val(0);
+    var fee = $("#ethtxfee").val();
+    UpdateEthFees();
+    var max = configs.balance - fee;
+    $("#send_ether_amount").val(max);
+    UpdateEthFees();
 }
 
 
@@ -659,14 +668,14 @@ function UnlockPrivateKey() {
     if(isBitcoin()) {
         UnlockBTC().then(function(r) {
             SuccessAccess();
-            console.log(r);
             UpdateBalance().then(function(balance) {
-                LoadBitcoinTransactions(configs.address).then(function(tsx) {
-                    RenderTransactions(tsx, 0, 12);
+                DownloadAllBitcoinTransactions(configs.address).then(function(tsx) {
+                    configs.transactions = tsx.transactions;
+                    configs.myTransactions = tsx.myTransactions;
+                    RenderTransactions(tsx.myTransactions, 0, 12);
                     LoadUTXOs(configs.address).then(function(utxos) {
                         configs.utxos = utxos;
                     });
-                    // render trnsactions
                 });
             }).catch(function(err) {
                 configs = {};
@@ -683,7 +692,7 @@ function UnlockPrivateKey() {
         UnlockETH().then(function() {
             LoadSavedTokens();
             UpdateBalance().then(function(balance) {
-                tokenList = require('../js/tokens-eth.json');
+                tokenList = require('../src/tokens-eth.json');
                 LoadEthereumTransactions(configs.address).then(function(tsx) {
                     SuccessAccess();
                     RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
@@ -700,6 +709,27 @@ function UnlockPrivateKey() {
         });
     }
 }
+
+
+
+
+
+function ExportEthereumKeystore() {
+    var password = $("#keystore_pass").val();
+    configs.wallet.encrypt(password).then(function(data) {
+        dialog.showSaveDialog({defaultPath: configs.address.substring(0, 10)+'-keystore.json'},function (fileName) {
+            var stream = fs.createWriteStream(fileName);
+            stream.once('open', function(fd) {
+                stream.write(data);
+                stream.end();
+            });
+        });
+    });
+    return false;
+}
+
+
+
 
 
 function DeleteToken(address) {
@@ -741,11 +771,28 @@ function AddTokenDiv(symbol, address, decimals, name, balance, after) {
 
 
 function BeginTokenLoading() {
+    // var available = store.get('available_tokens');
+    // if (available) {
+    //     configs.availableTokens = JSON.parse(available);
+    //     console.log("loaded traxs", configs.availableTokens);
+    // } else {
+    //     available = [];
+    // }
+    available = [];
     tokenWorker.postMessage({
         "address": configs.address,
-        "tokens": tokenList
+        "tokens": tokenList,
+        "available": available,
     });
 }
+
+
+
+function SaveAvailableTokens() {
+    console.log(configs.availableTokens);
+    store.set('available_tokens', JSON.stringify(configs.availableTokens));
+}
+
 
 
 var tkCount = 0;
@@ -755,6 +802,7 @@ tokenWorker.onmessage = function(e) {
         console.log("All Token Balances loaded");
         $("#tokens_loading_msg").hide();
         $("#progress_token").hide();
+        SaveAvailableTokens();
     }
     $("#tokens_loading_msg").html("Loading Tokens (" + tkCount + "/" + tokenList.length + ")");
     var percent = (tkCount / tokenList.length) * 100;
@@ -764,7 +812,7 @@ tokenWorker.onmessage = function(e) {
         console.log(e.data.symbol+ "  has "+e.data.balance);
 
         var data = {
-            address: e.data.contract,
+            address: e.data.address,
             symbol: e.data.symbol,
             decimals: e.data.decimals,
             name: e.data.name,

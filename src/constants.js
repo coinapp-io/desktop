@@ -2,6 +2,7 @@ var ethers = require('ethers');
 var bip39 = require('bip39');
 var bitcoin = require('bitcoinjs-lib');
 var hdkey = require('ethereumjs-wallet/hdkey');
+
 const {
     shell
 } = require('electron');
@@ -19,12 +20,13 @@ const Store = require('electron-store');
 const store = new Store();
 const notifier = require('node-notifier');
 var pathjs = require('path');
-var tokenWorker = new Worker('../js/token_parser.js');
+var tokenWorker = new Worker('../src/token_parser.js');
 var QRCode = require('qrcode');
 var configs = {
     coin: "none",
     wallet: null,
     address: "",
+    nonce: 0,
     network: null,
     transactions: [],
     decimals: 18,
@@ -50,7 +52,7 @@ var ethHD;
 var xpriv;
 var usingHD;
 var path;
-var version = "0.0.1";
+var version = store.get('version');
 // WALLET VARS
 var myWallet;
 var providers = ethers.providers;

@@ -559,13 +559,12 @@
 
 
 
-
 <div class="settings_page d-none">
 
     <div class="row">
 
     <div class="col-5 mt-2 ml-3">
-        <img src="../images/banner.png" style="height: 60px;">
+        <img onclick="OpenURL('https://coinapp.io')" src="../images/banner.png" style="height: 60px;">
         <span id="settings_version">v.0.0.22</span>
     </div>
 
@@ -578,7 +577,7 @@
                 <a class="nav-link" id="export_functions_tab" data-toggle="tab" href="#export_functions" role="tab" aria-controls="export_functions" aria-selected="false">Export</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Updates</a>
+                <a class="nav-link" id="updates-tab" data-toggle="tab" href="#updates" role="tab" aria-controls="updates" aria-selected="false">Updates</a>
             </li>
             <li class="nav-item" onclick="CloseSettings()">
                 <a class="nav-link" id="close_settings" href="#">Close</a>
@@ -588,7 +587,7 @@
 
 
         <div class="col-12">
-            <div class="tab-content" id="myTabContent">
+            <div class="tab-content" id="myTabContent" style="height: 470px;">
                 <div class="tab-pane fade show active" id="my_settings" role="tabpanel" aria-labelledby="my_settings">
 
                     <div class="col-12">
@@ -650,10 +649,43 @@
 
 
                 <div class="tab-pane fade" id="export_functions" role="tabpanel" aria-labelledby="export_functions">
-                    You can't export your wallet yet!
+
+
+                    <div class="row">
+
+                    <div class="col-6">
+                        <h5>Export Wallet Data</h5>
+                        You can export your wallet's transaction data for offline use. Exporting your Wallet Data does NOT include any private keys.
+                        The exported JSON file includes your transactions, nonce, balances, and token balance so you can create transactions offline.<br>
+                        <button id="export_btc_data" onclick="ExportWallet()" class="btn btn-primary mt-2">Export Wallet Data</button>
+                    </div>
+
+                    <div class="col-6">
+                        <h5>Export Keystore Wallet</h5>
+                        One of the safest ways to store your Ethereum and Tokens. Private keys are not recommended! Use a Keystore file for maximum security.
+                        <form class="form-inline mt-3">
+                            <div class="form-group mx-sm-3 mb-2">
+                                <label for="inputPassword2" class="sr-only">New Password</label>
+                                <input type="password" class="form-control" id="keystore_pass" placeholder="Password">
+                            </div>
+                            <button type="submit" onclick="ExportEthereumKeystore()" class="btn btn-primary mb-2">Export</button>
+                        </form>
+
+                    </div>
+
+                    <div class="col-6 mt-3">
+                        <h5>Import Wallet Data</h5>
+                        If you have a CoinApp Wallet Data JSON file you can upload it below to view your account history offline and also have the ability to
+                        create offline transactions.<br>
+                        <button id="import_wallet_data" onclick="ImportWalletData()" class="btn btn-primary mt-2">Import Wallet Data</button>
+                    </div>
+
+                    </div>
+
 
                 </div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <div class="tab-pane fade" id="updates" role="tabpanel" aria-labelledby="updates-tab">
+
                     There will be updates from Github here.
 
                 </div>
@@ -664,8 +696,6 @@
 
 
 </div>
-
-
 
 
 <span class="block_number d-none">Block #5352546</span>
@@ -683,15 +713,17 @@
     }
 </script>
 
-<script src="../js/jquery.min.js"></script>
-<script src="../js/bootstrap.min.js"></script>
-<script src="../js/constants.js"></script>
-<script src="../js/phrase.js"></script>
-<script src="../js/abi.js"></script>
-<script src="../js/settings.js"></script>
-<script src="../js/transactions.js"></script>
-<script src="../js/view.js"></script>
-<script src="../js/tokens.js"></script>
-<script src="../js/main.js"></script>
+<script src="../src/jquery.min.js"></script>
+<script src="../src/bootstrap.min.js"></script>
+<script src="../src/abi.js"></script>
+<script src="../src/constants.js"></script>
+<script src="../src/phrase.js"></script>
+<script src="../src/exporter.js"></script>
+<script src="../src/settings.js"></script>
+<script src="../src/transactions.js"></script>
+<script src="../src/view.js"></script>
+<script src="../src/tokens.js"></script>
+<script src="../src/main.js"></script>
+
 
 </html>

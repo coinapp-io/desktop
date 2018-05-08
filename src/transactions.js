@@ -47,25 +47,25 @@ function CryptoBalance(address) {
 }
 
 function NotifyPendingTransactions(pending) {
-    LoadBitcoinTransactions(myAddress, CryptoName()).then(function(txs) {
-        $.each(txs, function(key, tx) {
-            if(tx.confirms == 0) {
-                if(pending > 0) {
-                    var outTxt = "You received " + tx.value + " " + CryptoName() + "! Hash: " + tx.id;
-                    PopupNotification("Received " + tx.value + " " + CryptoName(), outTxt);
-                    ShowNotification("You received " + tx.value + " " + CryptoName() + "!");
-                }
-            } else if(tx.confirms == 1) {
-                if(pending == 0) {
-                    outTxt = tx.value + " " + CryptoName() + " is now confirmed!";
-                    PopupNotification("Confirmed Transaction", outTxt);
-                    ShowNotification(tx.value + " " + CryptoName() + " Confirmed!");
-                }
-            }
-        });
-        RenderTransactions(txs, 0, 16);
-        lastTransactions = txs;
-    });
+    // LoadBitcoinTransactions(myAddress, CryptoName()).then(function(txs) {
+    //     $.each(txs, function(key, tx) {
+    //         if(tx.confirms == 0) {
+    //             if(pending > 0) {
+    //                 var outTxt = "You received " + tx.value + " " + CryptoName() + "! Hash: " + tx.id;
+    //                 PopupNotification("Received " + tx.value + " " + CryptoName(), outTxt);
+    //                 ShowNotification("You received " + tx.value + " " + CryptoName() + "!");
+    //             }
+    //         } else if(tx.confirms == 1) {
+    //             if(pending == 0) {
+    //                 outTxt = tx.value + " " + CryptoName() + " is now confirmed!";
+    //                 PopupNotification("Confirmed Transaction", outTxt);
+    //                 ShowNotification(tx.value + " " + CryptoName() + " Confirmed!");
+    //             }
+    //         }
+    //     });
+    //     RenderTransactions(txs, 0, 16);
+    //     lastTransactions = txs;
+    // });
 }
 
 function CheckNewTransactions(newTranx, oldTranx) {
@@ -82,9 +82,9 @@ function CheckNewTransactions(newTranx, oldTranx) {
     PopupNotification("Received " + CryptoName(), "You just received 1.12345 BTC");
     console.log(allTransactions.length);
     console.log(allTransactions);
-    LoadBitcoinTransactions(myAddress, CryptoName(), function(transactions) {
-        RenderTransactions(transactions, 0, 16);
-    });
+    // DownloadAllBitcoinTransactions(myAddress, CryptoName(), function(transactions) {
+    //     RenderTransactions(transactions, 0, 16);
+    // });
 }
 
 function CheckForPendingETH() {
@@ -190,6 +190,7 @@ function ViewBitcoinTransaction(id) {
 
     var symbol = "ETH";
     var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
+    var coinLink = symbol;
     if (method=="transfer") {
         var transfer = DecodeData(tx.input);
         to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
@@ -197,6 +198,7 @@ function ViewBitcoinTransaction(id) {
         coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
         symbol = tk.symbol;
         value = transfer.value * (0.1 ** tk.decimals);
+        coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/"+tx.to+"')\">"+symbol+"</a>";
     }
 
     $("#tx_view_hash").html(tx_link);
@@ -204,7 +206,7 @@ function ViewBitcoinTransaction(id) {
     $("#tx_view_height").html(tx.blockNumber);
     $("#tx_view_to").html(to_link);
     $("#tx_view_from").html(from_link);
-    $("#tx_view_value").html(toNumber(value)+ " "+symbol+coinicon);
+    $("#tx_view_value").html(toNumber(value)+ " "+coinLink+coinicon);
     $("#tx_view_limit").html(tx.gas);
     $("#tx_view_used").html(tx.gasUsed);
     $("#tx_view_price").html(tx.gasPrice);
@@ -238,6 +240,7 @@ function ViewEthereumTransaction(id) {
 
     var symbol = "ETH";
     var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
+    var coinLink = symbol;
     if (method=="transfer") {
         var transfer = DecodeData(tx.input);
         to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
@@ -245,21 +248,23 @@ function ViewEthereumTransaction(id) {
         coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
         symbol = tk.symbol;
         value = transfer.value * (0.1 ** tk.decimals);
+        coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/"+tx.to+"')\">"+symbol+"</a>";
     }
+
+    var gweiGasPrice = parseInt(tx.gasPrice * (0.1 ** 9));
 
     $("#tx_view_hash").html(tx_link);
     $("#tx_view_status").html(tx_status);
     $("#tx_view_height").html(tx.blockNumber);
     $("#tx_view_to").html(to_link);
     $("#tx_view_from").html(from_link);
-    $("#tx_view_value").html(toNumber(value)+ " "+symbol+coinicon);
+    $("#tx_view_value").html(toNumber(value)+ " "+coinLink+coinicon);
     $("#tx_view_limit").html(tx.gas);
     $("#tx_view_used").html(tx.gasUsed);
-    $("#tx_view_price").html(tx.gasPrice);
+    $("#tx_view_price").html(gweiGasPrice+" gwei");
     $("#tx_view_fee").html(fee.toFixed(8)+" ETH");
     $("#tx_view_nonce").html(tx.nonce);
-    var method = GetDataMethod(tx.input);
-    $("#tx_view_method").val(method);
+    $("#tx_view_method").val(GetDataMethod(tx.input));
     $("#tx_view_data").val(tx.input);
 }
 
@@ -456,6 +461,18 @@ function SendEthereum() {
 function toBigInt(val) {
     return ethers.utils.bigNumberify(parseInt(val).toString())
 }
+
+
+function GetNonce() {
+    return new Promise(function(resolve, reject) {
+        configs.wallet.getTransactionCount('pending').then(function (nonce) {
+            configs.nonce = nonce;
+            resolve(nonce);
+        });
+    });
+}
+
+
 
 function SendToken() {
     var to = $('#send_to_token').val();

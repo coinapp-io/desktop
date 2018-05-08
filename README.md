@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <b>CoinApp - A Simple Cryptocurrency Wallet</b><br>
+  <b>CoinApp.io - A Simple Cryptocurrency Wallet</b><br>
   <a href="https://github.com/coinapp-io/desktop/releases">Windows</a> |
   <a href="https://github.com/coinapp-io/desktop/releases">Mac</a> |
   <a href="https://github.com/coinapp-io/desktop/releases">Linux</a>
