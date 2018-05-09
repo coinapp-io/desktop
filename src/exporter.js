@@ -108,7 +108,6 @@ function ParseBTCWalletData() {
 
                 resolve(exporter);
 
-
                 });
             });
         });

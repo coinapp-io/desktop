@@ -22,6 +22,7 @@ const notifier = require('node-notifier');
 var pathjs = require('path');
 var tokenWorker = new Worker('../src/token_parser.js');
 var QRCode = require('qrcode');
+var BigNumber = require('bignumber.js');
 var configs = {
     coin: "none",
     wallet: null,
@@ -36,6 +37,7 @@ var configs = {
     tokenBalance: "0.0",
     bigTokenBalance: 0,
     tokenDecimals: 0,
+    block: 0,
     api: "",
     provider: null,
     myTransactions: [],

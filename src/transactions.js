@@ -110,7 +110,7 @@ function CheckForPendingETH() {
                     if(tx.from == myAddress || tx.to == myAddress) {
                         pendingEthTransaction.push(tx.hash);
                         $("#pending_amount").html(pendBal.toFixed(6) + " Pending");
-                        WaitForTransaction(tx.hash, function(hash) {
+                        WaitForTransaction(tx.hash).then(function(hash) {
                             ShowNotification(hash + " Confirmed")
                         });
                     }
@@ -121,12 +121,51 @@ function CheckForPendingETH() {
     });
 }
 
-function WaitForTransaction(hash, callback) {
-    configs.provider.once(hash, function(transaction) {
-        console.log('Transaction Minded: ' + transaction.hash);
-        callback(transaction.hash);
+
+
+function RemovePendingTransaction(hash) {
+    $("#tx_"+hash).removeClass("pendingFlash");
+    $("#tx_"+hash+" button").html("View");
+    var pending = [];
+    $.each(configs.pendingTransactions, function(k, v) {
+        if (v!=hash) {
+            pending.push(v);
+        }
+    });
+    configs.pendingTransactions = pending;
+}
+
+
+function WaitForTransaction(hash) {
+    return new Promise(function(resolve, reject) {
+        configs.provider.once(hash, function(transaction) {
+            console.log('Transaction Minded: ' + transaction.hash);
+            resolve(transaction.hash);
+        });
     });
 }
+
+
+
+function OnBitcoinBlock() {
+    setInterval(function(){
+        var pendingapi = configs.api + "/status?q=getInfo";
+        $.get(pendingapi, function(res, status) {
+            var blockNumber = res.info.blocks;
+
+            if (blockNumber != configs.block) {
+                $(".block_number").html("Block #" + blockNumber);
+                $(".block_number").css("color", "#979797");
+                setTimeout(function () {
+                    $(".block_number").css("color", "#dadada");
+                }, 300);
+                configs.block = blockNumber;
+            }
+        });
+    },10000);
+}
+
+
 
 function OnEthereumBlock(callback) {
     configs.provider.on('block', function(blockNumber) {
@@ -163,7 +202,8 @@ function CloseTransactionView() {
 
 function ViewTransaction(id) {
     if (isBitcoin()) {
-        OpenBlockchainTx(id, configs.coin)
+        // OpenBlockchainTx(id, configs.coin)
+        ViewBitcoinTransaction(id);
     } else {
         ViewEthereumTransaction(id)
     }
@@ -173,48 +213,40 @@ function ViewTransaction(id) {
 
 function ViewBitcoinTransaction(id) {
     var tx = FindBTCTransaction(id);
+
+    console.log(tx);
+
     $(".transaction_view").removeClass('d-none');
-    var fee = tx.fees;
-    var value = tx.valueOut;
-    var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/"+id+"')\">"+id+"</a>";
-    var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx+"')\">"+tx+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.to+"');\" src=\"../images/icons/qrcode.png\">";
-    var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx+"')\">"+tx+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.from+"');\" src=\"../images/icons/qrcode.png\">";
+    $("#trx_view_inputs").html('');
+    $("#trx_view_outputs").html('');
 
-    if (tx.txreceipt_status==1) {
-        var tx_status = "<span class='text-success'>Success</span>";
-    } else {
-        var tx_status = "<span class='text-danger'>Error</span>";
-    }
+    $.each(tx.vin, function(k, inn) {
+        var color = "secondary";
+        if (configs.address == inn.addr) {
+            color = "danger";
+        }
+        var box = "<div class=\"alert alert-"+color+"\" role=\"alert\">"+inn.addr.substring(0, 12)+"...<span class=\"float-right\">"+toNumber(inn.value)+"</span></div>";
+        $("#trx_view_inputs").append(box);
+    });
 
-    var method = GetDataMethod(tx.input);
+    $.each(tx.vout, function(k, vout) {
+        var color = "secondary";
+        if (configs.address == vout.scriptPubKey.addresses[0]) {
+            color = "success";
+        }
+        var box = "<div class=\"alert alert-"+color+"\" role=\"alert\">"+vout.scriptPubKey.addresses[0].substring(0, 12)+"...<span class=\"float-right\">"+toNumber(vout.value)+"</span></div>";
+        $("#trx_view_outputs").append(box);
+    });
 
-    var symbol = "ETH";
-    var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
-    var coinLink = symbol;
-    if (method=="transfer") {
-        var transfer = DecodeData(tx.input);
-        to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
-        var tk = FindToken(tx.to);
-        coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
-        symbol = tk.symbol;
-        value = transfer.value * (0.1 ** tk.decimals);
-        coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/"+tx.to+"')\">"+symbol+"</a>";
-    }
+    var url = TransactionURL({symbol: configs.coin, id: tx.txid});
+    var tx_link = "<a href=\"#\" onclick=\"OpenURL('"+url+"')\">"+tx.txid+"</a>";
 
     $("#tx_view_hash").html(tx_link);
-    $("#tx_view_status").html(tx_status);
-    $("#tx_view_height").html(tx.blockNumber);
-    $("#tx_view_to").html(to_link);
-    $("#tx_view_from").html(from_link);
-    $("#tx_view_value").html(toNumber(value)+ " "+coinLink+coinicon);
-    $("#tx_view_limit").html(tx.gas);
-    $("#tx_view_used").html(tx.gasUsed);
-    $("#tx_view_price").html(tx.gasPrice);
-    $("#tx_view_fee").html(fee.toFixed(8)+" ETH");
-    $("#tx_view_nonce").html(tx.nonce);
-    var method = GetDataMethod(tx.input);
-    $("#tx_view_method").val(method);
-    $("#tx_view_data").val(tx.input);
+    $("#tx_view_status").html(tx.confirmations+" confirmations");
+    $("#tx_view_height").html(tx.blockheight);
+    $("#tx_view_value").html(toNumber(tx.valueOut)+" "+configs.coin);
+    $("#tx_view_fee").html(tx.fees+" "+configs.coin);
+
 }
 
 
@@ -423,6 +455,7 @@ function SendEthereum() {
         SendCoins(to, BTCamount, thisTxfee).then(function(raw) {
             BroadcastTransaction(raw).then(function(hash) {
                 NewTransactionView(hash.txid, amount, to);
+                configs.pendingTransactions.push(hash.txid);
             }).catch(function(e) {
                 console.error(e);
                 ShowNotification(e);
@@ -447,16 +480,26 @@ function SendEthereum() {
             console.log("raw tranaction: " + rawTrx);
             configs.provider.sendTransaction(rawTrx).then(function(hash) {
                 NewTransactionView(hash, amount, to);
-                pendingEthTransaction.push(hash);
-                WaitForTransaction(hash, function(hash) {
+                ReduceBalance(amount);
+                configs.pendingTransactions.push(hash);
+                WaitForTransaction(hash).then(function(hash) {
+                    RemovePendingTransaction(hash);
                     ShowNotification(hash + " Confirmed")
                 });
-                AddPendingTransaction(hash, amount, "ETH");
                 // UpdateBalance();
             });
         });
     }
 }
+
+
+function ReduceBalance(amount) {
+    configs.pendingBalance = configs.balance - amount;
+    splits = configs.pendingBalance.toString().split(".");
+    if(!splits[1]) splits[1] = "0";
+    $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
+}
+
 
 function toBigInt(val) {
     return ethers.utils.bigNumberify(parseInt(val).toString())
@@ -511,7 +554,7 @@ function SendToken() {
                 PopupNotification("Transaction Sent", "You sent " + amount + " " + configs.tokenSymbol);
                 AddPendingTransaction(txid.hash, amount, configs.tokenSymbol);
                 configs.pendingTransactions.push(txid.hash);
-                WaitForTransaction(txid.hash, function(hash) {
+                WaitForTransaction(txid.hash).then(function(hash) {
                     ShowNotification(hash + " Confirmed");
                 });
                 UpdateBalance();

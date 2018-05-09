@@ -34,7 +34,7 @@ $("#new_token_address").on("input", function() {
 
 $(".updateable_token_ether").on("input", UpdateTokenFees);
 
-$(".updateable_ether").on("input", UpdateEthFees);
+$(".updateable_ether").on("input change", UpdateEthFees);
 
 function QueryTokenContract(address) {
     var tmpToken = new ethers.Contract(address, TOKEN_ABI, configs.provider);
@@ -174,7 +174,11 @@ function QuickBTCFee(amount, price) {
         total += sats;
     });
     const satoshi = feeutil.p2pkh_tx_calc_fee(usingUtxos.length, 2);
-    return parseFloat(satoshi * (0.1 ** 8)).toFixed(8)
+
+    var amount = new BigNumber(satoshi);
+    var pow = new BigNumber(0.1).pow(8)
+    amount = amount.multipliedBy(pow);
+    return amount.toString()
 }
 
 function TransactionFee(utxos) {
@@ -219,9 +223,7 @@ function SendCoins(to_address, send_amount, tranx_fee) {
     return new Promise(function(resolve, reject) {
         var tx = new bitcoin.TransactionBuilder(configs.network);
         CryptoBalance(configs.address).then(function(bal) {
-            console.log("tx bal: " + bal);
             LoadUTXOs(configs.address).then(function(utxos) {
-                console.log(utxos);
                 $.each(utxos, function(key, out) {
                     tx.addInput(out.txid, out.vout);
                 });
@@ -239,7 +241,6 @@ function SendCoins(to_address, send_amount, tranx_fee) {
                 $.each(utxos, function(key, out) {
                     tx.sign(key, configs.wallet);
                 });
-                console.log(tx);
                 var tx_hex = tx.build().toHex();
                 console.log("raw: " + tx_hex);
                 resolve(tx_hex);
@@ -349,9 +350,15 @@ function FocusOnToken(token, decimals, name, symbol) {
     configs.tokenDecimals = decimals;
     configs.tokenSymbol = symbol;
     tokenContract.balanceOf(configs.address).then(function(tokenBal) {
-        configs.tokenBalance = parseInt(tokenBal) * (0.1 ** decimals);
+        var bal = new BigNumber(tokenBal.toString());
+        var pow = new BigNumber(0.1).pow(decimals);
+        bal = bal.multipliedBy(pow);
+        configs.tokenBalance = bal.toString();
         configs.bigTokenBalance = tokenBal;
-        var split = parseFloat(configs.tokenBalance).toFixed(4).split(".");
+        var split = configs.tokenBalance.split(".");
+        if (!split[1]) {
+            split[1] = "000";
+        }
         $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
     });
     $(".transaction_view").addClass('d-none');
@@ -463,6 +470,8 @@ function SuccessAccess() {
         $("#crypto_gas_price").remove();
         DefaultTxFees();
         // $("#ethtxfee").prop("readonly", false);
+        $(".block_number").removeClass("d-none");
+        OnBitcoinBlock();
     } else {
         $(".block_number").removeClass("d-none");
         OnEthereumBlock();
@@ -568,9 +577,15 @@ function isBitcoin() {
 }
 
 function toNumber(val) {
-    var fixed = parseFloat(val).toFixed(6);
+    var fixed = parseFloat(val).toFixed(8);
     return parseFloat(fixed.toString());
 }
+
+
+function toBigNumber(val) {
+    return new BigNumber(val.toString());
+}
+
 
 function UnlockWalletKeystore() {
     var keyFile = $("#keystore_file").val();
@@ -614,16 +629,20 @@ function UnlockWalletKeystore() {
 
 
 
-
 function UseFullBalance() {
     $("#send_ether_amount").val(0);
     var fee = $("#ethtxfee").val();
-    UpdateEthFees();
-    var max = configs.balance - fee;
-    $("#send_ether_amount").val(max);
+    var max = new BigNumber(configs.balance.toString()).minus(fee);
+    $("#send_ether_amount").val(max.toString());
     UpdateEthFees();
 }
 
+
+function UseFullTokenBalance() {
+    var max = new BigNumber(configs.tokenBalance.toString());
+    $("#send_amount_token").val(max.toString());
+    UpdateTokenFees();
+}
 
 
 function OpenQRCodeAddress(address="") {
@@ -846,22 +865,22 @@ function ConfirmButton(elem) {
 }
 
 function UpdateTokenFees() {
-    var amount = parseFloat($("#send_amount_token").val());
+    var amount = $("#send_amount_token").val();
     var gasLimit = $("#tokengaslimit").val();
     var gasPrice = $("#tokengasprice").val();
+    var fee = CalculateTXFee(gasLimit, gasPrice);
+    var availableTokens = new BigNumber(configs.tokenBalance);
     if(amount<0|| bad(gasLimit) || bad(gasPrice)) {
-        $(".ethavailable").html(parseFloat(configs.balance).toFixed(6));
-        $(".token_spend").html(parseFloat(configs.tokenBalance).toFixed(6));
+        $(".ethavailable").html(configs.balance.toString());
+        $(".token_spend").html(configs.tokenBalance.toString());
         $("#sendtokenbutton").prop("disabled", true);
         return
     }
-    var availableTokens = configs.tokenBalance - amount;
-    $(".token_spend").html(availableTokens.toFixed(6));
-    var price = parseInt(gasPrice) * 0.000000001;
-    var txCost = gasLimit * price;
-    var available = configs.balance - txCost;
-    $("#tokentxfee").val(txCost.toFixed(6));
-    $(".ethavailable").html(available.toFixed(6));
+    availableTokens = availableTokens.minus(amount);
+    $(".token_spend").html(availableTokens.toString());
+    var available = new BigNumber(configs.balance.toString()).minus(fee);
+    $("#tokentxfee").val(fee.toString());
+    $(".ethavailable").html(available.toString());
     var correctAddr = isEthAddress($("#send_to_token").val());
     if(correctAddr && availableTokens >= 0 && available >= 0) {
         $("#sendtokenbutton").prop("disabled", false);
@@ -870,47 +889,58 @@ function UpdateTokenFees() {
     }
 }
 
+
+
+function CalculateTXFee(limit, price) {
+    var price = new BigNumber(price).multipliedBy("0.000000001");
+    var amount = new BigNumber(limit).multipliedBy(price);
+    return amount;
+}
+
+
+
 function UpdateEthFees() {
+    var toAddress = $("#send_ether_to").val();
     var amount = parseFloat($("#send_ether_amount").val());
     var gasLimit = parseInt($("#ethgaslimit").val());
     var gasPrice = parseInt($("#ethgasprice").val());
-    var price = parseInt(gasPrice) * 0.000000001;
     var bytePrice = parseInt($("#btc_byte_price").val());
-    var txCost = 0;
-    var available = 0;
+    var txCost = CalculateTXFee(gasLimit, gasPrice);
+    var available;
+    $(".ethspend").val(configs.balance.toString());
+    $("#sendethbutton").prop("disabled", true);
     if(configs.coin == "LTC" || configs.coin == "LTCTEST") {
-        $(".ethspend").val(configs.balance);
         $("#btc_byte_price").parent().removeClass("d-none");
-        available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
         txCost = QuickBTCFee(parseFloat(amount), bytePrice);
+        available = new BigNumber(configs.balance.toString()).minus(amount).minus(txCost);
         $("#send_ether_to").attr("placeholder", "LKmC2Gda9LMAWWDYP6wqN2N8qKhnVzbgE5");
     } else if(configs.coin == "BTC" || configs.coin == "BTCTEST") {
-        $(".ethspend").val(configs.balance);
         $("#btc_byte_price").parent().removeClass("d-none");
-        available = configs.balance - parseFloat(amount);
         gasPrice = 1;
         gasLimit = 1;
         txCost = QuickBTCFee(parseFloat(amount), bytePrice);
+        available = new BigNumber(configs.balance.toString()).minus(amount).minus(txCost);
         $("#send_ether_to").attr("placeholder", "1GkYGJ8vmxT8JpEWJWFPUHgwYAAccapD2a");
     } else {
-        txCost = gasLimit * price;
-        $(".ethspend").val(configs.balance);
-        available = configs.balance - amount - txCost;
+        available = new BigNumber(configs.balance.toString()).minus(amount).minus(txCost);
     }
-    if(amount < 0 || bad(gasLimit) || bad(gasPrice)) {
-        $(".ethspend").html(available.toFixed(6));
+    if(toAddress=='' || amount < 0 || bad(gasLimit) || bad(gasPrice)) {
+        $(".ethspend").html(available.toString());
         $("#sendethbutton").prop("disabled", true);
-        return
+        return false;
     }
-    $("#ethtxfee").val(txCost);
-    $(".ethspend").html(available.toFixed(6));
+    $("#ethtxfee").val(txCost.toString());
+    $(".ethspend").html(available.toString());
     if(configs.coin == "ETH" || configs.coin == "ROPSTEN") {
         var correctAddr = isEthAddress($("#send_ether_to").val());
     } else {
         var correctAddr = true;
     }
+
+    console.log(available.toString());
+
     if(correctAddr && available >= 0) {
         $("#sendethbutton").prop("disabled", false);
     } else {

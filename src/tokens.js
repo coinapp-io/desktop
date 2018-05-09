@@ -225,7 +225,8 @@ function AddPendingTransaction(hash, amount, coin, isRecieving = false) {
         var design = "row transaction_box pendingFlash";
     }
     var element = "tx_" + hash;
-    var html = "<div class=\"row " + design + "\" id=\"" + element + "\">" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><b>" + hash.substring(0, 32) + "...</b></div>" + "<div class=\"col-12\"><button onclick=\"OpenURL('" + txUrl + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button> <b class=\"float-right\">" + amount + " " + coin.toUpperCase() + "</b></div>" + "        </div>";
+    var coinicon = "<img class='mini_icon' src='"+CoinIcon(coin)+"'>";
+    var html = "<div class=\"row " + design + "\" id=\"" + element + "\"><div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + hash.substring(0, 32) + "...</i></div>" + "<div class=\"col-12\"><button onclick=\"ViewTransaction('" + hash + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button> <b class=\"float-right\">" + amount + " " + coin.toUpperCase() + "</b>"+coinicon+"</div>" + "        </div>";
     $("#transactions_tab").prepend(html);
 }
 
