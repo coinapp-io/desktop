@@ -52,7 +52,7 @@ it('should open token sending modal and send tokens', () => {
         .getValue("#privatepass")
         .should.eventually.equal(ETH_PRIV)
         .click("//select/option[@value=\'ropsten\']")
-        .click('#unlock_priv_key').pause(4000)
+        .click('#unlock_priv_key').pause(8000)
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
         .click('#tokens_available-tab').pause(2000)
@@ -184,7 +184,7 @@ it('should insert a ETH private key', () => {
         .getValue("#privatepass")
         .should.eventually.equal(ETH_PRIV)
         .click("//select/option[@value=\'eth\']")
-        .click('#unlock_priv_key').pause(4000)
+        .click('#unlock_priv_key').pause(8000)
         .getText(".myaddress")
         .should.eventually.equal(correct_address)
 });
