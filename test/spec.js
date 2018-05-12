@@ -63,7 +63,7 @@ it('should open token sending modal and send tokens', () => {
         .click('#savetokenbutton').pause(2000)
         .click("#token_0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab").pause(3000)
         .getText("#token_bal")
-        .should.eventually.equal("10000000.000")
+        .should.eventually.equal("10000000.0")
         .click("#send_tokens_btn").pause(1000)
         .setValue('#send_to_token', "0xffcf8fdee72ac11b5c542428b35eef5769c409f0").pause(1000)
         .setValue('#send_amount_token', "1234567.999").pause(1000)
