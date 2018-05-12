@@ -214,19 +214,24 @@ function FadeInTransactions() {
     });
 }
 
-function AddPendingTransaction(hash, amount, coin, isRecieving = false) {
+function AddPendingTransaction(hash, amount, coin, isRecieving = false, pending = true) {
     var obj = {
         id: hash,
         symbol: coin
     };
+    var btnText = "View";
     var txUrl = TransactionURL(obj);
-    var design = "row transaction_box_neg pendingFlash";
+    var design = "row transaction_box_neg";
     if(isRecieving) {
-        var design = "row transaction_box pendingFlash";
+        var design = "row transaction_box";
+    }
+    if (pending) {
+        design = design + " pendingFlash";
+        btnText = "Pending"
     }
     var element = "tx_" + hash;
     var coinicon = "<img class='mini_icon' src='"+CoinIcon(coin)+"'>";
-    var html = "<div class=\"row " + design + "\" id=\"" + element + "\"><div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + hash.substring(0, 32) + "...</i></div>" + "<div class=\"col-12\"><button onclick=\"ViewTransaction('" + hash + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">Pending</button> <b class=\"float-right\">" + amount + " " + coin.toUpperCase() + "</b>"+coinicon+"</div>" + "        </div>";
+    var html = "<div class=\"row " + design + "\" id=\"" + element + "\"><div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + hash.substring(0, 32) + "...</i></div>" + "<div class=\"col-12\"><button onclick=\"ViewTransaction('" + hash + "')\" type=\"button\" class=\"btn view_tx_btn float-left\">"+btnText+"</button> <b class=\"float-right\">" + amount + " " + coin.toUpperCase() + "</b>"+coinicon+"</div>" + "        </div>";
     $("#transactions_tab").prepend(html);
 }
 

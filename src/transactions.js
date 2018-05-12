@@ -167,7 +167,7 @@ function OnBitcoinBlock() {
 
 
 
-function OnEthereumBlock(callback) {
+function OnEthereumBlock() {
     configs.provider.on('block', function(blockNumber) {
         console.log('New Block: ' + blockNumber);
         $(".block_number").html("Block #" + blockNumber);
@@ -175,9 +175,52 @@ function OnEthereumBlock(callback) {
         setTimeout(function() {
             $(".block_number").css("color", "#dadada");
         }, 300);
-        if(callback) callback(blockNumber);
+        configs.provider.getBlock(blockNumber).then(function(block) {
+            $.each(block.transactions, function(k, tx) {
+                configs.provider.getTransaction(tx).then(function (tx_res) {
+                    console.log(tx_res);
+                    if (tx_res.to == configs.address) {
+                        console.log("found pending tx to me: " + tx);
+                        NewTransactionView(tx, toEther(tx_res.value).toString(), tx_res.to, false, false);
+                        UpdateBalance()
+                        // AddPendingTransaction(tx, toEther(tx_res.value).toString(), configs.coin, true);
+                        // WaitForTransaction(tx).then(function(tx) {
+                        //     ShowNotification(tx + " Confirmed")
+                        // });
+                    }
+                });
+            });
+        });
     });
 }
+
+
+
+function toEther(value) {
+    var pow = new BigNumber(0.1);
+    pow = pow.pow(18);
+    var value = new BigNumber(value).multipliedBy(pow);
+    return value;
+}
+
+
+
+
+function ScanEthereumBlockTransactions(id) {
+    configs.provider.getBlock("pending").then(function(block) {
+        $.each(block.transactions, function(k, tx) {
+                console.log(tx);
+                configs.provider.getTransaction(tx).then(function(tx_res) {
+                    console.log(tx_res);
+                    if (tx_res.to==configs.address) {
+                        configs.pendingTransactions.push(tx);
+                        console.log("found pending tx to me: "+tx)
+                    }
+                })
+        });
+    });
+}
+
 
 
 function FindTransaction(id) {
@@ -254,53 +297,64 @@ function ViewBitcoinTransaction(id) {
 
 
 function ViewEthereumTransaction(id) {
-    var tx = FindTransaction(id);
-    $(".transaction_view").removeClass('d-none');
-    var fee = (tx.gasUsed * tx.gasPrice) * (0.1 ** 18);
-    var value = tx.value * (0.1 ** 18);
-    var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/"+id+"')\">"+id+"</a>";
-    var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx.to+"')\">"+tx.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.to+"');\" src=\"../images/icons/qrcode.png\">";
-    var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+tx.from+"')\">"+tx.from+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+tx.from+"');\" src=\"../images/icons/qrcode.png\">";
+    configs.provider.getTransaction(id).then(function(tx) {
+        console.log(tx);
+        $(".transaction_view").removeClass('d-none');
+        var fee = (tx.gasUsed * tx.gasPrice) * (0.1 ** 18);
+        var value = tx.value * (0.1 ** 18);
+        var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/" + id + "')\">" + id + "</a>";
+        var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.to + "')\">" + tx.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.to + "');\" src=\"../images/icons/qrcode.png\">";
+        var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.from + "')\">" + tx.from + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.from + "');\" src=\"../images/icons/qrcode.png\">";
 
-    if (tx.txreceipt_status==1) {
-        var tx_status = "<span class='text-success'>Success</span>";
-    } else {
-        var tx_status = "<span class='text-danger'>Error</span>";
-    }
+        if (tx.txreceipt_status == 1) {
+            var tx_status = "<span class='text-success'>Success</span>";
+        } else {
+            var tx_status = "<span class='text-danger'>Error</span>";
+        }
 
-    var method = GetDataMethod(tx.input);
+        var method = GetDataMethod(tx.data);
 
-    var symbol = "ETH";
-    var coinicon = "<img class='mini_icon' src='"+CoinIcon("ETH")+"'>";
-    var coinLink = symbol;
-    if (method=="transfer") {
-        var transfer = DecodeData(tx.input);
-        to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/"+transfer.to+"')\">"+transfer.to+"</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('"+transfer.to+"');\" src=\"../images/icons/qrcode.png\">";
-        var tk = FindToken(tx.to);
-        coinicon = "<img class='mini_icon' src='"+CoinIcon(tk.symbol)+"'>";
-        symbol = tk.symbol;
-        value = transfer.value * (0.1 ** tk.decimals);
-        coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/"+tx.to+"')\">"+symbol+"</a>";
-    }
+        var symbol = "ETH";
+        var coinicon = "<img class='mini_icon' src='" + CoinIcon("ETH") + "'>";
+        var coinLink = symbol;
+        if (method == "transfer") {
+            var transfer = DecodeData(tx.data);
+            to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + transfer.to + "')\">" + transfer.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + transfer.to + "');\" src=\"../images/icons/qrcode.png\">";
+            var tk = FindToken(tx.to);
+            coinicon = "<img class='mini_icon' src='" + CoinIcon(tk.symbol) + "'>";
+            symbol = tk.symbol;
+            value = transfer.value * (0.1 ** tk.decimals);
+            coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/" + tx.to + "')\">" + symbol + "</a>";
+        }
 
-    var gweiGasPrice = parseInt(tx.gasPrice * (0.1 ** 9));
+        var gweiGasPrice = parseInt(tx.gasPrice * (0.1 ** 9));
 
-    $("#tx_view_hash").html(tx_link);
-    $("#tx_view_status").html(tx_status);
-    $("#tx_view_height").html(tx.blockNumber);
-    $("#tx_view_to").html(to_link);
-    $("#tx_view_from").html(from_link);
-    $("#tx_view_value").html(toNumber(value)+ " "+coinLink+coinicon);
-    $("#tx_view_limit").html(tx.gas);
-    $("#tx_view_used").html(tx.gasUsed);
-    $("#tx_view_price").html(gweiGasPrice+" gwei");
-    $("#tx_view_fee").html(fee.toFixed(8)+" ETH");
-    $("#tx_view_nonce").html(tx.nonce);
-    $("#tx_view_method").val(GetDataMethod(tx.input));
-    $("#tx_view_data").val(tx.input);
+        $("#tx_view_hash").html(tx_link);
+        $("#tx_view_status").html(tx_status);
+        $("#tx_view_height").html(tx.blockNumber);
+        $("#tx_view_to").html(to_link);
+        $("#tx_view_from").html(from_link);
+        $("#tx_view_value").html(toNumber(value) + " " + coinLink + coinicon);
+        $("#tx_view_limit").html(tx.gas);
+        $("#tx_view_used").html(tx.gasUsed);
+        $("#tx_view_price").html(gweiGasPrice + " gwei");
+        $("#tx_view_fee").html(fee.toFixed(8) + " ETH");
+        $("#tx_view_nonce").html(tx.nonce);
+        $("#tx_view_method").val(GetDataMethod(tx.data));
+        $("#tx_view_data").val(tx.data);
+    });
 }
 
 
+
+
+function BalanceText(amount) {
+    var n = parseFloat(amount);
+    var ethValue = n.toLocaleString(undefined, {minimumFractionDigits: 4});
+    var messageEl = $('#ethbal');
+    var split = parseFloat(ethValue).toFixed(4).split(".");
+    messageEl.html(split[0] + ".<small>" + split[1] + "</small>");
+}
 
 
 
@@ -309,6 +363,7 @@ function UpdateBalance() {
         console.log("Updating "+configs.coin+" Balance.");
         if(isBitcoin()) {
             CryptoBalance(configs.address).then(function(balance) {
+                BalanceText(balance);
                 resolve(balance);
             }).catch(function(e) {
                 reject(e.responseText);
@@ -318,11 +373,7 @@ function UpdateBalance() {
                 var etherString = ethers.utils.formatEther(balance);
                 configs.balance = etherString;
                 configs.bigBalance = balance;
-                var n = parseFloat(etherString);
-                var ethValue = n.toLocaleString(undefined, // use a string like 'en-US' to override browser locale
-                    {
-                        minimumFractionDigits: 4
-                    });
+                BalanceText(etherString);
                 resolve(balance);
             });
         }
@@ -406,8 +457,14 @@ function UpdateBalance() {
     });
 }
 
-function NewTransactionView(hash, amount, to) {
-    PopupNotification("Transaction Sent", "You sent " + amount + " " + configs.coin + " to " + to);
+function NewTransactionView(hash, amount, to, sent, pending) {
+    var title = "Transaction Sent";
+    var desc = "You sent " + amount + " " + configs.coin + " to " + to;
+    if (!sent) {
+        title = "Transaction Received";
+        desc = "You received " + amount + " " + configs.coin;
+    }
+    PopupNotification(title, desc);
     console.log("new transaction: " + hash);
     $("#sendethbutton").prop("disabled", false);
     $('#ethermodal').modal('hide');
@@ -416,11 +473,14 @@ function NewTransactionView(hash, amount, to) {
     $("#senttxamount").html(amount);
     $("#txtoaddress").html(to);
     $("#txtype").html(configs.coin);
-    $('#trxsentModal').modal('show');
+    if (sent) $('#trxsentModal').modal('show');
     $("#send_ether_amount").val('0');
     $("#send_ether_to").val('');
-    AddPendingTransaction(hash, amount, configs.coin);
+    AddPendingTransaction(hash, amount, configs.coin, !sent, pending);
+
+
 }
+
 
 function DefaultTxFees() {
     var amount;
@@ -490,6 +550,14 @@ function SendEthereum() {
             });
         });
     }
+}
+
+
+function AddBalance(amount) {
+    configs.bigBalance = configs.bigBalance.plus(amount);
+    splits = configs.pendingBalance.toString().split(".");
+    if(!splits[1]) splits[1] = "0";
+    $('#ethbal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
 }
 
 
