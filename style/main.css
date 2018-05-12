@@ -310,10 +310,38 @@ BODY {
     cursor: pointer;
 }
 
+button {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    border: 1px solid transparent;
+}
+
+button:focus,
+button:active{
+    outline:none;
+}
+
+.btn:focus,
+.btn:active{
+    outline:none;
+}
+
 .btn-primary {
     background-color: #523e21;
     text-shadow: 1px 1px 0px black;
     border: 1px solid #171109;
+    cursor: pointer;
+}
+
+.btn-primary:HOVER {
+    background-color: orange;
+    border: 1px solid #da863c;
+}
+
+.fixed_btn {
+    width: 105px;
 }
 
 .transaction_box {
@@ -377,6 +405,10 @@ BODY {
 
 .left_navs .nav-item {
     padding: 0;
+}
+
+.nav-item A {
+    cursor: pointer;
 }
 
 .left_navs a {
@@ -476,6 +508,10 @@ BODY {
     color: rgb(236, 175, 26);
     opacity: 1;
     font-size: 25pt;
+}
+
+.close SPAN {
+    cursor: pointer;
 }
 
 .popup_notifications {

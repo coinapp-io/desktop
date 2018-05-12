@@ -178,7 +178,9 @@ function AddTransaction(out) {
     }
 
     var element = "tx_" + out.id;
-    var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">\n" + "            <div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + out.id.substring(0, 32) + "...</i></div>\n" + "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " " + out.symbol + "<img src=\""+CoinIcon(out.symbol)+"\"></b></div>" + "        </div>";
+    var html = "<div class=\"row " + thisClass + " fadeInEach\" id=\"" + element + "\">" +
+        "<div class=\"col-12 mt-1 mb-1 small_txt text-center\"><i>" + out.id.substring(0, 32) + "...</i></div>" +
+        "<div class=\"col-12\">" + btn + " <b class=\"float-right\">" + toNumber(out.value) + " <img src=\""+CoinIcon(out.symbol)+"\"></b></div></div>";
     $("#transactions_tab").append(html);
 }
 

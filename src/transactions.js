@@ -176,9 +176,9 @@ function OnEthereumBlock() {
             $(".block_number").css("color", "#dadada");
         }, 300);
         configs.provider.getBlock(blockNumber).then(function(block) {
+            console.log("Found ", block.transactions.length, " transactions in block #", blockNumber);
             $.each(block.transactions, function(k, tx) {
                 configs.provider.getTransaction(tx).then(function (tx_res) {
-                    console.log(tx_res);
                     if (tx_res.to == configs.address) {
                         console.log("found pending tx to me: " + tx);
                         NewTransactionView(tx, toEther(tx_res.value).toString(), tx_res.to, false, false);
@@ -250,6 +250,7 @@ function ViewTransaction(id) {
     } else {
         ViewEthereumTransaction(id)
     }
+    $(".transaction_view").scrollTop(0);
 }
 
 
@@ -294,14 +295,12 @@ function ViewBitcoinTransaction(id) {
 
 
 
-
-
 function ViewEthereumTransaction(id) {
-    configs.provider.getTransaction(id).then(function(tx) {
+    configs.wallet.provider.getTransaction(id).then(function(tx) {
         console.log(tx);
         $(".transaction_view").removeClass('d-none');
-        var fee = (tx.gasUsed * tx.gasPrice) * (0.1 ** 18);
-        var value = tx.value * (0.1 ** 18);
+        var fee = FormatDecimals(tx.gasPrice.mul(tx.gasLimit), 18);
+        var value = FormatDecimals(tx.value, 18);
         var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/" + id + "')\">" + id + "</a>";
         var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.to + "')\">" + tx.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.to + "');\" src=\"../images/icons/qrcode.png\">";
         var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.from + "')\">" + tx.from + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.from + "');\" src=\"../images/icons/qrcode.png\">";
@@ -323,11 +322,11 @@ function ViewEthereumTransaction(id) {
             var tk = FindToken(tx.to);
             coinicon = "<img class='mini_icon' src='" + CoinIcon(tk.symbol) + "'>";
             symbol = tk.symbol;
-            value = transfer.value * (0.1 ** tk.decimals);
+            value = FormatDecimals(transfer.value, tk.decimals);
             coinLink = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/token/" + tx.to + "')\">" + symbol + "</a>";
         }
 
-        var gweiGasPrice = parseInt(tx.gasPrice * (0.1 ** 9));
+        var gweiGasPrice = FormatDecimals(tx.gasPrice, 9);
 
         $("#tx_view_hash").html(tx_link);
         $("#tx_view_status").html(tx_status);
@@ -335,10 +334,10 @@ function ViewEthereumTransaction(id) {
         $("#tx_view_to").html(to_link);
         $("#tx_view_from").html(from_link);
         $("#tx_view_value").html(toNumber(value) + " " + coinLink + coinicon);
-        $("#tx_view_limit").html(tx.gas);
+        $("#tx_view_limit").html(tx.gasLimit.toString());
         $("#tx_view_used").html(tx.gasUsed);
-        $("#tx_view_price").html(gweiGasPrice + " gwei");
-        $("#tx_view_fee").html(fee.toFixed(8) + " ETH");
+        $("#tx_view_price").html(gweiGasPrice.toString() + " gwei");
+        $("#tx_view_fee").html(fee.toString() + " ETH");
         $("#tx_view_nonce").html(tx.nonce);
         $("#tx_view_method").val(GetDataMethod(tx.data));
         $("#tx_view_data").val(tx.data);
@@ -369,7 +368,7 @@ function UpdateBalance() {
                 reject(e.responseText);
             });
         } else {
-            configs.provider.getBalance(configs.address).then(function(balance) {
+            configs.wallet.provider.getBalance(configs.address).then(function(balance) {
                 var etherString = ethers.utils.formatEther(balance);
                 configs.balance = etherString;
                 configs.bigBalance = balance;
@@ -507,7 +506,7 @@ function SendEthereum() {
     var data = $("#eth_data").val();
     gasPrice = parseInt(gasPrice) * 1000000000;
     var thisTxfee = $("#ethtxfee").val();
-    var BTCamount = parseFloat(amount) * (10 ** 8);
+    var BTCamount = FormatBigDecimals(amount, 8);
     $("#sendethbutton").prop("disabled", true);
     if(isBitcoin()) {
         SendCoins(to, BTCamount, thisTxfee).then(function(raw) {
@@ -567,6 +566,12 @@ function ReduceBalance(amount) {
 }
 
 
+function UpdateTokenBalanceText(amount) {
+    splits = amount.toString().split(".");
+    if(!splits[1]) splits[1] = "0";
+    $('#token_bal').html(splits[0] + ".<small>" + splits[1].substring(0, 4) + "</small>");
+}
+
 function toBigInt(val) {
     return ethers.utils.bigNumberify(parseInt(val).toString())
 }
@@ -590,14 +595,14 @@ function SendToken() {
     $("#sendtokenbutton").prop("disabled", true);
     var price = parseInt($("#tokengasprice").val());
     price = parseInt(price) * 1000000000;
-    var bigamount = parseFloat(amount) * (10 ** configs.tokenDecimals);
+    var bigamount = FormatBigDecimals(amount, configs.tokenDecimals);
     $("#sendtokenbutton").prop("disabled", true);
     console.log("decimals: " + configs.tokenDecimals);
     console.log("sending tokens: " + amount);
     console.log("sending tokens big: " + bigamount);
     console.log("sending to: " + to);
     var trueamount = toBigInt(bigamount);
-    var decBalance = configs.tokenBalance * (10 ** configs.tokenDecimals);
+    var decBalance = FormatBigDecimals(configs.tokenBalance, configs.tokenDecimals);
     var targetAddress = ethers.utils.getAddress(to);
     if(to != '' && bigamount != '' && parseFloat(bigamount) <= decBalance) {
         configs.wallet.getTransactionCount('pending').then(function(nonce) {

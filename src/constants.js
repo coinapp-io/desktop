@@ -14,7 +14,6 @@ const {
 const feeutil = require('bitcoin-util-fee');
 var tokenList;
 const ipcRenderer = require('electron').ipcRenderer;
-const EthereumTx = require('ethereumjs-tx');
 var os = require('os');
 const Store = require('electron-store');
 const store = new Store();

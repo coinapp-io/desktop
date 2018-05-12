@@ -98,11 +98,11 @@
                     <th>Block Height</th>
                     <td id="tx_view_height"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>To</th>
                     <td id="tx_view_to"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>From</th>
                     <td id="tx_view_from"></td>
                 </tr>
@@ -110,31 +110,31 @@
                     <th>Value</th>
                     <td id="tx_view_value"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>Gas Limit</th>
                     <td id="tx_view_limit"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
+                    <th>Gas Price</th>
+                    <td id="tx_view_price"></td>
+                </tr>
+                <tr class="eth_element">
                     <th>Gas Used</th>
                     <td id="tx_view_used"></td>
                 </tr>
                 <tr>
-                    <th>Gas Price</th>
-                    <td id="tx_view_price"></td>
-                </tr>
-                <tr>
-                    <th>Actual Fee</th>
+                    <th>Maximum Fee</th>
                     <td id="tx_view_fee"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>Nonce</th>
                     <td id="tx_view_nonce"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>Method</th>
                     <td id="tx_view_method"></td>
                 </tr>
-                <tr>
+                <tr class="eth_element">
                     <th>Data</th>
                     <td><textarea class="form-control" id="tx_view_data" rows="3"></textarea></td>
                 </tr>
@@ -165,9 +165,8 @@
 
             <nav class="col-12">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active col-4 text-center" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Crypto Wallet</a>
-                    <a id="setup_panel-tab" onclick="OpenSettings()" class="nav-item nav-link col-4 text-center">Settings</a>
-                    <a class="nav-item nav-link col-4 text-center" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">New Wallet</a>
+                    <a class="nav-item nav-link active col-6 text-center" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Crypto Wallet</a>
+                    <a id="setup_panel-tab" onclick="OpenSettings()" class="nav-item nav-link col-6 text-center">Settings</a>
                 </div>
             </nav>
             <div class="col-12">
@@ -222,26 +221,9 @@
                         <p class="errorInfo text-info pull-right" id="phraseerror">Invalid Ethereum Wallet Private Key</p>
                     </div>
 
-                    <div class="tab-pane" id="nav-ledger" role="tabpanel" aria-labelledby="nav-ledger-tab">
-
-                        <div class="form-group">
-                            Connect Ledger!
-                        </div>
-
-
-                    </div>
-
 
                     <div class="tab-pane" id="setup_panel" role="tabpanel" aria-labelledby="setup_panel-tab">
 
-
-                    </div>
-                    <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-
-
-                        <button type="submit" class="btn btn-primary mb-2" onclick="OpenBTCLedger();">BTC on Ledger</button>
-
-                        <button type="submit" class="btn btn-primary mb-2" onclick="OpenETHLedger();">ETH on Ledger</button>
 
                     </div>
                 </div>
@@ -378,8 +360,8 @@
                 </div>
 
                 <div class="col-3">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="sendethbutton" class="btn btn-primary" onclick="SendEthereum();" disabled>Send ETH</button>
+                    <button type="button" class="btn btn-default fixed_btn" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="sendethbutton" class="btn btn-primary fixed_btn" onclick="SendEthereum();" disabled>Send</button>
                 </div>
             </div>
         </div>
@@ -433,8 +415,8 @@
                 </div>
 
                 <div class="col-3">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="sendtokenbutton" class="btn btn-primary" onclick="SendToken();" disabled>Send <span class="token_symbol">TOKEN</span></button>
+                    <button type="button" class="btn btn-default fixed_btn" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="sendtokenbutton" class="btn btn-primary fixed_btn" onclick="SendToken();" disabled>Send</button>
                 </div>
             </div>
         </div>
@@ -494,7 +476,7 @@
                 </div>
                 <div class="col-5 text-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="savetokenbutton" class="btn btn-primary" id="save_token_btn" onclick="SaveNewToken();">Save Token</button>
+                    <button type="button" id="savetokenbutton" class="btn btn-primary fixed_btn" id="save_token_btn" onclick="SaveNewToken();">Save Token</button>
                 </div>
             </div>
         </div>
@@ -581,7 +563,7 @@
     <div class="row">
 
     <div class="col-5 mt-2 ml-3">
-        <img onclick="OpenURL('https://coinapp.io')" src="../images/banner.png" style="height: 60px;">
+        <img onclick="OpenURL('https://coinapp.io')" src="../images/banner.png" style="height: 60px;cursor:pointer;">
         <span id="settings_version">v.0.0.22</span>
     </div>
 
@@ -591,15 +573,17 @@
                 <a class="nav-link active" id="my_settings_tab" data-toggle="tab" href="#my_settings" role="tab" aria-controls="my_settings" aria-selected="true">Server</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="export_functions_tab" data-toggle="tab" href="#export_functions" role="tab" aria-controls="export_functions" aria-selected="false">Export</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" id="updates-tab" data-toggle="tab" href="#updates" role="tab" aria-controls="updates" aria-selected="false">Updates</a>
             </li>
-            <li class="nav-item" onclick="CloseSettings()">
-                <a class="nav-link" id="close_settings" href="#">Close</a>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="export_functions_tab" data-toggle="tab" href="#export_functions" role="tab" aria-controls="export_functions" aria-selected="false">Export</a>
             </li>
         </ul>
+
+        <button type="button" class="close" aria-label="Close" onclick="CloseSettings()">
+            <span aria-hidden="true">×</span>
+        </button>
+
     </div>
 
 

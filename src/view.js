@@ -47,7 +47,7 @@ function QueryTokenContract(address) {
             tmpToken.decimals().then(function(dec) {
                 $("#new_token_decimals").val(parseInt(dec));
                 $("#new_token_decimals").prop('readonly', true);
-                var trueBal = tokenBal * (0.1 ** parseInt(dec));
+                var trueBal = FormatDecimals(tokenBal, dec);
                 $("#new_token_balance").val(trueBal);
                 tmpToken.name().then(function(name) {
                     var coinicon = "<img class='mini_icon' src='"+CoinIcon(sym)+"'>";
@@ -229,7 +229,7 @@ function SendCoins(to_address, send_amount, tranx_fee) {
                 });
                 // var transactionFee = QuickBTCFee(send_amount);
                 console.log("fee input: " + tranx_fee);
-                tranx_fee = parseInt(tranx_fee * (10 ** 8));
+                tranx_fee = FormatBigDecimals(tranx_fee, 8);
                 console.log("fee input: " + tranx_fee);
                 var remaining = parseInt(bal) - parseInt(send_amount) - tranx_fee;
                 console.log("sending:   ", send_amount);
@@ -282,6 +282,13 @@ function ChangeTokenSymbol(name) {
 function ChangeCryptoSymbol(name) {
     $(".crypto_symbol").each(function() {
         $(this).html(name);
+    });
+}
+
+
+function HideEthElements() {
+    $(".eth_element").each(function() {
+        $(this).remove();
     });
 }
 
@@ -355,11 +362,15 @@ function FocusOnToken(token, decimals, name, symbol) {
         bal = bal.multipliedBy(pow);
         configs.tokenBalance = bal.toString();
         configs.bigTokenBalance = tokenBal;
-        var split = configs.tokenBalance.split(".");
-        if (!split[1]) {
-            split[1] = "000";
-        }
-        $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
+        // var split = configs.tokenBalance.split(".");
+        // if (!split[1]) {
+        //     split[1] = "000";
+        // }
+        // $("#token_bal").html(split[0] + ".<small>" + split[1] + "</small>");
+        //
+
+        UpdateTokenBalanceText(configs.tokenBalance);
+
     });
     $(".transaction_view").addClass('d-none');
     $("#token_balance_area").removeClass("d-none");
@@ -373,6 +384,16 @@ function FocusOnToken(token, decimals, name, symbol) {
     ChangeTokenSymbol(symbol);
 }
 
+// converts 123.456 to 123456000
+function FormatBigDecimals(amount, decimals) {
+    return ethers.utils.parseUnits(amount.toString(), parseInt(decimals))
+}
+
+
+// converts 12345670000 to 1234.567
+function FormatDecimals(amount, decimals) {
+    return ethers.utils.formatUnits(amount.toString(), parseInt(decimals))
+}
 
 
 $(".setting_change").change(function(e) {
@@ -472,11 +493,14 @@ function SuccessAccess() {
         // $("#ethtxfee").prop("readonly", false);
         $(".block_number").removeClass("d-none");
         OnBitcoinBlock();
+
+        HideEthElements();
+
     } else {
         $(".block_number").removeClass("d-none");
         OnEthereumBlock();
     }
-    $("#sendethbutton").html("Send " + configs.coin);
+    // $("#sendethbutton").html("Send " + configs.coin);
     $("#crypto_modal_title").html('Send ' + configs.coin);
     $("#cryptos_available").html("<u onclick=\"UseFullBalance()\" class=\"ethspend\">0.0</u> " + configs.coin + " Available");
     $("#send_ether_btn").html("Send " + configs.coin);
@@ -490,6 +514,7 @@ function SuccessAccess() {
     $(".main-container").css("left", "220px");
     $(".main-container").css("width", "620px");
     $(".settings_icon").show();
+    $("#export_functions_tab").removeClass("disabled");
     // $(".options").hide();
     // $(".walletInput").hide();
     // $("#addressArea").attr("class", "row");
