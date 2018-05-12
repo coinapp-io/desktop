@@ -83,6 +83,13 @@ it('should open token sending modal and send tokens', () => {
 
 
 
+// it('should delete previous token', () => {
+//
+//
+// });
+
+
+
 
 it('should load settings', () => {
 return app.client.waitUntilWindowLoaded()
@@ -94,36 +101,6 @@ return app.client.waitUntilWindowLoaded()
     .getValue("#setting_btc_server")
     .should.eventually.equal("https://btctest.coinapp.io/api")
 });
-
-// it('should open token modal and send tokens', () => {
-//     return app.client.waitUntilWindowLoaded()
-//         .setValue('#privatepass', priv)
-//         .getValue("#privatepass")
-//         .should.eventually.equal(priv)
-//         .click('#unlock_priv_key').pause(3000)
-//         .getText(".myaddress")
-//         .should.eventually.equal(correct_address)
-//         .click('#send_tokens_btn').pause(3000)
-//         .getValue("#tokengaslimit")
-//         .should.eventually.equal("65000")
-//         .setValue("#send_to_token", "0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F").pause(500)
-//         .setValue("#send_amount_token", "123456.76543").pause(500)
-//         .setValue("#tokengaslimit", "80000").pause(500)
-//         .setValue("#tokengasprice", "5").pause(500)
-//         .getText("u.ethavailable")
-//         .should.eventually.equal("78.876000")
-//         .getText("u.token_spend")
-//         .should.eventually.equal("9876543.234570")
-//         .getValue("#tokentxfee")
-//         .should.eventually.equal("0.000400")
-//         .click('#sendtokenbutton').pause(8000)
-//         .getText(".txidLink")
-//         .should.eventually.equal("0x6292924881590cfd180531064f92e36e02754572951890b65cb49dbd3b05f4df")
-//         .getText("#senttxamount")
-//         .should.eventually.equal("123456.76543")
-//         .getText("#txtoaddress")
-//         .should.eventually.equal("0x004F3E7fFA2F06EA78e14ED2B13E87d710e8013F")
-// });
 
 
 it('should insert a ETH ROPSTEN private key', () => {

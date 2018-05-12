@@ -477,8 +477,6 @@ function NewTransactionView(hash, amount, to, sent, pending) {
     $("#send_ether_amount").val('0');
     $("#send_ether_to").val('');
     AddPendingTransaction(hash, amount, configs.coin, !sent, pending);
-
-
 }
 
 
@@ -514,7 +512,7 @@ function SendEthereum() {
     if(isBitcoin()) {
         SendCoins(to, BTCamount, thisTxfee).then(function(raw) {
             BroadcastTransaction(raw).then(function(hash) {
-                NewTransactionView(hash.txid, amount, to);
+                NewTransactionView(hash.txid, amount, to, true, true);
                 configs.pendingTransactions.push(hash.txid);
             }).catch(function(e) {
                 console.error(e);
@@ -539,7 +537,7 @@ function SendEthereum() {
             rawTrx = configs.wallet.sign(transaction);
             console.log("raw tranaction: " + rawTrx);
             configs.provider.sendTransaction(rawTrx).then(function(hash) {
-                NewTransactionView(hash, amount, to);
+                NewTransactionView(hash, amount, to, true, true);
                 ReduceBalance(amount);
                 configs.pendingTransactions.push(hash);
                 WaitForTransaction(hash).then(function(hash) {
