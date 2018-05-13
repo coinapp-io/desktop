@@ -760,8 +760,8 @@ function UnlockPrivateKey() {
 
 function ExportEthereumKeystore() {
     var password = $("#keystore_pass").val();
-    configs.wallet.encrypt(password).then(function(data) {
-        dialog.showSaveDialog({defaultPath: configs.address.substring(0, 10)+'-keystore.json'},function (fileName) {
+    dialog.showSaveDialog({defaultPath: configs.address.substring(0, 10)+'-keystore.json'},function (fileName) {
+        configs.wallet.encrypt(password).then(function(data) {
             var stream = fs.createWriteStream(fileName);
             stream.once('open', function(fd) {
                 stream.write(data);
