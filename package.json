@@ -1,6 +1,6 @@
 {
     "name": "coinapp",
-    "version": "0.0.25",
+    "version": "0.0.26",
     "description": "A Simple Cryptocurrency Wallet for Ethereum, ERC20 Tokens, Bitcoin and Litecoin",
     "author": "Hunter Long <info@socialeck.com>",
     "main": "main.js",
@@ -20,6 +20,29 @@
     "build": {
         "appId": "com.coinapp",
         "productName": "CoinApp",
+        "files": [
+            "main.js",
+            "src/",
+            "node_modules/",
+            "views/",
+            "style/",
+            "images/",
+            "package.json"
+        ],
+        "dmg": {
+            "contents": [
+                {
+                    "x": 210,
+                    "y": 260
+                },
+                {
+                    "x": 490,
+                    "y": 260,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
+        },
         "mac": {
             "publish": [
                 "github"
