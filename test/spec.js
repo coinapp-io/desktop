@@ -65,7 +65,7 @@ describe('CoinApp Transaction Testing', () => {
             .setValue('#tokengasprice', "21").pause(1000)
             .getText(".ethavailable")
             .should.eventually.equal("99.998845")
-            .click("#sendtokenbutton").pause(5000)
+            .click("#sendtokenbutton").pause(8000)
             .getText("#senttxamount")
             .should.eventually.equal("1234567.999")
             .getText("#txtoaddress")
@@ -106,15 +106,13 @@ describe('CoinApp Transaction Testing', () => {
     });
 
 
-
-
     it('should open litecoin sending modal and send LTC', () => {
         return app.client.waitUntilWindowLoaded()
             .setValue('#privatepass', LTC_PRIV)
             .getValue("#privatepass")
             .should.eventually.equal(LTC_PRIV)
             .click("//select/option[@value=\'ltctest\']")
-            .click('#unlock_priv_key').pause(4000)
+            .click('#unlock_priv_key').pause(10000)
             .getText(".myaddress")
             .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
             .click('#send_ether_btn').pause(7000)
@@ -136,7 +134,7 @@ describe('CoinApp Transaction Testing', () => {
             .getValue("#privatepass")
             .should.eventually.equal(BTC_PRIV)
             .click("//select/option[@value=\'btctest\']")
-            .click('#unlock_priv_key').pause(8000)
+            .click('#unlock_priv_key').pause(12000)
             .getText(".myaddress")
             .should.eventually.equal("myPmiKz2RF3ihCCW8mQacYX8TC5yxem7aD")
             .click('#send_ether_btn').pause(7000)
