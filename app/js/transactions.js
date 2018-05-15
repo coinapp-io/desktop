@@ -302,8 +302,8 @@ function ViewEthereumTransaction(id) {
         var fee = FormatDecimals(tx.gasPrice.mul(tx.gasLimit), 18);
         var value = FormatDecimals(tx.value, 18);
         var tx_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/tx/" + id + "')\">" + id + "</a>";
-        var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.to + "')\">" + tx.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.to + "');\" src=\"../images/icons/qrcode.png\">";
-        var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.from + "')\">" + tx.from + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.from + "');\" src=\"../images/icons/qrcode.png\">";
+        var to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.to + "')\">" + tx.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.to + "');\" src=\"../../images/icons/qrcode.png\">";
+        var from_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + tx.from + "')\">" + tx.from + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + tx.from + "');\" src=\"../../images/icons/qrcode.png\">";
 
         if (tx.txreceipt_status == 1) {
             var tx_status = "<span class='text-success'>Success</span>";
@@ -318,7 +318,7 @@ function ViewEthereumTransaction(id) {
         var coinLink = symbol;
         if (method == "transfer") {
             var transfer = DecodeData(tx.data);
-            to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + transfer.to + "')\">" + transfer.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + transfer.to + "');\" src=\"../images/icons/qrcode.png\">";
+            to_link = "<a href=\"#\" onclick=\"OpenURL('https://etherscan.io/address/" + transfer.to + "')\">" + transfer.to + "</a> <img class=\"mini_icon\" onclick=\"OpenQRCodeAddress('" + transfer.to + "');\" src=\"../../images/icons/qrcode.png\">";
             var tk = FindToken(tx.to);
             coinicon = "<img class='mini_icon' src='" + CoinIcon(tk.symbol) + "'>";
             symbol = tk.symbol;

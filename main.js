@@ -107,7 +107,7 @@ function createWindow () {
           // experimentalFeatures: false,
           // webSecurity: true,
           // nodeIntegration: false,
-          preload: __dirname+'/src/constants.js'
+          // preload: __dirname+'/app/js/constants.js'
       }
   });
 
@@ -120,10 +120,12 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'views/index.html'),
+    pathname: path.join(__dirname, 'app/views/index.html'),
     protocol: 'file:',
     slashes: true
   }));
+
+    // mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

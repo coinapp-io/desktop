@@ -32,7 +32,7 @@ ipcRenderer.on('completedDownload', function(event, info) {
 });
 
 // https://raw.githubusercontent.com/coinapp-io/desktop/master/
-$("#updates").load("../UPDATES.txt");
+$("#updates").load("https://raw.githubusercontent.com/coinapp-io/desktop/master/UPDATES.txt");
 
 
 function CloseApp() {

@@ -633,7 +633,7 @@ function UnlockWalletKeystore() {
             $(".myaddress").html(configs.address);
             LoadSavedTokens();
             UpdateBalance().then(function(balance) {
-                tokenList = require('../src/tokens-eth.json');
+                tokenList = require('./tokens-eth.json');
                 LoadEthereumTransactions(configs.address).then(function(tsx) {
                     SuccessAccess();
                     SaveTransactions(configs.address);
@@ -736,7 +736,7 @@ function UnlockPrivateKey() {
         UnlockETH().then(function() {
             LoadSavedTokens();
             UpdateBalance().then(function(balance) {
-                tokenList = require('../src/tokens-eth.json');
+                tokenList = require('../../app/js/tokens-eth.json');
                 LoadEthereumTransactions(configs.address).then(function(tsx) {
                     SuccessAccess();
                     RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {

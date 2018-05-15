@@ -12,7 +12,7 @@ node --version
 npm --version
 npm install
 
-ganache-cli -d 75.12345 --seed visit exotic maximum -a 100 > /dev/null &
+ganache-cli -d 75.12345 --seed visit exotic maximum -a 10 > /dev/null &
 
 sleep 10
 
