@@ -179,6 +179,7 @@ function OnEthereumBlock() {
             console.log("Found ", block.transactions.length, " transactions in block #", blockNumber);
             $.each(block.transactions, function(k, tx) {
                 configs.provider.getTransaction(tx).then(function (tx_res) {
+                    if (!tx_res) return;
                     if (tx_res.to == configs.address) {
                         console.log("found pending tx to me: " + tx);
                         NewTransactionView(tx, toEther(tx_res.value).toString(), tx_res.to, false, false);

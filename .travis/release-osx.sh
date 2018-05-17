@@ -7,6 +7,8 @@ npm --version
 
 npm install
 
+npm run fetch-list
+
 npm run icon
 
 npm run release

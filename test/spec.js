@@ -1,6 +1,6 @@
 const hooks = require('./hooks');
-
-
+const path = require('path');
+var thispath = path.join(__dirname, '../');
 
 
 
@@ -22,6 +22,7 @@ describe('CoinApp Transaction Testing', () => {
     const ETH_PRIV = "4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d";
     const BTC_PRIV = process.env.BTC_PRIV;
     const LTC_PRIV = process.env.LTC_PRIV;
+
 
     it('should save settings', () => {
         return app.client.waitUntilWindowLoaded()

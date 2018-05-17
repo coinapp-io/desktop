@@ -15,13 +15,19 @@ onmessage = function(e) {
 
 var HttpClient = function() {
     this.get = function(aUrl, obj, aCallback) {
-        var anHttpRequest = new XMLHttpRequest();
-        anHttpRequest.onreadystatechange = function() {
-            if(anHttpRequest.readyState == 4 && anHttpRequest.status == 200) aCallback(anHttpRequest.responseText, obj);
-        };
-        anHttpRequest.open("GET", aUrl, true);
-        anHttpRequest.send(null);
-    }
+            var anHttpRequest = new XMLHttpRequest();
+            anHttpRequest.onreadystatechange = function () {
+                if (anHttpRequest.readyState == 4) {
+                    if (this.status == 200) {
+                        aCallback(anHttpRequest.responseText, obj);
+                    } else {
+                        aCallback("0", obj);
+                    }
+                }
+            };
+            anHttpRequest.open("GET", aUrl, true);
+            anHttpRequest.send(null);
+        }
 };
 
 
@@ -39,13 +45,17 @@ function LoadToken(i, reversed) {
     };
     var client = new HttpClient();
     var url = 'https://api.tokenbalance.com/balance/' + contract + '/' + address;
-    client.get(url, obj, function(response, obj) {
-        obj.balance = response;
-        postMessage(obj);
-        if (i < tokenList.length-1) {
-            LoadToken(i+1, false);
-        }
-    });
+        client.get(url, obj, function (response, obj, err) {
+            obj.balance = response;
+            postMessage(obj);
+            if (i < tokenList.length - 1) {
+                LoadToken(i + 1, false);
+            }
+        });
+}
+
+function catcherror(err) {
+    console.log(err);
 }
 
 function ParseTokenList() {
