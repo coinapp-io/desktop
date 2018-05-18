@@ -218,6 +218,15 @@
                             </div>
                         </div>
 
+
+                        <div class="form-group row">
+                            <label for="phrase" class="col-3 col-form-label">Ledger Wallet</label>
+                            <div class="col-sm-9 text-right">
+                                <button type="submit" class="btn btn-primary mb-2" id="open_ledger" onclick="OpenLedger('ETH');">Use ETH</button>
+                                <button type="submit" class="btn btn-primary mb-2" id="open_ledger" onclick="OpenLedger('BTC');">Use BTC</button>
+                            </div>
+                        </div>
+
                         <p class="errorInfo text-info pull-right" id="phraseerror">Invalid Ethereum Wallet Private Key</p>
                     </div>
 
@@ -718,6 +727,7 @@
 <script src="../../app/js/transactions.js"></script>
 <script src="../../app/js/view.js"></script>
 <script src="../../app/js/tokens.js"></script>
+<script src="../../app/js/ledger.js"></script>
 <script src="../../app/js/main.js"></script>
 
 </html>

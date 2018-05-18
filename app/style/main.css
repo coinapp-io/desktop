@@ -272,6 +272,18 @@ BODY {
     width: 300px;
 }
 
+.update_progress {
+    width: 0%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.23);
+    position: absolute;
+    top: 0;
+}
+
+#nav-profile .form-group {
+    margin-bottom: 0;
+}
+
 .updateLoader .progress {
     height: 6px;
     border-radius: 0;

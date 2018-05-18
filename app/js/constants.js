@@ -2,6 +2,7 @@ var ethers = require('ethers');
 var bip39 = require('bip39');
 var bitcoin = require('bitcoinjs-lib');
 var hdkey = require('ethereumjs-wallet/hdkey');
+var ledger = require('ledgerco');
 
 const {
     shell

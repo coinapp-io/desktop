@@ -25,7 +25,9 @@ ipcRenderer.on('newUpdateAvailable', function(event, text) {
     ShowNotification("Update Available for CoinApp", 60000)
 });
 ipcRenderer.on('updateProgressCheck', function(event, percent) {
-    ShowNotification("Update is " + parseFloat(percent).toFixed(2) + "% Complete", 60000);
+    var loading = "<div class='update_progress'></div>";
+    ShowNotification("Update is " + parseFloat(percent).toFixed(2) + "% Complete"+loading, 60000);
+    $(".update_process").css("width", parseFloat(percent).toFixed(2)+"%");
 });
 ipcRenderer.on('completedDownload', function(event, info) {
     ShowNotification("<button onclick=\"RestartApp()\" id=\"restart_app\" type=\"button\" class=\"btn btn-sm btn-primary\">Update Complete Restart CoinApp</button>", 60000);
