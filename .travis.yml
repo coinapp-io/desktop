@@ -22,6 +22,8 @@ addons:
   apt:
     packages:
       - xvfb
+      - libusb-1.0-0
+      - libusb-1.0-0-dev
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /bin/bash -c ./.travis/travis-test.sh; fi
