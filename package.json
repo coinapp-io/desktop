@@ -1,6 +1,6 @@
 {
     "name": "coinapp",
-    "version": "0.0.3",
+    "version": "0.0.31",
     "description": "A Simple Cryptocurrency Wallet for Ethereum, ERC20 Tokens, Bitcoin and Litecoin",
     "author": "Hunter Long <info@socialeck.com>",
     "main": "main.js",
