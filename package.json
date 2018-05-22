@@ -16,7 +16,8 @@
         "test-all": "docker-compose up -d && sleep 20 && curl -X POST -H 'Content-Type: application/json' -d @test/newcoin.json http://localhost:8545 && export NODE_ALL='true' >> /dev/null && mocha && docker-compose down",
         "fetch-list": "/bin/bash -c ./.travis/fetch-list.sh",
         "icon": "./.travis/notification-icon.sh -i ./build/icon.png -b com.coinapp",
-        "dev": "electron-webpack dev"
+        "dev": "electron-webpack dev",
+        "postinstall": "electron-rebuild -f"
     },
     "build": {
         "appId": "com.coinapp",
@@ -88,7 +89,8 @@
         "electron": "^2.0.0",
         "electron-builder": "^20.13.3",
         "mocha": "^5.1.1",
-        "spectron": "^3.8.0"
+        "spectron": "^3.8.0",
+        "electron-rebuild": "^1.7.3"
     },
     "dependencies": {
         "bignumber.js": "^7.0.1",
