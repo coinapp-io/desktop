@@ -29,8 +29,8 @@ addons:
       - libusb-1.0-0-dev
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; docker run -it -d -p 3001:3001 hunterlong/btcregtest-insight:latest; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]];  docker run -it -d -p 3005:3005 hunterlong/ltcregtest-insight:latest; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it -d -p 3001:3001 hunterlong/btcregtest-insight:latest; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it -d -p 3005:3005 hunterlong/ltcregtest-insight:latest; fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /bin/bash -c ./.travis/travis-test.sh; fi
