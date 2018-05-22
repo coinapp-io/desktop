@@ -52,10 +52,8 @@ describe('CoinApp Transaction Viewing', () => {
             .getText(".myaddress")
             .should.eventually.equal("mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo")
             .click('//*[@class="row transaction_box"]/div[2]/button').pause(2000)
-            .getText("#tx_view_value")
-            .should.eventually.equal("31.2344482 LTCTEST")
-            .getText("#tx_view_fee")
-            .should.eventually.equal("0.0000518 LTCTEST")
+            .getText("#tx_view_height")
+            .should.eventually.equal("115")
     });
 
 
@@ -69,10 +67,8 @@ describe('CoinApp Transaction Viewing', () => {
             .getText(".myaddress")
             .should.eventually.equal("mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo")
             .click('//*[@class="row transaction_box"]/div[2]/button').pause(2000)
-            .getText("#tx_view_value")
-            .should.eventually.equal("14.133112 BTCTEST")
-            .getText("#tx_view_fee")
-            .should.eventually.equal("0.000588 BTCTEST")
+            .getText("#tx_view_height")
+            .should.eventually.equal("115")
     });
 
 
