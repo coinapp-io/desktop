@@ -12,7 +12,7 @@ node --version
 npm --version
 npm install
 
-ganache-cli -d 75.12345 --seed visit exotic maximum -a 10 > /dev/null &
+ganache-cli -d 75.12345 -m "myth like bonus scare over problem client lizard pioneer submit female collect" -a 10 > /dev/null &
 
 sleep 7
 
