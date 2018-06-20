@@ -1,26 +1,14 @@
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Montserrat'), local('Montserrat'), url(../fonts/Montserrat-Bold.ttf) format('sans-serif');
+}
+
 BODY {
-    font-size: 10pt;
-    letter-spacing: 0.03em;
-    color: #4c4c4c;
-    background-color: #1f1f1f;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11pt;
 }
-
-
-.btn {
-    font-size: 0.9rem;
-    letter-spacing: 0.05rem;
-}
-
-INPUT {
-    font-size: 0.8rem !important;
-    letter-spacing: 0.02rem;
-}
-
-
-.input-group-text {
-    width: 125px;
-}
-
 
 #transactions_tab {
     font-size: 10pt;
@@ -39,7 +27,7 @@ INPUT {
 }
 
 #transactions_tab > .row:HOVER {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: #fff8eb;
 }
 
 .windows_close {
@@ -86,8 +74,12 @@ INPUT {
 }
 
 .tab-content {
+    background-color: rgba(255, 255, 255, 0.75);
     padding: 25px 30px;
-    height: 234px;
+    border-left: 1px solid #e8e8e8;
+    border-right: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    height: 235px;
 }
 
 .dynamicbar {
@@ -102,17 +94,15 @@ INPUT {
 .tokens_list {
     width: 220px;
     height: 514px;
-    border-bottom: 1px solid #717171;
+    border-bottom: 1px solid #d2d2d2;
+    border-top: 1px solid #d2d2d2;
     position: absolute;
     top: 22px;
-    background-color: #353535;
     display: block;
-    color: #b9b9b9;
-    background: url(http://api.thumbr.it/whitenoise-361x370.png?background=3d3d3dff&noise=242424&density=15&opacity=15);
 }
 
 .token_obj {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #f1f1f1;
     padding: 10px 5px;
     margin-bottom: 1px;
     cursor: pointer;
@@ -155,24 +145,23 @@ INPUT {
 
 
 .token_obj:HOVER {
-    background-color: rgba(0, 0, 0, 0.48);
+    background-color: #f9f9f9;
     cursor: pointer;
 }
 
 .main-container {
     display: block;
     position: absolute;
-    border-left: 1px solid #676767;
-    left: -1px;
+    border-left: 1px solid #bdbdbd;
+    border-top: 1px solid #d2d2d2;
+    left: 0px;
     top: 22px;
     height: 538px;
-    width: 860px;
+    width: 100%;
     float: right;
     background-color: #f7f7f7;
     opacity: 0;
     transition-duration: 250ms;
-    background-image: url(http://api.thumbr.it/whitenoise-361x370.png?background=1f1f1fff&noise=363636&density=15&opacity=15);
-    background-repeat: repeat;
 }
 
 .main-container IMG {
@@ -223,29 +212,27 @@ INPUT {
 
 .coinBox {
     text-align: center;
-    color: #f9a332;
 }
 
 .coinBox B {
-    font-size: 55pt;
+    font-size: 42pt;
     display: block;
     font-weight: bold;
 }
 
 .coinBox SMALL {
     font-size: 23pt;
-    color: #d58131;
+    color: #6f6f6f;
 }
 
 .myaddress {
     text-align: center;
     display: block;
-    font-size: 14pt;
+    font-size: 17pt;
     margin: 40px 0;
-    color: #adadad;
+    color: #f9a332;
     font-weight: bold;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.27);
-    cursor: pointer;
 }
 
 .options {
@@ -270,8 +257,7 @@ INPUT {
 }
 
 .modal-content {
-    background-color: #383838;
-    color: #d0d0d0;
+    border-radius: 0;
 }
 
 .modal-dialog {
@@ -324,25 +310,16 @@ INPUT {
     border-radius: 0;
 }
 
+.myaddress {
+    cursor: pointer;
+}
+
 .nav-tabs a {
     color: #d69637;
     font-size: 12pt;
     padding-top: 10px;
     background-color: rgba(255, 255, 255, 0.75);
     cursor: pointer;
-}
-
-
-.nav-tabs .nav-link {
-    color: #d87f1d;
-    background-color: #1f1f1f;
-    border: 0 !important;
-    letter-spacing: 0.01rem;
-}
-
-.nav-tabs .nav-link.active {
-    color: #dc8525;
-    background-color: #3c3c3c !important;
 }
 
 button {
@@ -363,28 +340,16 @@ button:active{
     outline:none;
 }
 
-button {
-    outline: 0 none !important;
-}
-
 .btn-primary {
-    background-color: #FCCF51;
-    text-shadow: 0px 1px 1px #ffffff;
-    border: 1px solid #d2ab3f;
-    color: #4e4e4e;
+    background-color: #523e21;
+    text-shadow: 1px 1px 0px black;
+    border: 1px solid #171109;
+    cursor: pointer;
 }
 
 .btn-primary:HOVER {
-    background-color: #ffe59d;
-    text-shadow: 0px 1px 1px #ffffff;
-    border: 1px solid #b99329;
-    color: #383838;
-}
-
-.btn-primary:ACTIVE:FOCUS {
-    background-color: #ffe8a7 !important;
-    color: #383838 !important;
-    border: 1px solid #bb9c46;
+    background-color: orange;
+    border: 1px solid #da863c;
 }
 
 .fixed_btn {
@@ -406,6 +371,7 @@ button {
 }
 
 .transaction_box_misc {
+    background-color: white;
     padding: 2px 0;
     margin: 0 -6px;
     height: 50px;
@@ -433,7 +399,7 @@ button {
 
 
 .small_txt {
-    font-size: 7pt;
+    font-size: 8pt;
 }
 
 .view_tx_btn {
@@ -507,12 +473,11 @@ button {
 }
 
 .settings_page {
-    background-color: #1f1f1f;
-    color: #c7c7c7;
+    background-color: #f3f3f3;
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 22px;
+    top: 23px;
     z-index: 2;
 }
 
@@ -534,15 +499,14 @@ button {
     bottom: 2px;
     right: 10px;
     font-size: 12pt;
-    color: rgb(53, 53, 53);
+    color: #dadada;
     transition-duration: 100ms;
 }
 
 .transaction_view {
     width: 100%;
     height: 100%;
-    background-color: #212121;
-    color: gainsboro;
+    background-color: #fbfbfb;
     position: absolute;
     z-index: 9;
     overflow-y: scroll;
