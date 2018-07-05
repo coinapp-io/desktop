@@ -15,14 +15,14 @@
 A nifty crypto wallet application that lets you send and receive Ethereum, ERC20 Tokens, Bitcoin and Litecoin. CoinApp has a minimal UI for people who just want to move their coins, there's some advanced features for the knowledgable users too. <a href="https://github.com/hunterlong/coinapp/releases/latest">Download Latest</a> and try out this new opensource wallet. This application uses [insight-api](https://github.com/bitpay/insight-api) to fetch up-to-date balances and UTXO's rather than depending on a central server to collect transaction information. For Ethereum, this application uses a normal connect to geth JSON RPC server. You can use [infura.io](https://infura.io/) or connect to your local geth server. CoinApp lets the user modify their connections to fit their own decentralized server. 
 
 <p align="center">
-  <img width="70%" src="https://i.imgur.com/OlufxEL.png">
+  <img width="70%" src="https://img.cjx.io/coinapprun1.gif">
 </p>
 
 # Features of CoinApp
 CoinApp trys to make this cryptocurrency process as simple as possible. The wallet accepts Keystore JSON Etheruem Wallets, Private Keys for ETH, BTC, LTC, and Mnemonic phrases 3-24 words long [BIP39](https://iancoleman.io/bip39/). With CoinApp you can view all of your wallet's transactions without downloading the entire blockchain. This application is also great for developing on the Blockchain Testnet's.
 
 <p align="center">
-  <img width="70%" src="https://i.imgur.com/iDeHHxy.png">
+  <img width="70%" src="https://img.cjx.io/coinappsendeth.gif">
 </p>
 
 # ERC20 Tokens
@@ -30,10 +30,10 @@ CoinApp will automatically fetch all your balances for the most popular coins wh
 If you need to add a custom token you can easily add your own contract address to parse ERC20 tokens!
 
 <p align="center">
-  <img width="45%" src="https://i.imgur.com/N6poiQv.png"><img width="45%" src="https://i.imgur.com/tCdgr6e.png">
+  <img width="45%" src="https://img.cjx.io/coinappcoinview1.gif"><img width="45%" src="https://img.coinapp.io/coinapptxscroll.gif">
 </p>
 <p align="center">
-  <img width="60%" src="https://i.imgur.com/9r2cgD6.png">
+  <img width="60%" src="https://img.cjx.io/coinapptxview.gif">
 </p>
 
 
