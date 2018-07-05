@@ -30,7 +30,7 @@ CoinApp will automatically fetch all your balances for the most popular coins wh
 If you need to add a custom token you can easily add your own contract address to parse ERC20 tokens!
 
 <p align="center">
-  <img width="45%" src="https://img.cjx.io/coinappcoinview1.gif"><img width="45%" src="https://img.coinapp.io/coinapptxscroll.gif">
+  <img width="45%" src="https://img.cjx.io/coinappcoinview1.gif"><img width="45%" src="https://img.cjx.io/coinapptxscroll.gif">
 </p>
 <p align="center">
   <img width="60%" src="https://img.cjx.io/coinapptxview.gif">
@@ -46,6 +46,10 @@ There are hundreds of cryptos these days, but this app lets you interact with th
 - Ethereum Ropsten Testnet
 - Bitcoin Testnet
 - Litecoin Testnet
+
+<p align="center">
+  <img width="70%" src="https://img.cjx.io/coinappsendbtc.gif">
+</p>
 
 This list will expand while trying to keep the "minimal" look. Any coin that has an insight api or any other open source API should be added in CoinApp. Coins like Bitcoin and Litecoin need to fetch previous transactions from the blockchain before you can create a new transaction. This application will give you the option to point everything to your own local servers. Below is a list of cryptos we want to accept in the near future. 
 - Bitcoin Cash
