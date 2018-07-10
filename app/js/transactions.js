@@ -363,7 +363,7 @@ function UpdateBalance() {
         console.log("Updating "+configs.coin+" Balance.");
         if(isBitcoin()) {
             CryptoBalance(configs.address).then(function(balance) {
-                BalanceText(balance);
+                // BalanceText(balance);
                 resolve(balance);
             }).catch(function(e) {
                 reject(e.responseText);
