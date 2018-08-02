@@ -1,8 +1,9 @@
 var ethers = require('ethers');
 var bip39 = require('bip39');
 var bitcoin = require('bitcoinjs-lib');
-var hdkey = require('ethereumjs-wallet/hdkey');
+var hdkey = require('ethereumjs-wallet/dist/hdkey');
 var ledger = require('ledgerco');
+var networks = require('../js/networks');
 
 const {
     shell
@@ -90,3 +91,14 @@ var pendingBalance;
 var pendingEthTransaction = [];
 var lastEthBlock;
 var lastTrxScroll;
+
+const litecoinNetwork = {litecoin: {
+    messagePrefix: '\x19Litecoin Signed Message:\n',
+        bip32: {
+        public: 0x019da462,
+            private: 0x019d9cfe
+    },
+    pubKeyHash: 0x30,
+        scriptHash: 0x32,
+        wif: 0xb0
+}}

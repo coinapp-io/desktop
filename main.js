@@ -3,15 +3,13 @@ var log = require('electron-log');
 
 const ipcMain = electron.ipcMain;
 
+const {app, BrowserWindow, TouchBar} = require('electron');
+const {TouchBarLabel, TouchBarButton, TouchBarSpacer} = TouchBar;
+
 const {autoUpdater} = require("electron-updater");
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
-
-// Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
 
 const defaultMenu = require('electron-default-menu');
 const { Menu, shell } = electron;
@@ -25,59 +23,49 @@ const Store = require('electron-store');
 const store = new Store();
 
 
-//
-// import Transport from "@ledgerhq/hw-transport-node-hid";
-// import AppBtc from "@ledgerhq/hw-app-btc";
-// import AppEth from "@ledgerhq/hw-app-eth";
-//
-//
-//
-// ipcMain.on("checkForLedger", (event, arg) => {
-//
-//
-// });
-//
-//
-// ipcMain.on("signEthLedger", (event, path, rawtx) => {
-//     const signedTx = async () => {
-//     const transport = await Transport.create();
-//     const eth = new AppEth(transport);
-//     const result = await eth.signTransaction(path, rawtx);
-//     return result.s;
-//     };
-//     signedTx().then(a =>
-//         mainWindow.webContents.send('ledgerEthAddress', a)
-//     );
-// });
-//
-//
-// ipcMain.on("openBtcLedger", (event, arg) => {
-//     const getBtcAddress = async () => {
-//     const transport = await Transport.create();
-//     const btc = new AppBtc(transport);
-//     const result = await btc.getWalletPublicKey(arg);
-//     return result.bitcoinAddress;
-//     };
-//     getBtcAddress().then(a =>
-//         mainWindow.webContents.send('ledgerBtcAddress', a)
-//     );
-// });
-//
-//
-//
-// ipcMain.on("openEthLedger", (event, arg) => {
-//     const getEthAddress = async () => {
-//     const transport = await Transport.create();
-//     const eth = new AppEth(transport);
-//     const result = await eth.getAddress(arg);
-//     return result.address;
-//     };
-//     getEthAddress().then(a =>
-//     mainWindow.webContents.send('ledgerEthAddress', a)
-//     );
-// });
-//
+const logo = new TouchBarButton({
+    icon: path.join(__dirname, 'app/images/iconsm.png'),
+    backgroundColor: '#000000',
+    click: () => {
 
+    }
+})
+
+
+const initText = new TouchBarLabel({
+    label: "CoinApp.io",
+    textColor: "#fdff1b"
+});
+
+
+const versionText = new TouchBarLabel({
+    label: 'v'+app.getVersion(),
+    textColor: "#c0c0c0"
+});
+
+
+const secondText = new TouchBarLabel({
+    label: "",
+    textColor: "#51ff19"
+});
+
+const touchBar = new TouchBar([
+    logo,
+    new TouchBarSpacer({size: 'small'}),
+    initText,
+    secondText
+]);
+
+
+function ChangeInitText(text, color="#fdff1b") {
+    initText.label = text;
+    initText.textColor = color;
+}
+
+function ChangeSecondText(text, color="#3dff1a") {
+    secondText.label = text;
+    secondText.textColor = color;
+}
 
 var alreadySet = store.get('set');
 store.set('version', app.getVersion());
@@ -102,6 +90,7 @@ function createWindow () {
       titleBarStyle: 'hidden',
       width: 840,
       height: 560,
+      show: false,
       webPreferences: {
           // allowRunningInsecureContent: false,
           // experimentalFeatures: false,
@@ -118,12 +107,20 @@ function createWindow () {
     }
   mainWindow.setFullScreenable(false);
 
+    mainWindow.setTouchBar(touchBar);
+
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'app/views/index.html'),
     protocol: 'file:',
     slashes: true
   }));
+
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+        mainWindow.focus();
+    });
 
     // mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
 
@@ -205,10 +202,9 @@ autoUpdater.on('download-progress', (progressObj) => {
     log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
     log.info(log_message);
-
     mainWindow.webContents.send('updateProgressCheck', progressObj.percent);
-
 })
+
 autoUpdater.on('update-downloaded', (info) => {
     log.info('Update downloaded');
     mainWindow.webContents.send('completedDownload');
@@ -226,6 +222,15 @@ ipcMain.on("closeApplication", (event, arg) => {
 
 ipcMain.on("minimizeApp", (event, arg) => {
     mainWindow.minimize();
+});
+
+ipcMain.on("ChangeInitText", (event, arg) => {
+    ChangeInitText(arg.text, arg.color);
+});
+
+
+ipcMain.on("ChangeSecondText", (event, arg) => {
+    ChangeSecondText(arg.text, arg.color);
 });
 
 // In this file you can include the rest of your app's specific main process

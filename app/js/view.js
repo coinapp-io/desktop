@@ -500,6 +500,7 @@ function SuccessAccess() {
         $(".block_number").removeClass("d-none");
         OnEthereumBlock();
     }
+    ChangeInitText(configs.address, "#ffffff");
     // $("#sendethbutton").html("Send " + configs.coin);
     $("#crypto_modal_title").html('Send ' + configs.coin);
     $("#cryptos_available").html("<u onclick=\"UseFullBalance()\" class=\"ethspend\">0.0</u> " + configs.coin + " Available");
@@ -565,7 +566,9 @@ function UnlockBTC() {
     return new Promise(function(resolve, reject) {
         var key = $("#privatepass").val();
         myWallet = bitcoin.ECPair.fromWIF(key, configs.network);
-        myAddress = myWallet.getAddress();
+        const { address } = bitcoin.payments.p2pkh({ network: configs.network, pubkey: myWallet.publicKey })
+        console.log(address);
+        myAddress = address;
         configs.wallet = myWallet;
         configs.address = myAddress;
         configs.decimals = 8;
@@ -687,18 +690,18 @@ function UnlockPrivateKey() {
     if(coin == "" || key == "") return false;
     $("#unlock_priv_key").html("<div class='loader'></div>");
     if(coin == "btc") {
-        configs.network = bitcoin.networks.bitcoin;
+        configs.network = networks.bitcoin;
         configs.api = store.get("btc");
     } else if(coin == "ltc") {
         configs.api = store.get("ltc");
-        configs.network = bitcoin.networks.litecoin;
+        configs.network = networks.litecoin;
     } else if(coin == "btctest") {
         configs.api = store.get("btc");
-        configs.network = bitcoin.networks.testnet;
+        configs.network = networks.testnet;
         configs.isTestnet = true;
     } else if(coin == "ltctest") {
         configs.api = store.get("ltc");
-        configs.network = bitcoin.networks.testnet;
+        configs.network = networks.testnet;
         configs.isTestnet = true;
     } else if(coin == "eth") {
         configs.api = store.get("geth");
@@ -717,6 +720,7 @@ function UnlockPrivateKey() {
                     configs.transactions = tsx.transactions;
                     configs.myTransactions = tsx.myTransactions;
                     RenderTransactions(tsx.myTransactions, 0, 12);
+                    ChangeSecondText("Balance: "+parseFloat(configs.balance).toFixed(4)+" "+configs.coin);
                     LoadUTXOs(configs.address).then(function(utxos) {
                         configs.utxos = utxos;
                     });
@@ -741,6 +745,7 @@ function UnlockPrivateKey() {
                     SuccessAccess();
                     RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
                         BeginTokenLoading();
+                        ChangeSecondText("Balance: "+parseFloat(configs.balance).toFixed(4)+" "+configs.coin);
                         // render trnsactions
                     });
                 }).catch(function(err) {

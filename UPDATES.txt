@@ -1,6 +1,8 @@
+<h3>v0.0.38</h3>
+Updated NPM packages to latest version. Confirmed BTC, LTC, ETH, and Token transactions. Added Mac touchbar interface.
+
 <h3>v0.0.24</h3>
 Updates with Ethereum pending transaction notifications.
-
 
 <h3>v0.0.23</h3>
 Major design changes and code structure refactoring. Export Wallet data (not private keys) for offline usage.
