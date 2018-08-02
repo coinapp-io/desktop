@@ -27,6 +27,7 @@ addons:
       - xvfb
       - libusb-1.0-0
       - libusb-1.0-0-dev
+      - libudev-dev
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it -d -p 3001:3001 hunterlong/btcregtest-insight:latest; fi
