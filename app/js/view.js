@@ -615,43 +615,38 @@ function toBigNumber(val) {
 }
 
 
-function UnlockWalletKeystore() {
+function UnlockWalletKeystoreForm() {
     var keyFile = $("#keystore_file").val();
     var password = $("#keystorewalletpass").val();
     if(password == "" || keyFile == undefined) return false;
-    var buffer = fs.readFileSync(keyFile);
-    var walletData = buffer.toString();
-    if(password != '' && keyFile != '' && Wallet.isEncryptedWallet(walletData)) {
-        Wallet.fromEncryptedWallet(walletData, password).then(function(wallet) {
-            console.log("Opened Address: " + wallet.address);
-            configs.coin = "ETH";
-            configs.api = store.get("geth");
-            configs.network = ethers.networks.testnet;
-            var provider = new ethers.providers.JsonRpcProvider(configs.api, configs.network);
-            configs.provider = provider;
-            var myWallet = wallet;
-            myWallet.provider = provider;
-            configs.wallet = myWallet;
-            configs.address = myWallet.address;
-            $(".myaddress").html(configs.address);
-            LoadSavedTokens();
-            UpdateBalance().then(function(balance) {
-                tokenList = require('./tokens-eth.json');
-                LoadEthereumTransactions(configs.address).then(function(tsx) {
-                    SuccessAccess();
-                    SaveTransactions(configs.address);
-                    RenderTransactions(configs.myTransactions, 0, 12).then(function(t) {
-                        BeginTokenLoading();
-                        // render trnsactions
-                    });
-                }).catch(function(err) {
-                    ShowNotification(err);
+
+    UnlockWalletKeystore(keyFile[0].files[0].path, password).then(function(wallet) {
+        console.log("Opened Address: " + wallet.address);
+        configs.coin = "ETH";
+        configs.api = store.get("geth");
+        configs.network = ethers.networks.testnet;
+        var provider = new ethers.providers.JsonRpcProvider(configs.api, configs.network);
+        configs.provider = provider;
+        var myWallet = wallet;
+        myWallet.provider = provider;
+        configs.wallet = myWallet;
+        configs.address = myWallet.address;
+        $(".myaddress").html(configs.address);
+        LoadSavedTokens();
+        UpdateBalance().then(function (balance) {
+            tokenList = require('./tokens-eth.json');
+            LoadEthereumTransactions(configs.address).then(function (tsx) {
+                SuccessAccess();
+                SaveTransactions(configs.address);
+                RenderTransactions(configs.myTransactions, 0, 12).then(function (t) {
+                    BeginTokenLoading();
+                    // render trnsactions
                 });
+            }).catch(function (err) {
+                ShowNotification(err);
             });
         });
-    } else {
-        ShowNotification("Invalid Keystore JSON File");
-    }
+    });
     $("#keystorewalletpass").val('');
 }
 

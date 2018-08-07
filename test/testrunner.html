@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+</head>
+<body>
+<div id="mocha"></div>
+<script src="../node_modules/mocha/mocha.js"></script>
+
+<script>
+    var chai = require("chai");
+    var chaiAsPromised = require("chai-as-promised");
+    chai.use(chaiAsPromised);
+    var expect = chai.expect;
+    var assert = chai.assert;
+    chai.should();
+    mocha.setup('bdd');
+
+    var failed = 0;
+</script>
+
+<script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+</script>
+
+
+<!-- load code you want to test here -->
+<script src="../app/js/jquery.min.js"></script>
+<script src="../app/js/bootstrap.min.js"></script>
+<script src="../app/js/abi.js"></script>
+<script src="../app/js/constants.js"></script>
+
+<script src="../app/js/libs/helpers.js"></script>
+<script src="../app/js/libs/file.js"></script>
+<script src="../app/js/libs/web3.js"></script>
+<script src="../app/js/libs/wallet.js"></script>
+<script src="../app/js/libs/transaction.js"></script>
+
+<script src="../app/js/phrase.js"></script>
+<script src="../app/js/exporter.js"></script>
+<script src="../app/js/settings.js"></script>
+<script src="../app/js/transactions.js"></script>
+<script src="../app/js/touchbar.js"></script>
+<script src="../app/js/view.js"></script>
+<script src="../app/js/tokens.js"></script>
+<script src="../app/js/ledger.js"></script>
+<script src="../app/js/main.js"></script>
+
+<!-- load your test files here -->
+<script src="../test/unit/coinwallet.js"></script>
+<script src="../test/unit/cointransaction.js"></script>
+
+
+<script>
+    mocha.run();
+
+    afterEach(function() {
+        if (this.currentTest.state === 'failed') {
+            failed++;
+            ipcRenderer.send('failedTest');
+        }
+    });
+
+    after(function(done) {
+        console.log("im done, failures: "+failed);
+        done();
+    });
+
+</script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ node_js:
 sudo: required
 
 os:
+  - linux
   - osx
 
 env:

@@ -499,7 +499,7 @@ function DefaultTxFees() {
     $("#btc_byte_price").val(amount);
 }
 
-function SendEthereum() {
+function SendEthereumForm() {
     var to = $('#send_ether_to').val();
     var amount = $('#send_ether_amount').val();
     var gasLimit = $("#ethgaslimit").val();
@@ -589,7 +589,7 @@ function GetNonce() {
 
 
 
-function SendToken() {
+function SendTokenForm() {
     var to = $('#send_to_token').val();
     var amount = $('#send_amount_token').val();
     var gasLimit = parseInt($('#tokengaslimit').val());

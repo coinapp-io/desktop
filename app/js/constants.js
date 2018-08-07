@@ -1,14 +1,24 @@
+const fs = require("fs");
+const pathjs = require('path');
+const current_path = pathjs.join(__dirname, '../');
 var ethers = require('ethers');
 var bip39 = require('bip39');
 var bitcoin = require('bitcoinjs-lib');
 var hdkey = require('ethereumjs-wallet/dist/hdkey');
 var ledger = require('ledgerco');
-var networks = require('../js/networks');
+var networks = require(current_path+'app/js/networks');
+
+const CoinWallet = require(current_path+'app/js/exports/coinwallet');
+const CoinTransaction = require(current_path+'app/js/exports/cointransaction');
+
+const Web3 = require('web3');
+
+const RLP = require('rlp');
+const Tx = require('ethereumjs-tx');
 
 const {
     shell
 } = require('electron');
-const fs = require('fs');
 const clipboardy = require('clipboardy');
 const {
     dialog
@@ -20,16 +30,18 @@ var os = require('os');
 const Store = require('electron-store');
 const store = new Store();
 const notifier = require('node-notifier');
-var pathjs = require('path');
-var tokenWorker = new Worker('../../app/js/token_parser.js');
+var tokenWorker = new Worker(current_path+'app/js/token_parser.js');
 var QRCode = require('qrcode');
 var BigNumber = require('bignumber.js');
 var configs = {
     coin: "none",
+    gasLimit: 21000,
+    gasPrice: 21,
     wallet: null,
     address: "",
     nonce: 0,
     network: null,
+    chainCode: 1,
     transactions: [],
     decimals: 18,
     bigBalance: 0,
@@ -39,7 +51,7 @@ var configs = {
     bigTokenBalance: 0,
     tokenDecimals: 0,
     block: 0,
-    api: "",
+    api: "https://eth.coinapp.io",
     provider: null,
     myTransactions: [],
     pendingTransactions: [],
@@ -92,13 +104,4 @@ var pendingEthTransaction = [];
 var lastEthBlock;
 var lastTrxScroll;
 
-const litecoinNetwork = {litecoin: {
-    messagePrefix: '\x19Litecoin Signed Message:\n',
-        bip32: {
-        public: 0x019da462,
-            private: 0x019d9cfe
-    },
-    pubKeyHash: 0x30,
-        scriptHash: 0x32,
-        wif: 0xb0
-}}
+var web3 = new Web3(new Web3.providers.HttpProvider(configs.api));

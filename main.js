@@ -120,6 +120,7 @@ function createWindow () {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         mainWindow.focus();
+        autoUpdater.checkForUpdates();
     });
 
     // mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
@@ -135,8 +136,6 @@ function createWindow () {
     mainWindow = null
   })
 
-    autoUpdater.checkForUpdates();
-
 }
 
 
@@ -147,23 +146,48 @@ function createWindow () {
 app.on('ready', function(){
 
   // const menu = defaultMenu(app, shell);
+    var template = [{
+        label: "Edit",
+        submenu: [
+            {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
+            {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
+            {label: "Test", accelerator: "CmdOrCtrl+T", click() { openTesting(); }},
+            {
+                label: 'Reload App',
+                accelerator: 'CmdOrCtrl+R',
+                enabled: (process.env.NODE_ENV==="test"),
+                click (item, focusedWindow) {
+                    if (focusedWindow) focusedWindow.reload()
+                }
+            }
+        ]
+    }];
 
-    if (process.env.NODE_ENV!="test" && os.platform()=="darwin") {
-        var template = [{
-            label: "Edit",
-            submenu: [
-                {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
-                {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"}
-            ]
-        }
-        ];
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
-        Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-    }
-
-  createWindow();
+    createWindow();
 
 });
+
+
+function openTesting() {
+    testWindow = new BrowserWindow({
+        width: 980,
+        height: 700,
+        show: true
+    });
+    testWindow.openDevTools();
+    testWindow.loadURL(url.format({
+        pathname: path.join(__dirname, '/test/testrunner.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
+    testWindow.once('ready-to-show', () => {
+        testWindow.show();
+        testWindow.focus();
+    });
+}
+
 
 
 // Quit when all windows are closed.
